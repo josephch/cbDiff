@@ -30,6 +30,7 @@
 					<Add option="-DwxUSE_UNICODE" />
 					<Add option="-DEXPORT_FUNC" />
 					<Add directory="../../../include" />
+					<Add directory="../../../include/tinyxml" />
 					<Add directory="../../../sdk/wxscintilla/include" />
 					<Add directory="$(#wx30.include)" />
 					<Add directory="$(#wx30)/lib/gcc_dll/mswu" />
@@ -68,134 +69,38 @@
 		<VirtualTargets>
 			<Add alias="All" targets="Windows;" />
 		</VirtualTargets>
-		<Unit filename="images/reload.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="images/sidebyside.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="images/swap.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="images/table.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="images/unified.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="manifest.xml">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiff.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiff.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffConfigPanel.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffConfigPanel.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffCtrl.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffCtrl.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffEditor.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffEditor.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffMenu.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffMenu.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffSelectFiles.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffSelectFiles.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffToolbar.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffToolbar.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffUtils.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbDiffUtils.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbSideBySideCtrl.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbSideBySideCtrl.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbTableCtrl.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbTableCtrl.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbUnifiedCtrl.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/cbUnifiedCtrl.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/wxDiff.cpp">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="src/wxDiff.h">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="wxsmith/cbDiffConfigPanel.wxs">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
-		<Unit filename="wxsmith/cbDiffSelectFiles.wxs">
-			<Option target="Unix" />
-			<Option target="Windows" />
-		</Unit>
+		<Unit filename="images/reload.h" />
+		<Unit filename="images/sidebyside.h" />
+		<Unit filename="images/swap.h" />
+		<Unit filename="images/table.h" />
+		<Unit filename="images/unified.h" />
+		<Unit filename="manifest.xml" />
+		<Unit filename="src/cbDiff.cpp" />
+		<Unit filename="src/cbDiff.h" />
+		<Unit filename="src/cbDiffConfigPanel.cpp" />
+		<Unit filename="src/cbDiffConfigPanel.h" />
+		<Unit filename="src/cbDiffCtrl.cpp" />
+		<Unit filename="src/cbDiffCtrl.h" />
+		<Unit filename="src/cbDiffEditor.cpp" />
+		<Unit filename="src/cbDiffEditor.h" />
+		<Unit filename="src/cbDiffMenu.cpp" />
+		<Unit filename="src/cbDiffMenu.h" />
+		<Unit filename="src/cbDiffSelectFiles.cpp" />
+		<Unit filename="src/cbDiffSelectFiles.h" />
+		<Unit filename="src/cbDiffToolbar.cpp" />
+		<Unit filename="src/cbDiffToolbar.h" />
+		<Unit filename="src/cbDiffUtils.cpp" />
+		<Unit filename="src/cbDiffUtils.h" />
+		<Unit filename="src/cbSideBySideCtrl.cpp" />
+		<Unit filename="src/cbSideBySideCtrl.h" />
+		<Unit filename="src/cbTableCtrl.cpp" />
+		<Unit filename="src/cbTableCtrl.h" />
+		<Unit filename="src/cbUnifiedCtrl.cpp" />
+		<Unit filename="src/cbUnifiedCtrl.h" />
+		<Unit filename="src/wxDiff.cpp" />
+		<Unit filename="src/wxDiff.h" />
+		<Unit filename="wxsmith/cbDiffConfigPanel.wxs" />
+		<Unit filename="wxsmith/cbDiffSelectFiles.wxs" />
 		<Extensions>
 			<envvars />
 			<code_completion />
