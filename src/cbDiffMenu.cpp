@@ -99,11 +99,9 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
 
 cbDiffMenu::~cbDiffMenu()
 {
-    Destroy(FindItem(_("Project files")));
-    Destroy(FindItem(_("Open files")));
 }
 
-void cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
+void  cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
 {
 
 }
