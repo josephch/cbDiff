@@ -55,6 +55,7 @@
 					<Add option="-DwxUSE_UNICODE" />
 					<Add option="-DEXPORT_FUNC" />
 					<Add directory="../../../include" />
+					<Add directory="../../../include/tinyxml" />
 					<Add directory="../../../sdk/wxscintilla/include" />
 					<Add directory="$(#wx.include)" />
 					<Add directory="$(#wx)/lib/gcc_dll/mswu" />
