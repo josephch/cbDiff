@@ -1,6 +1,6 @@
 #include "wxDiff.h"
 
-#include "../dtl-1.12/dtl/dtl.hpp"
+#include "dtl/dtl.hpp"
 
 #include <sstream>
 #include <fstream>

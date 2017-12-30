@@ -101,7 +101,7 @@ cbDiffMenu::~cbDiffMenu()
 {
 }
 
-void  cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
+void cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
 {
 
 }
