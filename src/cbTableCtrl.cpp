@@ -41,7 +41,8 @@ void cbTableCtrl::Init(cbDiffColors colset)
     m_txtctrl->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND,
                             colset.m_addedlines, colset.m_addedlines);
     m_txtctrl->MarkerSetAlpha(GREEN_BKG_MARKER, colset.m_addedlines.Alpha());
-    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), m_txtctrl);
+    bool isC = false;
+    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), m_txtctrl, isC, true);
 }
 
 void cbTableCtrl::ShowDiff(wxDiff diff)

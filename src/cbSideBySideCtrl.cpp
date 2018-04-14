@@ -106,7 +106,8 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
                              colset.m_caretline, colset.m_caretline);
         TCLeft->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
     }
-    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCLeft);
+    bool isC = false;
+    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCLeft, isC, true);
 
     cbEditor::ApplyStyles(TCRight);
     TCRight->SetMargins(0,0);
@@ -134,7 +135,7 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
                               colset.m_caretline, colset.m_caretline);
         TCRight->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
     }
-    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCRight);
+    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCRight, isC, true);
 }
 
 void cbSideBySideCtrl::ShowDiff(wxDiff diff)

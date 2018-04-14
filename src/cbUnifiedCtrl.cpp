@@ -28,7 +28,7 @@ void cbUnifiedCtrl::Init(cbDiffColors colset)
     m_txtctrl->SetMarginWidth(1,0);    // don't show +-= symbol margin
     m_txtctrl->SetMarginWidth(2,0);    // to hide the change and fold
     m_txtctrl->SetMarginWidth(3,0);    // margin made by cbEditor::ApplyStyles
-    m_theme->Apply(_T("DiffPatch"), m_txtctrl);
+    m_theme->Apply(_T("DiffPatch"), m_txtctrl, false, true);
 }
 
 void cbUnifiedCtrl::ShowDiff(wxDiff diff)
