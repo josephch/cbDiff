@@ -3,13 +3,13 @@
 
 //(*Headers(cbDiffConfigPanel)
 #include <wx/panel.h>
-class wxStaticBoxSizer;
-class wxChoice;
-class wxButton;
-class wxSlider;
 class wxBoxSizer;
-class wxStaticText;
+class wxButton;
+class wxChoice;
 class wxRadioBox;
+class wxSlider;
+class wxStaticBoxSizer;
+class wxStaticText;
 //*)
 
 #include <configurationpanel.h>
@@ -32,15 +32,15 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 	private:
 
 		//(*Declarations(cbDiffConfigPanel)
-		wxSlider* SLCarAlpha;
-		wxChoice* CHCaret;
-		wxRadioBox* RBViewing;
-		wxStaticText* StaticText3;
-		wxButton* BColRem;
-		wxSlider* SLAddAlpha;
-		wxSlider* SLRemAlpha;
 		wxButton* BColAdd;
 		wxButton* BColCar;
+		wxButton* BColRem;
+		wxChoice* CHCaret;
+		wxRadioBox* RBViewing;
+		wxSlider* SLAddAlpha;
+		wxSlider* SLCarAlpha;
+		wxSlider* SLRemAlpha;
+		wxStaticText* StaticText3;
 		//*)
 
 		//(*Identifiers(cbDiffConfigPanel)
@@ -55,7 +55,6 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 		static const long ID_STATICTEXT3;
 		static const long ID_SLIDER3;
 		static const long ID_RADIOBOX1;
-		static const long ID_CHOICE2;
 		//*)
 
 		//(*Handlers(cbDiffConfigPanel)

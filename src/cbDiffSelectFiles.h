@@ -4,14 +4,13 @@
 #ifndef WX_PRECOMP
 	//(*HeadersPCH(cbDiffSelectFiles)
 	#include <wx/dialog.h>
-	class wxTextCtrl;
-	class wxStaticBoxSizer;
-	class wxChoice;
-	class wxButton;
-	class wxStdDialogButtonSizer;
-	class wxFileDialog;
 	class wxBoxSizer;
+	class wxButton;
+	class wxFileDialog;
 	class wxRadioBox;
+	class wxStaticBoxSizer;
+	class wxStdDialogButtonSizer;
+	class wxTextCtrl;
 	//*)
 #endif
 //(*Headers(cbDiffSelectFiles)
@@ -31,12 +30,12 @@ class cbDiffSelectFiles: public wxDialog
 	protected:
 	private:
         //(*Declarations(cbDiffSelectFiles)
-        wxRadioBox* RBViewing;
+        wxButton* BSelectFrom;
         wxButton* BSelectTo;
+        wxFileDialog* SelectFile;
+        wxRadioBox* RBViewing;
         wxTextCtrl* TCFromFile;
         wxTextCtrl* TCToFile;
-        wxButton* BSelectFrom;
-        wxFileDialog* SelectFile;
         //*)
 
         //(*Identifiers(cbDiffSelectFiles)

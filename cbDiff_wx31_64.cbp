@@ -111,8 +111,8 @@
 			<lib_finder disable_auto="1" />
 			<wxsmith version="1">
 				<resources>
-					<wxPanel wxs="wxsmith/cbDiffConfigPanel.wxs" src="cbDiffConfigPanel.cpp" hdr="cbDiffConfigPanel.h" fwddecl="1" i18n="1" name="cbDiffConfigPanel" language="CPP" />
-					<wxDialog wxs="wxsmith/cbDiffSelectFiles.wxs" src="cbDiffSelectFiles.cpp" hdr="cbDiffSelectFiles.h" fwddecl="1" i18n="1" name="cbDiffSelectFiles" language="CPP" />
+					<wxPanel wxs="wxsmith/cbDiffConfigPanel.wxs" src="src/cbDiffConfigPanel.cpp" hdr="src/cbDiffConfigPanel.h" fwddecl="1" i18n="1" name="cbDiffConfigPanel" language="CPP" />
+					<wxDialog wxs="wxsmith/cbDiffSelectFiles.wxs" src="src/cbDiffSelectFiles.cpp" hdr="src/cbDiffSelectFiles.h" fwddecl="1" i18n="1" name="cbDiffSelectFiles" language="CPP" />
 				</resources>
 			</wxsmith>
 			<DoxyBlocks>

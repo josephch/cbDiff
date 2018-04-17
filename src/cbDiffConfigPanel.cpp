@@ -1,14 +1,14 @@
 #include "cbDiffConfigPanel.h"
 
 //(*InternalHeaders(cbDiffConfigPanel)
-#include <wx/sizer.h>
 #include <wx/button.h>
-#include <wx/string.h>
-#include <wx/slider.h>
-#include <wx/intl.h>
-#include <wx/stattext.h>
 #include <wx/choice.h>
+#include <wx/intl.h>
 #include <wx/radiobox.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
 //*)
 #include <wx/colordlg.h>
 
@@ -28,7 +28,6 @@ const long cbDiffConfigPanel::ID_BUTTON3 = wxNewId();
 const long cbDiffConfigPanel::ID_STATICTEXT3 = wxNewId();
 const long cbDiffConfigPanel::ID_SLIDER3 = wxNewId();
 const long cbDiffConfigPanel::ID_RADIOBOX1 = wxNewId();
-const long cbDiffConfigPanel::ID_CHOICE2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(cbDiffConfigPanel, cbConfigurationPanel)
@@ -39,14 +38,14 @@ END_EVENT_TABLE()
 cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 {
 	//(*Initialize(cbDiffConfigPanel)
-	wxStaticBoxSizer* StaticBoxSizer2;
+	wxBoxSizer* BoxSizer1;
 	wxBoxSizer* BoxSizer2;
-	wxStaticText* StaticText1;
+	wxStaticBoxSizer* StaticBoxSizer1;
+	wxStaticBoxSizer* StaticBoxSizer2;
 	wxStaticBoxSizer* StaticBoxSizer3;
 	wxStaticBoxSizer* StaticBoxSizer4;
-	wxBoxSizer* BoxSizer1;
+	wxStaticText* StaticText1;
 	wxStaticText* StaticText2;
-	wxStaticBoxSizer* StaticBoxSizer1;
 
 	Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("wxID_ANY"));
 	BoxSizer1 = new wxBoxSizer(wxVERTICAL);
@@ -57,7 +56,7 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 	StaticBoxSizer2->Add(StaticText1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SLAddAlpha = new wxSlider(this, ID_SLIDER1, 50, 0, 255, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER1"));
 	StaticBoxSizer2->Add(SLAddAlpha, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	BoxSizer1->Add(StaticBoxSizer2, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	BoxSizer1->Add(StaticBoxSizer2, 0, wxALL|wxEXPAND, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Removed Lines:"));
 	BColRem = new wxButton(this, ID_BUTTON1, _("Colour"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
 	StaticBoxSizer1->Add(BColRem, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -65,12 +64,12 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 	StaticBoxSizer1->Add(StaticText2, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SLRemAlpha = new wxSlider(this, ID_SLIDER2, 50, 0, 255, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER2"));
 	StaticBoxSizer1->Add(SLRemAlpha, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	BoxSizer1->Add(StaticBoxSizer1, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	BoxSizer1->Add(StaticBoxSizer1, 0, wxALL|wxEXPAND, 5);
 	StaticBoxSizer3 = new wxStaticBoxSizer(wxVERTICAL, this, _("Caret Line:"));
 	CHCaret = new wxChoice(this, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
 	CHCaret->SetSelection( CHCaret->Append(_("Underline")) );
 	CHCaret->Append(_("Background"));
-	StaticBoxSizer3->Add(CHCaret, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticBoxSizer3->Add(CHCaret, 0, wxALL|wxEXPAND, 5);
 	BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
 	BColCar = new wxButton(this, ID_BUTTON3, _("Colour"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
 	BoxSizer2->Add(BColCar, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -78,8 +77,8 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 	BoxSizer2->Add(StaticText3, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SLCarAlpha = new wxSlider(this, ID_SLIDER3, 50, 0, 255, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER3"));
 	BoxSizer2->Add(SLCarAlpha, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer3->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	BoxSizer1->Add(StaticBoxSizer3, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticBoxSizer3->Add(BoxSizer2, 1, wxALL|wxEXPAND, 0);
+	BoxSizer1->Add(StaticBoxSizer3, 0, wxALL|wxEXPAND, 5);
 	StaticBoxSizer4 = new wxStaticBoxSizer(wxVERTICAL, this, _("Default values:"));
 	wxString __wxRadioBoxChoices_1[3] =
 	{
@@ -89,8 +88,8 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
 	};
 	RBViewing = new wxRadioBox(this, ID_RADIOBOX1, _("Displaytype:"), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	RBViewing->SetSelection(0);
-	StaticBoxSizer4->Add(RBViewing, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	BoxSizer1->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticBoxSizer4->Add(RBViewing, 0, wxALL|wxEXPAND, 5);
+	BoxSizer1->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND, 5);
 	SetSizer(BoxSizer1);
 	BoxSizer1->Fit(this);
 	BoxSizer1->SetSizeHints(this);
