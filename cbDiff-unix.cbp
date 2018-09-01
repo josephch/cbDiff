@@ -2,11 +2,11 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="cbDiff for Unix" />
+		<Option title="cbDiff (Unix)" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Unix">
+			<Target title="default">
 				<Option output="../../../devel/share/codeblocks/plugins/cbDiff" prefix_auto="0" extension_auto="1" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -33,6 +33,9 @@
 				</ExtraCommands>
 			</Target>
 		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="default;" />
+		</VirtualTargets>
 		<Unit filename="images/reload.h" />
 		<Unit filename="images/sidebyside.h" />
 		<Unit filename="images/swap.h" />
