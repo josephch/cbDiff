@@ -94,7 +94,21 @@ cbDiffMenu::~cbDiffMenu()
 
 void cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
 {
+    if(!wxFileExists(m_basefile))
+        return;
 
+    unsigned int idx;
+    for( idx = 0 ; idx < m_ids.size() ; ++idx )
+    {
+        if (m_ids[idx] == event.GetId())
+            break;
+    }
+    if ( idx == m_ids.size() ) return;
+
+    idx -= m_projectfilenames.GetCount();
+
+    if(idx < m_openfilenames.GetCount() && wxFileExists(m_openfilenames[idx]))
+        new cbDiffEditor(m_basefile, m_openfilenames[idx]);
 }
 
 void cbDiffMenu::OnSelectProject(wxCommandEvent& event)
