@@ -10,8 +10,6 @@
 #include <cbproject.h>
 #include <cbeditor.h>
 
-#define IDSTART (wxID_HIGHEST + 20000)
-
 using namespace cbDiffUtils;
 
 namespace
@@ -57,8 +55,6 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
 
     wxArrayString shortnames = GetActiveProjectFilesRelative(file);
 
-
-
     while (m_ids.size() < projectFiles + openFiles)
             m_ids.push_back(wxNewId());
 
@@ -88,13 +84,8 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
         AppendSubMenu(openmenu, _("Open files"));
     }
 
-
-
-
     Append(ID_SELECT_LOCAL, _("Local file..."));
-    parent->Connect(ID_SELECT_LOCAL, wxEVT_COMMAND_MENU_SELECTED,
-                          (wxObjectEventFunction)&cbDiffMenu::OnSelectLocal, NULL, this);
-
+    parent->Connect(ID_SELECT_LOCAL, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectLocal, NULL, this);
 }
 
 cbDiffMenu::~cbDiffMenu()
@@ -111,14 +102,13 @@ void cbDiffMenu::OnSelectProject(wxCommandEvent& event)
     if(!wxFileExists(m_basefile))
         return;
 
-    unsigned int idx = 0;
-    std::vector<long>::iterator it;
-    for( it = m_ids.begin() ; it < m_ids.end(); ++it )
+    unsigned int idx;
+    for( idx = 0 ; idx < m_ids.size() ; ++idx )
     {
-        if (*it == event.GetId())
+        if (m_ids[idx] == event.GetId())
             break;
     }
-    if ( it == m_ids.end() ) return;
+    if ( idx == m_ids.size() ) return;
 
     if(idx < m_projectfilenames.GetCount() && wxFileExists(m_projectfilenames[idx]))
         new cbDiffEditor(m_basefile, m_projectfilenames[idx]);

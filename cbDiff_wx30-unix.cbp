@@ -82,36 +82,21 @@
 			<Option target="Unix" />
 			<Option target="Unix-release" />
 		</Unit>
-		<Unit filename="images/reload.xpm">
-			<Option target="Unix" />
-		</Unit>
 		<Unit filename="images/sidebyside.h">
 			<Option target="Unix" />
 			<Option target="Unix-release" />
-		</Unit>
-		<Unit filename="images/sidebyside.xpm">
-			<Option target="Unix" />
 		</Unit>
 		<Unit filename="images/swap.h">
 			<Option target="Unix" />
 			<Option target="Unix-release" />
 		</Unit>
-		<Unit filename="images/swap.xpm">
-			<Option target="Unix" />
-		</Unit>
 		<Unit filename="images/table.h">
 			<Option target="Unix" />
 			<Option target="Unix-release" />
 		</Unit>
-		<Unit filename="images/table.xpm">
-			<Option target="Unix" />
-		</Unit>
 		<Unit filename="images/unified.h">
 			<Option target="Unix" />
 			<Option target="Unix-release" />
-		</Unit>
-		<Unit filename="images/unified.xpm">
-			<Option target="Unix" />
 		</Unit>
 		<Unit filename="manifest.xml">
 			<Option target="Unix" />
