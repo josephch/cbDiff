@@ -2,17 +2,17 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="cbDiff wx3.1.x (64 bit)" />
+		<Option title="cbDiff wx3.0.x (64 bit)" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="default">
-				<Option output="../../../devel31_64/share/codeblocks/plugins/cbDiff" prefix_auto="1" extension_auto="1" />
+				<Option output="../../../devel30_64/share/codeblocks/plugins/cbDiff" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option parameters="--debug-log --multiple-instance -na -ns -nd" />
-				<Option host_application="../../../devel31_64/codeblocks.exe" />
+				<Option host_application="../../../devel30_64/codeblocks.exe" />
 				<Option run_host_application_in_terminal="0" />
 				<Compiler>
 					<Add option="-Wall" />
@@ -32,20 +32,20 @@
 					<Add directory="../../../include" />
 					<Add directory="../../../include/tinyxml" />
 					<Add directory="../../../sdk/wxscintilla/include" />
-					<Add directory="$(#wx31_64.include)" />
-					<Add directory="$(#wx31_64)/lib/gcc_dll/mswu" />
+					<Add directory="$(#wx30_64.include)" />
+					<Add directory="$(#wx30_64)/lib/gcc_dll/mswu" />
 				</Compiler>
 				<Linker>
 					<Add option="-mthreads" />
 					<Add option="--enable-auto-import" />
 					<Add library="codeblocks" />
-					<Add library="wxmsw31u" />
+					<Add library="wxmsw30u" />
 					<Add library="wxscintilla_cb" />
-					<Add directory="../../../devel31_64" />
-					<Add directory="$(#wx31_64.lib)/gcc_dll" />
+					<Add directory="../../../devel30_64" />
+					<Add directory="$(#wx30_64.lib)/gcc_dll" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="zip -jq9 ..\..\..\devel31_64\share\codeblocks\cbDiff.zip manifest.xml" />
+					<Add after="zip -jq9 ..\..\..\devel30_64\share\codeblocks\cbDiff.zip manifest.xml" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>

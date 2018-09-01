@@ -30,27 +30,18 @@ class cbDiffEditor : public EditorBase
 {
 public:
 
-    cbDiffEditor(const wxString& firstfile,
-                 const wxString& secondfile,
-                 int diffmode = DEFAULT);
+    cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int diffmode = DEFAULT);
 
     virtual ~cbDiffEditor();
 
     /// Saves the diff as .diff file
     virtual bool Save();
-
-    /// look above
-    virtual bool SaveAs();
-
-    /** \brief Close all editors */
+    virtual bool SaveAs(){return Save();}
     static void CloseAllEditors();
 
     void Swap();
-
     void Reload();
-
     int GetMode();
-
     void SetMode(int mode);
 
     enum
@@ -62,6 +53,7 @@ public:
     };
 
 private:
+    void InitDiffCtrl(int mode);
     void ShowDiff();        /// Makes the diff and shows it
 
     /// Diff properties
@@ -75,6 +67,8 @@ private:
 
     /// Events
     void OnContextMenu(wxContextMenuEvent& event){} /// Just override it for now
+    void OnToolButton(wxCommandEvent& event);
+    void CreateDiffToolButtons(int viewmode);
 
     /// Controls
     cbDiffCtrl* m_diffctrl;
@@ -84,6 +78,11 @@ private:
     ///< \brief Set of all opened editors,
     ///   used to close all editors when plugin is being unloaded
     static EditorsSet        m_AllEditors;
+
+    wxBitmapButton* BBTable;
+    wxBitmapButton* BBUnified;
+    wxBitmapButton* BBSideBySide;
+
     DECLARE_EVENT_TABLE()
 };
 

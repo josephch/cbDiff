@@ -22,12 +22,12 @@ namespace
 }
 
 /// Function for other plugins
-EXPORT_FFP void DiffFiles(const wxString& firstfile,
-                          const wxString& secondfile,
-                          int viewmode)
-{
-    new cbDiffEditor(firstfile, secondfile, viewmode);
-}
+//EXPORT_FFP void DiffFiles(const wxString& firstfile,
+//                          const wxString& secondfile,
+//                          int viewmode)
+//{
+//    new cbDiffEditor(firstfile, secondfile, viewmode);
+//}
 
 // events handling
 BEGIN_EVENT_TABLE(cbDiff, cbPlugin)
@@ -48,6 +48,12 @@ cbDiff::cbDiff()
 
 cbDiff::~cbDiff()
 {
+}
+
+void cbDiff::DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode)
+{
+    if ( m_IsAttached )
+        new cbDiffEditor(firstfile, secondfile, viewmode);
 }
 
 void cbDiff::OnAttach()

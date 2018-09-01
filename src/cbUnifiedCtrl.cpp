@@ -11,7 +11,7 @@ cbUnifiedCtrl::cbUnifiedCtrl(wxWindow* parent) : cbDiffCtrl(parent)
 {
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxHORIZONTAL);
     m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
-    BoxSizer->Add(m_txtctrl, 1, wxEXPAND|wxALIGN_CENTER, 0);
+    BoxSizer->Add(m_txtctrl, 1, wxEXPAND, 0);
     SetSizer(BoxSizer);
 }
 

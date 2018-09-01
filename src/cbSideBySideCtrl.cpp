@@ -46,14 +46,13 @@ cbSideBySideCtrl::cbSideBySideCtrl(wxWindow* parent) : cbDiffCtrl(parent)
     wxBoxSizer* HBoxSizer = new wxBoxSizer(wxHORIZONTAL);
     TCLeft = new cbStyledTextCtrl(this, wxID_ANY);
     TCRight = new cbStyledTextCtrl(this, wxID_ANY);
-    VScrollBar = new wxScrollBar(this, wxID_ANY, wxDefaultPosition,
-                                 wxDefaultSize, wxSB_VERTICAL);
+    VScrollBar = new wxScrollBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSB_VERTICAL);
     HScrollBar = new wxScrollBar(this, wxID_ANY);
-    HBoxSizer->Add(TCLeft, 1, wxALL|wxEXPAND|wxALIGN_CENTER, 0);
-    HBoxSizer->Add(TCRight, 1, wxALL|wxEXPAND|wxALIGN_CENTER, 0);
-    HBoxSizer->Add(VScrollBar, 0, wxALL|wxEXPAND|wxALIGN_CENTER, 0);
-    VBoxSizer->Add(HBoxSizer, 1, wxALL|wxEXPAND|wxALIGN_CENTER, 5);
-    VBoxSizer->Add(HScrollBar, 0, wxALL|wxEXPAND|wxALIGN_CENTER, 0);
+    HBoxSizer->Add(TCLeft, 1, wxEXPAND, 0);
+    HBoxSizer->Add(TCRight, 1, wxEXPAND, 0);
+    HBoxSizer->Add(VScrollBar, 0, wxEXPAND, 0);
+    VBoxSizer->Add(HBoxSizer, 1, wxEXPAND, 5);
+    VBoxSizer->Add(HScrollBar, 0, wxEXPAND, 0);
     SetSizer(VBoxSizer);
     VBoxSizer->Fit(this);
     VBoxSizer->SetSizeHints(this);

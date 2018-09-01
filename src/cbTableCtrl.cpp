@@ -13,7 +13,7 @@ cbTableCtrl::cbTableCtrl(wxWindow* parent) : cbDiffCtrl(parent)
 {
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxHORIZONTAL);
     m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
-    BoxSizer->Add(m_txtctrl, 1,wxEXPAND|wxALIGN_CENTER, 0);
+    BoxSizer->Add(m_txtctrl, 1,wxEXPAND, 0);
     SetSizer(BoxSizer);
 }
 
@@ -35,11 +35,9 @@ void cbTableCtrl::Init(cbDiffColors colset)
     m_txtctrl->SetMarginWidth(2, 0);
     // to hide the fold margin made by cbEditor::ApplyStyles
     m_txtctrl->SetMarginWidth(3, 0);
-    m_txtctrl->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND,
-                            colset.m_removedlines, colset.m_removedlines);
+    m_txtctrl->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_removedlines, colset.m_removedlines);
     m_txtctrl->MarkerSetAlpha(RED_BKG_MARKER, colset.m_removedlines.Alpha());
-    m_txtctrl->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND,
-                            colset.m_addedlines, colset.m_addedlines);
+    m_txtctrl->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_addedlines, colset.m_addedlines);
     m_txtctrl->MarkerSetAlpha(GREEN_BKG_MARKER, colset.m_addedlines.Alpha());
     bool isC = false;
     m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), m_txtctrl, isC, true);
