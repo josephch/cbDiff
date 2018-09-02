@@ -22,12 +22,10 @@ namespace
 }
 
 /// Function for other plugins
-//EXPORT_FFP void DiffFiles(const wxString& firstfile,
-//                          const wxString& secondfile,
-//                          int viewmode)
-//{
-//    new cbDiffEditor(firstfile, secondfile, viewmode);
-//}
+EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode)
+{
+    new cbDiffEditor(firstfile, secondfile, viewmode);
+}
 
 // events handling
 BEGIN_EVENT_TABLE(cbDiff, cbPlugin)
@@ -50,11 +48,6 @@ cbDiff::~cbDiff()
 {
 }
 
-void cbDiff::DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode)
-{
-    if ( m_IsAttached )
-        new cbDiffEditor(firstfile, secondfile, viewmode);
-}
 
 void cbDiff::OnAttach()
 {
@@ -74,6 +67,7 @@ void cbDiff::OnAppDoneStartup(CodeBlocksEvent& event)
     EvalCmdLine();
     event.Skip();
 }
+
 void cbDiff::OnAppCmdLine(CodeBlocksEvent& event)
 {
     EvalCmdLine();
@@ -84,23 +78,6 @@ void cbDiff::OnRelease(bool appShutDown)
 {
     if (!appShutDown)
         cbDiffEditor::CloseAllEditors();
-}
-
-int cbDiff::Configure()
-{
-    if(!m_IsAttached)
-        return-1;
-    cbConfigurationDialog dlg(Manager::Get()->GetAppWindow(),
-                              wxID_ANY,
-                              _("cbDiff Settings"));
-    cbConfigurationPanel* panel = GetConfigurationPanel(&dlg);
-    if (panel)
-    {
-        dlg.AttachConfigurationPanel(panel);
-        PlaceWindow(&dlg);
-        return dlg.ShowModal() == wxID_OK ? 0 : -1;
-    }
-    return -1;
 }
 
 cbConfigurationPanel* cbDiff::GetConfigurationPanel(wxWindow* parent)
