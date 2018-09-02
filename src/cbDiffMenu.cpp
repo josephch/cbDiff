@@ -62,12 +62,18 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     if(projectFiles)
     {
         wxMenu* projmenu = new wxMenu();
+        bool hasEntries = false;
         for(unsigned int i = 0; i < shortnames.GetCount(); ++i)
         {
-            projmenu->Append(m_ids[i], shortnames[i]);
-            parent->Connect(m_ids[i],wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectProject, NULL, this);
+            if( !shortnames[i].IsEmpty() )
+            {
+                projmenu->Append(m_ids[i], shortnames[i]);
+                parent->Connect(m_ids[i],wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectProject, NULL, this);
+                hasEntries = true;
+            }
         }
-        AppendSubMenu(projmenu, _("Project files"));
+        if ( hasEntries )
+            AppendSubMenu(projmenu, _("Project files"));
     }
 
 
@@ -76,12 +82,18 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     if(openFiles)
     {
         wxMenu* openmenu = new wxMenu();
+        bool hasEntries = false;
         for(unsigned int i = 0; i < openFiles; i++)
         {
-            openmenu->Append(m_ids[i+projectFiles], shortnames[i]);
-            parent->Connect(m_ids[i+projectFiles],wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectOpen, NULL, this);
+            if( !shortnames[i].IsEmpty() )
+            {
+                openmenu->Append(m_ids[i+projectFiles], shortnames[i]);
+                parent->Connect(m_ids[i+projectFiles],wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectOpen, NULL, this);
+                hasEntries = true;
+            }
         }
-        AppendSubMenu(openmenu, _("Open files"));
+        if ( hasEntries )
+            AppendSubMenu(openmenu, _("Open files"));
     }
 
     Append(ID_SELECT_LOCAL, _("Local file..."));
