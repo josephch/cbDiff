@@ -43,14 +43,34 @@ namespace cbDiffUtils
 
     wxArrayString GetOpenFilesShort(wxString excludefile)
     {
-        wxArrayString ar;
+        wxArrayString arlong = GetOpenFilesLong(excludefile);
         EditorManager* em = Manager::Get()->GetEditorManager();
-        if(em->GetBuiltinEditor(excludefile))
-            excludefile = em->GetBuiltinEditor(excludefile)->GetShortName();
-        for(int i = 0; i < em->GetEditorsCount(); i++)
-            if(em->GetBuiltinEditor(i) &&
-                    excludefile != em->GetBuiltinEditor(i)->GetShortName())
-                ar.Add(em->GetBuiltinEditor(i)->GetShortName());
+        wxArrayString ar;
+        wxString exclShort = wxEmptyString;
+        if ( em->GetBuiltinEditor(excludefile) )
+            exclShort = em->GetBuiltinEditor(excludefile)->GetShortName();
+
+        for(size_t i = 0 ; i < arlong.GetCount() ; ++i)
+        {
+            if(em->GetBuiltinEditor(arlong[i]))
+            {
+                wxString sn = em->GetBuiltinEditor(arlong[i])->GetShortName();
+                int fidx = ar.Index(sn);
+                if( fidx != wxNOT_FOUND )//shortname is already in the list replace with long name and add long name
+                {
+                    ar[fidx] = arlong[fidx];
+                    ar.Add(arlong[i]);
+                }
+                else if ( exclShort == sn) // excludefile has the same short name so we add the long name
+                    ar.Add(arlong[i]);
+                else
+                    ar.Add(sn);
+            }
+            else
+                return arlong; //
+        }
+        //assert(arlong.GetCount() == ar.GetCount());
+
         return ar;
     }
 

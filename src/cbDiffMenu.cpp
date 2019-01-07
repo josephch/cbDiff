@@ -50,8 +50,8 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     m_projectfilenames = GetActiveProjectFilesAbsolute(file);
     m_openfilenames = cbDiffUtils::GetOpenFilesLong(basefile);
 
-    unsigned int projectFiles = m_projectfilenames.GetCount();
-    unsigned int openFiles = m_openfilenames.GetCount();
+    const unsigned int projectFiles = m_projectfilenames.GetCount();
+    const unsigned int openFiles = m_openfilenames.GetCount();
 
     wxArrayString shortnames = GetActiveProjectFilesRelative(file);
 
