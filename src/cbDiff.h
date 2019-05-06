@@ -18,7 +18,7 @@ class cbDiff : public cbPlugin
 {
     public:
         cbDiff();
-        virtual ~cbDiff();
+        virtual ~cbDiff(){}
 
         virtual int GetConfigurationPriority() const  override{ return 50; }
         virtual int GetConfigurationGroup() const  override{ return cgUnknown; }
@@ -32,16 +32,21 @@ class cbDiff : public cbPlugin
         virtual void OnAttach() override;
         virtual void OnRelease(bool appShutDown) override;
 
-        void OnDiff(wxCommandEvent& event);
+        void OnMenuDiffFiles(wxCommandEvent& event);
+        void OnContextDiffFiles(wxCommandEvent& event);
         void OnAppDoneStartup(CodeBlocksEvent& event);
         void OnAppCmdLine(CodeBlocksEvent& event);
         void EvalCmdLine();
         bool m_prevSelectionValid;
         wxString m_prevFileName;
         std::vector<long> MenuIds;
+        struct FileNames{
+            wxString file1, file2;
+        };
+        FileNames m_names;
 
     private:
         DECLARE_EVENT_TABLE();
 };
 
-#endif // CBDIFF_H_INCLUDED
+#endif
