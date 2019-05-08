@@ -19,4 +19,4 @@ namespace cbDiffUtils
     wxArrayString GetOpenFilesLong(wxString excludefile);
     wxBitmap _wxGetBitmapFromMemory(const unsigned char *data, int length);
 }
-#endif // CBDIFFUTILS_H
+#endif

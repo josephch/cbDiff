@@ -17,11 +17,6 @@ cbTableCtrl::cbTableCtrl(wxWindow* parent) : cbDiffCtrl(parent)
     SetSizer(BoxSizer);
 }
 
-cbTableCtrl::~cbTableCtrl()
-{
-    //dtor
-}
-
 void cbTableCtrl::Init(cbDiffColors colset)
 {
     int width = 20 * m_txtctrl->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));

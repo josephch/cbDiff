@@ -9,7 +9,7 @@ class cbTableCtrl : public cbDiffCtrl
 {
 public:
     cbTableCtrl(wxWindow* parent);
-    virtual ~cbTableCtrl();
+    virtual ~cbTableCtrl(){}
     virtual void Init(cbDiffColors colset) override;
     virtual void ShowDiff(wxDiff diff) override;
 private:

@@ -8,7 +8,7 @@ class cbDiffMenu : public wxMenu
 {
 public:
     cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelected, wxString &prevFileName, std::vector<long> &ids);
-    virtual ~cbDiffMenu();
+    virtual ~cbDiffMenu(){}
 private:
     wxString m_basefile;
     wxArrayString m_projectfilenames;
@@ -27,4 +27,4 @@ private:
     DECLARE_EVENT_TABLE();
 };
 
-#endif // CBDIFFMENU_H
+#endif

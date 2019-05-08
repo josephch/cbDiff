@@ -12,8 +12,8 @@
 class cbDiffCtrl: public wxPanel
 {
 public:
-    cbDiffCtrl(wxWindow* parent)
-    : wxPanel(parent, -1, wxPoint(1000, 1000)), m_theme(0)
+    cbDiffCtrl(wxWindow* parent):
+        wxPanel(parent, -1, wxPoint(1000, 1000)), m_theme(0)
     {
         m_theme = new EditorColourSet( Manager::Get()->GetConfigManager(_T("editor"))->Read(_T("/colour_sets/active_colour_set"), COLORSET_DEFAULT));
     }
@@ -26,4 +26,4 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-#endif // CBDIFFCTRL_H
+#endif

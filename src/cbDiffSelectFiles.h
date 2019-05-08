@@ -54,4 +54,4 @@ class cbDiffSelectFiles: public wxDialog
         DECLARE_EVENT_TABLE()
 };
 
-#endif // CBDIFFSELECTFILES_H
+#endif

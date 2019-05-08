@@ -100,10 +100,6 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     parent->Connect(ID_SELECT_LOCAL, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectLocal, NULL, this);
 }
 
-cbDiffMenu::~cbDiffMenu()
-{
-}
-
 void cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
 {
     if(!wxFileExists(m_basefile))

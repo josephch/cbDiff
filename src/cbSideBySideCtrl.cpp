@@ -76,8 +76,8 @@ cbSideBySideCtrl::~cbSideBySideCtrl()
 
 void cbSideBySideCtrl::Init(cbDiffColors colset)
 {
-    int width = 7 * TCLeft->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));
-    wxColor marbkg = TCLeft->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
+    const int width = 7 * TCLeft->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));
+    const wxColor marbkg = TCLeft->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
     cbEditor::ApplyStyles(TCLeft);
     TCLeft->SetMargins(0,0);
@@ -87,25 +87,21 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     TCLeft->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
     TCLeft->SetMarginWidth(2,0);    // to hide the change and the fold margin
     TCLeft->SetMarginWidth(3,0);    // made by cbEditor::ApplyStyles
-    TCLeft->MarkerDefine(MINUS_MARKER, wxSCI_MARK_MINUS,
-                         colset.m_removedlines, colset.m_removedlines);
-    TCLeft->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61,
-                         *wxWHITE, marbkg);
-    TCLeft->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND,
-                         colset.m_removedlines, colset.m_removedlines);
+    TCLeft->MarkerDefine(MINUS_MARKER, wxSCI_MARK_MINUS, colset.m_removedlines, colset.m_removedlines);
+    TCLeft->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
+    TCLeft->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_removedlines, colset.m_removedlines);
     TCLeft->MarkerSetAlpha(RED_BKG_MARKER, colset.m_removedlines.Alpha());
-    TCLeft->MarkerDefine(GREY_BKG_MARKER, wxSCI_MARK_BACKGROUND,
-                         *wxLIGHT_GREY, *wxLIGHT_GREY);
+    TCLeft->MarkerDefine(GREY_BKG_MARKER, wxSCI_MARK_BACKGROUND, *wxLIGHT_GREY, *wxLIGHT_GREY);
     if(colset.m_caretlinetype == 0)
-        TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE,
-                             colset.m_caretline, colset.m_caretline);
+    {
+        TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.m_caretline, colset.m_caretline);
+    }
     else
     {
-        TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND,
-                             colset.m_caretline, colset.m_caretline);
+        TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND, colset.m_caretline, colset.m_caretline);
         TCLeft->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
     }
-    bool isC = false;
+    const bool isC = false;
     m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCLeft, isC, true);
 
     cbEditor::ApplyStyles(TCRight);
@@ -116,22 +112,18 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     TCRight->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
     TCRight->SetMarginWidth(2,0);    // to hide the change and fold margin
     TCRight->SetMarginWidth(3,0);    // made by cbEditor::ApplyStyles
-    TCRight->MarkerDefine(PLUS_MARKER, wxSCI_MARK_PLUS,
-                          colset.m_addedlines, colset.m_addedlines);
-    TCRight->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61,
-                          *wxWHITE, marbkg);
-    TCRight->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND,
-                          colset.m_addedlines, colset.m_addedlines);
+    TCRight->MarkerDefine(PLUS_MARKER, wxSCI_MARK_PLUS, colset.m_addedlines, colset.m_addedlines);
+    TCRight->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
+    TCRight->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_addedlines, colset.m_addedlines);
     TCRight->MarkerSetAlpha(GREEN_BKG_MARKER, colset.m_addedlines.Alpha());
-    TCRight->MarkerDefine(GREY_BKG_MARKER, wxSCI_MARK_BACKGROUND,
-                          *wxLIGHT_GREY, *wxLIGHT_GREY);
+    TCRight->MarkerDefine(GREY_BKG_MARKER, wxSCI_MARK_BACKGROUND, *wxLIGHT_GREY, *wxLIGHT_GREY);
     if(colset.m_caretlinetype == 0)
-        TCRight->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE,
-                              colset.m_caretline, colset.m_caretline);
+    {
+        TCRight->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.m_caretline, colset.m_caretline);
+    }
     else
     {
-        TCRight->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND,
-                              colset.m_caretline, colset.m_caretline);
+        TCRight->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND, colset.m_caretline, colset.m_caretline);
         TCRight->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
     }
     m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCRight, isC, true);

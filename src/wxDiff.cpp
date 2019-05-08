@@ -17,10 +17,10 @@ using std::string;
 using std::ifstream;
 using std::vector;
 
-wxDiff::wxDiff(wxString filename1, wxString filename2)
-              : m_filename1(filename1), m_filename2(filename2)
+wxDiff::wxDiff(wxString filename1, wxString filename2):
+    m_filename1(filename1), m_filename2(filename2)
 {
-    typedef std::string elem;
+    typedef string elem;
     typedef pair<elem, elemInfo> sesElem;
     ifstream Aifs(filename1.mbc_str());
     ifstream Bifs(filename2.mbc_str());
@@ -68,10 +68,6 @@ wxDiff::wxDiff(wxString filename1, wxString filename2)
         diffs.push_back(currdiff);
 
     ParseDiff(diffs);
-}
-
-wxDiff::~wxDiff()
-{
 }
 
 wxString wxDiff::IsDifferent()

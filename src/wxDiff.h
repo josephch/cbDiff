@@ -9,7 +9,7 @@ class wxDiff
 {
 public:
     wxDiff(wxString filename1, wxString filename2);
-    virtual ~wxDiff();
+    virtual ~wxDiff(){}
 
     wxString IsDifferent();
 
@@ -34,4 +34,4 @@ private:
     wxArrayInt m_removed_lines;
 };
 
-#endif // WXDIFF_H
+#endif
