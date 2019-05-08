@@ -10,10 +10,10 @@ class cbTableCtrl : public cbDiffCtrl
 public:
     cbTableCtrl(wxWindow* parent);
     virtual ~cbTableCtrl();
-    virtual void Init(cbDiffColors colset);
-    virtual void ShowDiff(wxDiff diff);
+    virtual void Init(cbDiffColors colset) override;
+    virtual void ShowDiff(wxDiff diff) override;
 private:
     cbStyledTextCtrl* m_txtctrl;
 };
 
-#endif // CBTABLECTRL_H
+#endif

@@ -9,11 +9,11 @@ class cbUnifiedCtrl : public cbDiffCtrl
 {
 public:
     cbUnifiedCtrl(wxWindow* parent);
-    virtual ~cbUnifiedCtrl();
-    virtual void Init(cbDiffColors colset);
-    virtual void ShowDiff(wxDiff diff);
+    virtual ~cbUnifiedCtrl(){}
+    virtual void Init(cbDiffColors colset) override;
+    virtual void ShowDiff(wxDiff diff) override;
 private:
     cbStyledTextCtrl* m_txtctrl;
 };
 
-#endif // CBUNIFIEDCTRL_H
+#endif

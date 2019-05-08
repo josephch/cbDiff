@@ -15,11 +15,6 @@ cbUnifiedCtrl::cbUnifiedCtrl(wxWindow* parent) : cbDiffCtrl(parent)
     SetSizer(BoxSizer);
 }
 
-cbUnifiedCtrl::~cbUnifiedCtrl()
-{
-}
-
-
 void cbUnifiedCtrl::Init(cbDiffColors colset)
 {
     cbEditor::ApplyStyles(m_txtctrl);

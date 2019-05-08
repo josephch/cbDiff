@@ -11,8 +11,8 @@ class cbSideBySideCtrl : public cbDiffCtrl
 public:
     cbSideBySideCtrl(wxWindow* parent);
     virtual ~cbSideBySideCtrl();
-    virtual void Init(cbDiffColors colset);
-    virtual void ShowDiff(wxDiff diff);
+    virtual void Init(cbDiffColors colset) override;
+    virtual void ShowDiff(wxDiff diff) override;
     void Synchronize();
 private:
     cbStyledTextCtrl* TCLeft;
@@ -28,4 +28,4 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-#endif // CBSIDEBYSIDECTRL_H
+#endif
