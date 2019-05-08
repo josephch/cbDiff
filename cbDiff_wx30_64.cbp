@@ -74,6 +74,8 @@
 		<Unit filename="src/cbDiffMenu.h" />
 		<Unit filename="src/cbDiffSelectFiles.cpp" />
 		<Unit filename="src/cbDiffSelectFiles.h" />
+		<Unit filename="src/cbDiffToolbar.cpp" />
+		<Unit filename="src/cbDiffToolbar.h" />
 		<Unit filename="src/cbDiffUtils.cpp" />
 		<Unit filename="src/cbDiffUtils.h" />
 		<Unit filename="src/cbSideBySideCtrl.cpp" />
