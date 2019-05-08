@@ -67,23 +67,16 @@ private:
 
     /// Events
     void OnContextMenu(wxContextMenuEvent& event){} /// Just override it for now
-    void OnToolButton(wxCommandEvent& event);
-    void CreateDiffToolButtons(int viewmode);
 
     /// Controls
-    cbDiffCtrl* m_diffctrl;
+    cbDiffCtrl *m_diffctrl;
 
     /// static Members (thx to Bartlomiej Swiecki for hexedit!)
     typedef std::set< EditorBase* > EditorsSet;
     ///< \brief Set of all opened editors,
     ///   used to close all editors when plugin is being unloaded
     static EditorsSet        m_AllEditors;
-
-    wxBitmapButton* BBTable;
-    wxBitmapButton* BBUnified;
-    wxBitmapButton* BBSideBySide;
-
     DECLARE_EVENT_TABLE()
 };
 
-#endif // DIFFEDITOR_H
+#endif

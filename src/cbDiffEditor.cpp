@@ -8,19 +8,14 @@
 
 #include "wxDiff.h"
 
+#include "cbDiffToolbar.h"
+
 /// diffctrls
 #include "cbTableCtrl.h"
 #include "cbUnifiedCtrl.h"
 #include "cbSideBySideCtrl.h"
 
-#include "cbDiffUtils.h"
 
-/// bitmaps
-#include "../images/swap.h"
-#include "../images/reload.h"
-#include "../images/table.h"
-#include "../images/unified.h"
-#include "../images/sidebyside.h"
 
 //! static Editor set
 cbDiffEditor::EditorsSet cbDiffEditor::m_AllEditors;
@@ -29,10 +24,10 @@ cbDiffEditor::EditorsSet cbDiffEditor::m_AllEditors;
 namespace {
 
     /// IDs
-    const long int ID_BBRELOAD = wxNewId();
-    const long int ID_BBSWAP = wxNewId();
-    const long int ID_BUTTON_TABLE = wxNewId();
-    const long int ID_BUTTON_UNIFIED = wxNewId();
+    const long int ID_BBRELOAD          = wxNewId();
+    const long int ID_BBSWAP            = wxNewId();
+    const long int ID_BUTTON_TABLE      = wxNewId();
+    const long int ID_BUTTON_UNIFIED    = wxNewId();
     const long int ID_BUTTON_SIDEBYSIDE = wxNewId();
 
 };
@@ -74,21 +69,25 @@ cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile
     if (hl != HL_NONE)
         m_colorset.m_hlang = Manager::Get()->GetEditorManager()->GetColourSet()->GetLanguageName(hl);
 
-    SetSizer(new wxBoxSizer(wxVERTICAL));
-    CreateDiffToolButtons(viewmode);
+    cbDiffToolbar* difftoolbar = new cbDiffToolbar(this, viewmode);
+
+    wxBoxSizer* BoxSizer = new wxBoxSizer(wxVERTICAL);
+    BoxSizer->Add(difftoolbar, 0, wxALL|wxEXPAND, 0);
+    SetSizer(BoxSizer);
     InitDiffCtrl(viewmode);
 
     m_AllEditors.insert(this);
 
     ShowDiff();
 
+    m_diffctrl->Layout();
+    BoxSizer->Layout();
     Layout();
 }
 
 cbDiffEditor::~cbDiffEditor()
 {
     m_AllEditors.erase(this);
-    Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, (wxObjectEventFunction)&cbDiffEditor::OnToolButton);
 }
 
 void cbDiffEditor::ShowDiff()
@@ -195,94 +194,3 @@ void cbDiffEditor::CloseAllEditors()
     }
     assert(m_AllEditors.empty());
 }
-
-void cbDiffEditor::CreateDiffToolButtons(int viewmode)
-{
-    BBTable = new wxBitmapButton(this, ID_BUTTON_TABLE, wxGetBitmapFromMemory(table), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
-    BBTable->SetToolTip(_("Display as a table"));
-
-    BBUnified = new wxBitmapButton(this, ID_BUTTON_UNIFIED, wxGetBitmapFromMemory(unified), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
-    BBUnified->SetToolTip(_("Display as unified diff"));
-
-    BBSideBySide = new wxBitmapButton(this, ID_BUTTON_SIDEBYSIDE, wxGetBitmapFromMemory(sidebyside), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
-    BBSideBySide->SetToolTip(_("Display side by side"));
-
-    wxBitmapButton* BBReload = new wxBitmapButton(this, ID_BBRELOAD, wxGetBitmapFromMemory(reload), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
-    BBReload->SetToolTip(_("Reload files"));
-
-    wxBitmapButton* BBSwap = new wxBitmapButton(this, ID_BBSWAP, wxGetBitmapFromMemory(swap), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW);
-    BBSwap->SetToolTip(_("Swap files"));
-
-    wxBoxSizer* boxsizer = new wxBoxSizer(wxHORIZONTAL);
-    boxsizer->Add(BBTable, 0, wxALL, 5);
-    boxsizer->Add(BBUnified, 0, wxALL, 5);
-    boxsizer->Add(BBSideBySide, 0, wxALL, 5);
-    boxsizer->Add(-1,-1,0, wxALL, 5);
-    boxsizer->Add(BBReload, 0, wxALL, 5);
-    boxsizer->Add(BBSwap, 0, wxALL, 5);
-    boxsizer->Add(-1,-1,0, wxALL, 5);
-
-    GetSizer()->Add(boxsizer);
-
-    switch (viewmode)
-    {
-    case cbDiffEditor::TABLE:
-        BBTable->Enable(false);
-        break;
-    case cbDiffEditor::UNIFIED:
-        BBUnified->Enable(false);
-        break;
-    case cbDiffEditor::SIDEBYSIDE:
-        BBSideBySide->Enable(false);
-        break;
-    default:
-        break;
-    }
-
-    Connect(wxEVT_COMMAND_BUTTON_CLICKED, (wxObjectEventFunction)&cbDiffEditor::OnToolButton);
-}
-
-void cbDiffEditor::OnToolButton(wxCommandEvent& event)
-{
-    if(event.GetId() == ID_BBSWAP)
-    {
-        Swap();
-        return;
-    }
-    else
-    {
-        if (event.GetId() == ID_BUTTON_TABLE)
-        {
-            if ( GetMode() != cbDiffEditor::TABLE)
-            {
-                SetMode(cbDiffEditor::TABLE);
-                BBTable->Enable(false);
-		        BBUnified->Enable();
-		        BBSideBySide->Enable();
-            }
-        }
-        else if (event.GetId() == ID_BUTTON_UNIFIED)
-        {
-            if ( GetMode() != cbDiffEditor::UNIFIED)
-            {
-                SetMode(cbDiffEditor::UNIFIED);
-		        BBTable->Enable();
-                BBUnified->Enable(false);
-		        BBSideBySide->Enable();
-            }
-        }
-        else if (event.GetId() == ID_BUTTON_SIDEBYSIDE)
-        {
-            if ( GetMode() != cbDiffEditor::SIDEBYSIDE)
-            {
-                SetMode(cbDiffEditor::SIDEBYSIDE);
-		        BBTable->Enable();
-		        BBUnified->Enable();
-                BBSideBySide->Enable(false);
-            }
-        }
-    }
-
-    Reload();
-}
-
