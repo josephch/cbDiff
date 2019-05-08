@@ -100,6 +100,8 @@ void cbDiffEditor::ShowDiff()
     if(different != wxEmptyString)
         cbMessageBox(different, _("cbDiff"));
 
+    m_diff = diff.GetDiff();
+
     m_diffctrl->ShowDiff(diff);
 }
 
@@ -132,7 +134,7 @@ bool cbDiffEditor::Save()
         cbMessageBox(msg, _("Error saving file"), wxICON_ERROR);
         return false; // failed; file is read-only?
     }
-    return true;;
+    return true;
 }
 
 void cbDiffEditor::Swap()
