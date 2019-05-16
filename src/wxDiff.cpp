@@ -18,7 +18,8 @@ using std::ifstream;
 using std::vector;
 
 wxDiff::wxDiff(wxString filename1, wxString filename2):
-    m_filename1(filename1), m_filename2(filename2)
+    m_filename1(filename1),
+    m_filename2(filename2)
 {
     typedef string elem;
     typedef pair<elem, elemInfo> sesElem;
@@ -80,7 +81,7 @@ wxString wxDiff::IsDifferent()
     filename.GetTimes(0, &modifyTime2, 0);
     if(modifyTime == modifyTime2 && m_filename1 == m_filename2)
         return _("Same file => Same content!");
-    if(m_added_lines.GetCount() == 0 && m_removed_lines.GetCount() == 0)
+    if(m_added_lines.empty() && m_removed_lines.empty())
         return _("Different files, but same content!");
     return wxEmptyString;
 }
@@ -104,8 +105,6 @@ wxString wxDiff::CreateHeader()
 
 void wxDiff::ParseDiff(vector<wxArrayString> diffs)
 {
-    int file_start_left = 0;
-    int file_start_right = 0;
     for(unsigned int i = 0; i < diffs.size(); i++)
     {
         wxArrayString currdiff = diffs[i];
@@ -118,26 +117,57 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
                      headline.Find(_T(","))).ToLong(&start_left);
         headline.Mid(headline.Find(_T("+")) + 1,
                      headline.Find(_T(","))).ToLong(&start_right);
-        start_left +=file_start_left;
-        start_right +=file_start_right;
-        for(unsigned int i = 1; i < currdiff.size(); i++)
+        start_left -= 1; //using 0-based line numbers internally
+        start_right -= 1;
+        unsigned int added = 0;
+        unsigned int removed = 0;
+        unsigned int block_start_left = 0;
+        unsigned int block_start_right = 0;
+        for(unsigned int i = 1; i < currdiff.size(); ++i)
         {
             wxString line = currdiff[i];
-            if(line.StartsWith(_T("+")))
+            bool add = line.StartsWith(_T("+"));
+            bool rem = line.StartsWith(_T("-"));
+            if(add || rem)
             {
-                m_added_lines.Add(start_right);
-                m_left_empty_lines.Add(start_left);
+                if(added == 0 && removed == 0)
+                {
+                    block_start_left = start_left;
+                    block_start_right = start_right;
+                }
+                if(add)
+                {
+                    ++added;
+                    ++start_right;
+                }
+                if(rem)
+                {
+                    ++removed;
+                    ++start_left;
+                }
             }
-            if(line.StartsWith(_T("-")))
+            else
             {
-                m_removed_lines.Add(start_left);
-                m_right_empty_lines.Add(start_right);
+                if (added > 0)
+                {
+                    m_added_lines[block_start_right] = added;
+                }
+                if (removed > 0)
+                {
+                    m_removed_lines[block_start_left] = removed;
+                    m_line_pos[block_start_left] = block_start_right;
+                }
+
+                if(added > removed)
+                    m_left_empty_lines[block_start_left+removed] = added - removed;
+                if(removed > added)
+                    m_right_empty_lines[block_start_right+added] = removed - added;
+                added = 0;
+                removed = 0;
+                ++start_left;
+                ++start_right;
             }
-            start_right++;
-            start_left++;
         }
-        file_start_left = m_left_empty_lines.GetCount();
-        file_start_right = m_right_empty_lines.GetCount();
     }
 }
 
@@ -146,22 +176,27 @@ wxString wxDiff::GetDiff()
     return CreateHeader() + m_diff;
 }
 
-wxArrayInt wxDiff::GetAddedLines()
+std::map<long, int> wxDiff::GetAddedLines()
 {
     return m_added_lines;
 }
 
-wxArrayInt wxDiff::GetLeftEmptyLines()
+std::map<long, int> wxDiff::GetLeftEmptyLines()
 {
     return m_left_empty_lines;
 }
 
-wxArrayInt wxDiff::GetRightEmptyLines()
+std::map<long, int> wxDiff::GetRightEmptyLines()
 {
     return m_right_empty_lines;
 }
 
-wxArrayInt wxDiff::GetRemovedLines()
+std::map<long, long> wxDiff::GetLinePositions()
+{
+    return m_line_pos;
+}
+
+std::map<long, int> wxDiff::GetRemovedLines()
 {
     return m_removed_lines;
 }

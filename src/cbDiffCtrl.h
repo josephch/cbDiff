@@ -18,8 +18,9 @@ public:
         m_theme = new EditorColourSet( Manager::Get()->GetConfigManager(_T("editor"))->Read(_T("/colour_sets/active_colour_set"), COLORSET_DEFAULT));
     }
     virtual ~cbDiffCtrl() { wxDELETE(m_theme); }
-    virtual void Init(cbDiffColors colset) = 0;
+    virtual void Init(cbDiffColors colset, bool left_read_only=true, bool right_read_only=true) = 0;
     virtual void ShowDiff(wxDiff diff) = 0;
+
 protected:
     EditorColourSet *m_theme;
 private:

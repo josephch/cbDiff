@@ -30,7 +30,7 @@ class cbDiffEditor : public EditorBase
 {
 public:
 
-    cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int diffmode = DEFAULT);
+    cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int diffmode = DEFAULT, bool left_ro = true, bool right_ro = true);
 
     virtual ~cbDiffEditor();
 
@@ -53,7 +53,7 @@ public:
     };
 
 private:
-    void InitDiffCtrl(int mode);
+    void InitDiffCtrl(int mode, bool left_ro, bool right_ro);
     void ShowDiff();        /// Makes the diff and shows it
 
     /// Diff properties
@@ -70,6 +70,8 @@ private:
 
     /// Controls
     cbDiffCtrl *m_diffctrl;
+    bool left_ro_;
+    bool right_ro_;
 
     /// static Members (thx to Bartlomiej Swiecki for hexedit!)
     typedef std::set< EditorBase* > EditorsSet;

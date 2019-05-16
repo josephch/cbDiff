@@ -36,7 +36,7 @@ BEGIN_EVENT_TABLE(cbDiffEditor,EditorBase)
     EVT_CONTEXT_MENU(cbDiffEditor::OnContextMenu)
 END_EVENT_TABLE()
 
-cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int viewmode):
+cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_ro, bool right_ro):
     EditorBase((wxWindow*)Manager::Get()->GetEditorManager()->GetNotebook(), firstfile + secondfile),
     m_diffctrl(0)
 {
@@ -74,7 +74,7 @@ cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxVERTICAL);
     BoxSizer->Add(difftoolbar, 0, wxALL|wxEXPAND, 0);
     SetSizer(BoxSizer);
-    InitDiffCtrl(viewmode);
+    InitDiffCtrl(viewmode, left_ro, right_ro);
 
     m_AllEditors.insert(this);
 
@@ -156,8 +156,10 @@ int cbDiffEditor::GetMode()
     return m_viewingmode;
 }
 
-void cbDiffEditor::InitDiffCtrl(int mode)
+void cbDiffEditor::InitDiffCtrl(int mode, bool left_ro, bool right_ro)
 {
+    left_ro_ = left_ro;
+    right_ro_ = right_ro;
     assert(m_diffctrl == nullptr);
 
     if(mode == TABLE)
@@ -168,7 +170,7 @@ void cbDiffEditor::InitDiffCtrl(int mode)
         m_diffctrl = new cbSideBySideCtrl(this);
 
     GetSizer()->Add(m_diffctrl, 1, wxEXPAND, 5);
-    m_diffctrl->Init(m_colorset);
+    m_diffctrl->Init(m_colorset, left_ro, right_ro);
     m_viewingmode = mode;
 
     GetSizer()->Layout();
@@ -183,7 +185,7 @@ void cbDiffEditor::SetMode(int mode)
         GetSizer()->Detach(m_diffctrl);
         wxDELETE(m_diffctrl);
     }
-    InitDiffCtrl(mode);
+    InitDiffCtrl(mode, left_ro_, right_ro_);
 }
 
 void cbDiffEditor::CloseAllEditors()

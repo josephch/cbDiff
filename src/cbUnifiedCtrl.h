@@ -10,7 +10,7 @@ class cbUnifiedCtrl : public cbDiffCtrl
 public:
     cbUnifiedCtrl(wxWindow* parent);
     virtual ~cbUnifiedCtrl(){}
-    virtual void Init(cbDiffColors colset) override;
+    virtual void Init(cbDiffColors colset, bool, bool) override;
     virtual void ShowDiff(wxDiff diff) override;
 private:
     cbStyledTextCtrl* m_txtctrl;

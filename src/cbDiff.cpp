@@ -19,20 +19,20 @@
 namespace
 {
     PluginRegistrant<cbDiff> reg(_T("cbDiff"));
-    const int ID_MENU_DIFF_FILES = wxNewId();
-    const int ID_CONTEXT_DIFF = wxNewId();
+    const int ID_MENU_DIFF_FILES  = wxNewId();
+    const int ID_CONTEXT_DIFF_TWO = wxNewId();
 }
 
 /// Function for other plugins
-EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode)
+EXPORT_FFP void DiffFilesRO(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_ro, bool right_ro)
 {
-    new cbDiffEditor(firstfile, secondfile, viewmode);
+    new cbDiffEditor(firstfile, secondfile, viewmode, left_ro, right_ro);
 }
 
 // events handling
 BEGIN_EVENT_TABLE(cbDiff, cbPlugin)
-    EVT_MENU        (ID_MENU_DIFF_FILES, cbDiff::OnMenuDiffFiles)
-    EVT_MENU        (ID_CONTEXT_DIFF,    cbDiff::OnContextDiffFiles)
+    EVT_MENU        (ID_MENU_DIFF_FILES,  cbDiff::OnMenuDiffFiles)
+    EVT_MENU        (ID_CONTEXT_DIFF_TWO, cbDiff::OnContextDiffFiles)
 END_EVENT_TABLE()
 
 // constructor
@@ -110,17 +110,12 @@ void cbDiff::BuildMenu(wxMenuBar* menuBar)
         if (label.Contains( _("Recent files")))
         {
             fileMenu->InsertSeparator(pos + 1);
-            fileMenu->Insert(pos + 2,
-                             ID_MENU_DIFF_FILES,
-                             _("Diff files..."),
-                             _("Shows the differences between two files"));
+            fileMenu->Insert(pos + 2, ID_MENU_DIFF_FILES, _("Diff files..."),       _("Shows the differences between two files"));
             return;
         }
     }
     fileMenu->AppendSeparator();
-    fileMenu->Append(ID_MENU_DIFF_FILES,
-                     _("Diff files..."),
-                     _("Shows the differences between two files"));
+    fileMenu->Append(ID_MENU_DIFF_FILES, _("Diff files..."),       _("Shows the differences between two files"));
 }
 
 void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTreeData* data)
@@ -163,7 +158,7 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTree
                 m_names.file1 = paths.BeforeFirst('*');
                 m_names.file2 = paths.AfterFirst('*');
                 if( wxFileName::Exists(m_names.file1) && wxFileName::Exists(m_names.file2) )
-                    menu->Append(ID_CONTEXT_DIFF, _("Diff"), _("Shows the differences between two files"));
+                    menu->Append(ID_CONTEXT_DIFF_TWO, _("Diff"), _("Shows the differences between two files"));
             }
         }
     }
@@ -180,9 +175,7 @@ void cbDiff::OnMenuDiffFiles(wxCommandEvent& event)
        wxFile::Exists(sdf.GetFromFile()) &&
        wxFile::Exists(sdf.GetToFile()))
     {
-        new cbDiffEditor(sdf.GetFromFile(),
-                         sdf.GetToFile(),
-                         sdf.GetViewingMode());
+        new cbDiffEditor(sdf.GetFromFile(), sdf.GetToFile(), sdf.GetViewingMode());
     }
 }
 

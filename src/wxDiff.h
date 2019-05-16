@@ -4,6 +4,7 @@
 #include <wx/wx.h>
 
 #include <vector>
+#include <map>
 
 class wxDiff
 {
@@ -14,10 +15,11 @@ public:
     wxString IsDifferent();
 
     wxString GetDiff();
-    wxArrayInt GetAddedLines();
-    wxArrayInt GetLeftEmptyLines();
-    wxArrayInt GetRightEmptyLines();
-    wxArrayInt GetRemovedLines();
+    std::map<long, int> GetAddedLines();
+    std::map<long, int> GetRemovedLines();
+    std::map<long, int> GetLeftEmptyLines();
+    std::map<long, int> GetRightEmptyLines();
+    std::map<long, long> GetLinePositions();
     wxString GetFromFilename();
     wxString GetToFilename();
 private:
@@ -28,10 +30,11 @@ private:
     wxString m_filename2;
     wxString m_diff;
     wxArrayString m_diff_lines;
-    wxArrayInt m_added_lines;
-    wxArrayInt m_left_empty_lines;
-    wxArrayInt m_right_empty_lines;
-    wxArrayInt m_removed_lines;
+    std::map<long, int> m_added_lines;
+    std::map<long, int> m_removed_lines;
+    std::map<long, int> m_left_empty_lines;
+    std::map<long, int> m_right_empty_lines;
+    std::map<long, long> m_line_pos;
 };
 
 #endif

@@ -8,7 +8,7 @@
 #include <cbeditor.h>
 
 #include <wx/textfile.h>
-
+#include <wx/splitter.h>
 #include "cbDiffEditor.h"
 
 /**
@@ -40,22 +40,27 @@ public:
 BEGIN_EVENT_TABLE(cbSideBySideCtrl, cbDiffCtrl)
 END_EVENT_TABLE()
 
-cbSideBySideCtrl::cbSideBySideCtrl(wxWindow* parent) : cbDiffCtrl(parent)
+cbSideBySideCtrl::cbSideBySideCtrl(wxWindow* parent):
+    cbDiffCtrl(parent),
+    lineNumbersWidthLeft(0),
+    lineNumbersWidthRight(0)
 {
     wxBoxSizer* VBoxSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* HBoxSizer = new wxBoxSizer(wxHORIZONTAL);
-    TCLeft = new cbStyledTextCtrl(this, wxID_ANY);
-    TCRight = new cbStyledTextCtrl(this, wxID_ANY);
     VScrollBar = new wxScrollBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSB_VERTICAL);
     HScrollBar = new wxScrollBar(this, wxID_ANY);
-    HBoxSizer->Add(TCLeft, 1, wxEXPAND, 0);
-    HBoxSizer->Add(TCRight, 1, wxEXPAND, 0);
+    wxSplitterWindow *splitWindow = new wxSplitterWindow(this, wxID_ANY);
+    TCLeft = new cbStyledTextCtrl(splitWindow, wxID_ANY);
+    TCRight = new cbStyledTextCtrl(splitWindow, wxID_ANY);
+    splitWindow->SplitVertically(TCLeft, TCRight);
+    HBoxSizer->Add(splitWindow, 1, wxEXPAND, 0);
     HBoxSizer->Add(VScrollBar, 0, wxEXPAND, 0);
     VBoxSizer->Add(HBoxSizer, 1, wxEXPAND, 5);
     VBoxSizer->Add(HScrollBar, 0, wxEXPAND, 0);
     SetSizer(VBoxSizer);
     VBoxSizer->Fit(this);
     VBoxSizer->SetSizeHints(this);
+    splitWindow->SetSashGravity(0.5);
 
     TCLeft->SetVScrollBar(VScrollBar);
     TCLeft->SetHScrollBar(HScrollBar);
@@ -74,15 +79,13 @@ cbSideBySideCtrl::~cbSideBySideCtrl()
     wxDELETE(m_timer);
 }
 
-void cbSideBySideCtrl::Init(cbDiffColors colset)
+void cbSideBySideCtrl::Init(cbDiffColors colset, bool left_read_only, bool right_read_only)
 {
-    const int width = 7 * TCLeft->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));
+    left_read_only_ = left_read_only;
+    right_read_only_ = right_read_only;
     const wxColor marbkg = TCLeft->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
     cbEditor::ApplyStyles(TCLeft);
-    TCLeft->SetMargins(0,0);
-    TCLeft->SetMarginWidth(0,width);
-    TCLeft->SetMarginType(0, wxSCI_MARGIN_RTEXT);
     TCLeft->SetMarginWidth(1, 16);
     TCLeft->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
     TCLeft->SetMarginWidth(2,0);    // to hide the change and the fold margin
@@ -91,7 +94,7 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     TCLeft->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
     TCLeft->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_removedlines, colset.m_removedlines);
     TCLeft->MarkerSetAlpha(RED_BKG_MARKER, colset.m_removedlines.Alpha());
-    TCLeft->MarkerDefine(GREY_BKG_MARKER, wxSCI_MARK_BACKGROUND, *wxLIGHT_GREY, *wxLIGHT_GREY);
+    TCLeft->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
     if(colset.m_caretlinetype == 0)
     {
         TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.m_caretline, colset.m_caretline);
@@ -101,13 +104,11 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
         TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND, colset.m_caretline, colset.m_caretline);
         TCLeft->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
     }
-    const bool isC = false;
-    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCLeft, isC, true);
+    const auto lang = colset.m_hlang;
+    const bool isC = lang == "C/C++";
+    m_theme->Apply(m_theme->GetHighlightLanguage(lang), TCLeft, isC, true);
 
     cbEditor::ApplyStyles(TCRight);
-    TCRight->SetMargins(0,0);
-    TCRight->SetMarginWidth(0,width);
-    TCRight->SetMarginType(0, wxSCI_MARGIN_RTEXT);
     TCRight->SetMarginWidth(1, 16);
     TCRight->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
     TCRight->SetMarginWidth(2,0);    // to hide the change and fold margin
@@ -116,7 +117,7 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     TCRight->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
     TCRight->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_addedlines, colset.m_addedlines);
     TCRight->MarkerSetAlpha(GREEN_BKG_MARKER, colset.m_addedlines.Alpha());
-    TCRight->MarkerDefine(GREY_BKG_MARKER, wxSCI_MARK_BACKGROUND, *wxLIGHT_GREY, *wxLIGHT_GREY);
+    TCRight->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
     if(colset.m_caretlinetype == 0)
     {
         TCRight->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.m_caretline, colset.m_caretline);
@@ -131,90 +132,62 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
 
 void cbSideBySideCtrl::ShowDiff(wxDiff diff)
 {
-    wxArrayInt right_added = diff.GetAddedLines();
-    wxArrayInt right_empty = diff.GetRightEmptyLines();
-    wxArrayInt left_empty = diff.GetLeftEmptyLines();
-    wxArrayInt left_removed = diff.GetRemovedLines();
+    std::map<long, int> right_added  = diff.GetAddedLines();
+    std::map<long, int> right_empty  = diff.GetRightEmptyLines();
+    std::map<long, int> left_empty   = diff.GetLeftEmptyLines();
+    std::map<long, int> left_removed = diff.GetRemovedLines();
 
-    /* Left Textctrl (m_fromfile) */
     TCLeft->SetReadOnly(false);
     TCLeft->ClearAll();
-    wxTextFile tff(diff.GetFromFilename());
-    tff.Open();
-    bool refill = false;
-    wxString str = tff.GetFirstLine();
-    int linecount = tff.GetLineCount() + left_empty.GetCount();
-    int linenumber = 1;
-    for (int i = 0; i < linecount; i++)
+    TCLeft->LoadFile(diff.GetFromFilename());
+    TCLeft->AnnotationClearAll();
+    for(auto itr = left_removed.begin() ; itr != left_removed.end() ; ++itr)
     {
-        if(refill && !tff.Eof())
-            str = tff.GetNextLine();
-        if(left_removed.Index(i+1) != wxNOT_FOUND)
+        long line = itr->first;
+        unsigned int len = itr->second;
+        for(unsigned int k = 0 ; k < len ; ++k)
         {
-            TCLeft->AppendText(str + _T("\n"));
-            refill = true;
-            TCLeft->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
-            TCLeft->MarginSetText(i,wxString::Format(_T("%d"),linenumber));
-            TCLeft->MarkerAdd(i, MINUS_MARKER);
-            TCLeft->MarkerAdd(i, RED_BKG_MARKER);
-            linenumber++;
-            continue;
+            TCLeft->MarkerAdd(line+k, MINUS_MARKER);
+            TCLeft->MarkerAdd(line+k, RED_BKG_MARKER);
         }
-        if(left_empty.Index(i+1) != wxNOT_FOUND)
-        {
-            TCLeft->AppendText(_T("\n"));
-            TCLeft->MarkerAdd(i, GREY_BKG_MARKER);
-            refill = false;
-            continue;
-        }
-        TCLeft->AppendText(str + _T("\n"));
-        refill = true;
-        TCLeft->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
-        TCLeft->MarginSetText(i,wxString::Format(_T("%d"),linenumber));
-        TCLeft->MarkerAdd(i, EQUAL_MARKER);
-        linenumber++;
     }
-    TCLeft->SetReadOnly(true);
+    for(auto itr = left_empty.begin(); itr != left_empty.end() ; ++itr )
+    {
+        long line = itr->first;
+        unsigned int len = itr->second;
+        wxString annotationStr('\n', len-1);
+        TCLeft->AnnotationSetText(line-1, annotationStr);
+    }
+    if(left_read_only_)
+        TCLeft->SetReadOnly(true);
+    TCLeft->SetMarginType(0, wxSCI_MARGIN_NUMBER);
+    setLineNumberMarginWidth(TCLeft, lineNumbersWidthLeft);
 
-    /* Right Textctrl (m_tofile) */
     TCRight->SetReadOnly(false);
     TCRight->ClearAll();
-    wxTextFile tft(diff.GetToFilename());
-    tft.Open();
-    refill = false;
-    str = tft.GetFirstLine();
-    linecount = tft.GetLineCount() + right_empty.GetCount();
-    linenumber = 1;
-    for (int i = 0; i < linecount; i++)
+    TCRight->LoadFile(diff.GetToFilename());
+    TCRight->AnnotationClearAll();
+    for(auto itr = right_added.begin() ; itr != right_added.end() ; ++itr)
     {
-        if(refill && !tft.Eof())
-            str = tft.GetNextLine();
-        if(right_added.Index(i+1) != wxNOT_FOUND)
+        long line = itr->first;
+        unsigned int len = itr->second;
+        for(unsigned int k = 0 ; k < len ; ++k)
         {
-            TCRight->AppendText(str + _T("\n"));
-            refill = true;
-            TCRight->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
-            TCRight->MarginSetText(i, wxString::Format(_T("%d"),linenumber));
-            linenumber++;
-            TCRight->MarkerAdd(i, PLUS_MARKER);
-            TCRight->MarkerAdd(i, GREEN_BKG_MARKER);
-            continue;
+            TCRight->MarkerAdd(line+k, PLUS_MARKER);
+            TCRight->MarkerAdd(line+k, GREEN_BKG_MARKER);
         }
-        if(right_empty.Index(i+1) != wxNOT_FOUND)
-        {
-            TCRight->AppendText(_T("\n"));
-            TCRight->MarkerAdd(i, GREY_BKG_MARKER);
-            refill = false;
-            continue;
-        }
-        TCRight->AppendText(str + _T("\n"));
-        refill = true;
-        TCRight->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
-        TCRight->MarginSetText(i, wxString::Format(_T("%d"),linenumber));
-        TCRight->MarkerAdd(i, EQUAL_MARKER);
-        linenumber++;
     }
-    TCRight->SetReadOnly(true);
+    for(auto itr = right_empty.begin(); itr != right_empty.end() ; ++itr )
+    {
+        long line = itr->first;
+        unsigned int len = itr->second;
+        wxString annotationStr('\n', len-1);
+        TCRight->AnnotationSetText(line-1, annotationStr);
+    }
+    if(right_read_only_)
+        TCRight->SetReadOnly(true);
+    TCRight->SetMarginType(0, wxSCI_MARGIN_NUMBER);
+    setLineNumberMarginWidth(TCRight, lineNumbersWidthRight);
 }
 
 void cbSideBySideCtrl::Synchronize()
@@ -271,4 +244,31 @@ void cbSideBySideCtrl::Synchronize()
         TCRight->SetXOffset(HScrollBar->GetThumbPosition());
         m_hscrollpos = HScrollBar->GetThumbPosition();
     }
+}
+
+void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth)
+{
+    ConfigManager* cfg = Manager::Get()->GetConfigManager(_T("editor"));
+    int pixelWidth = stc->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));
+    if (cfg->ReadBool(_T("/margin/dynamic_width"), false))
+    {
+        int lineNumChars = 1;
+        int lineCount = stc->GetLineCount();
+
+        while (lineCount >= 10)
+        {
+            lineCount /= 10;
+            ++lineNumChars;
+        }
+
+        int lineNumWidth =  lineNumChars * pixelWidth + pixelWidth * 0.75;
+
+        if (lineNumWidth != currWidth)
+        {
+            stc->SetMarginWidth(0, lineNumWidth);
+            currWidth = lineNumWidth;
+        }
+    }
+    else
+        stc->SetMarginWidth(0, pixelWidth * 0.75 + cfg->ReadInt(_T("/margin/width_chars"), 6) * pixelWidth);
 }

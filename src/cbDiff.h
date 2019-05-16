@@ -12,7 +12,7 @@ class cbConfigurationPanel;
     #define EXPORT_FFP WXIMPORT
 #endif
 
-extern "C" EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode);
+extern "C" EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_readonly, bool right_readonly);
 
 class cbDiff : public cbPlugin
 {
@@ -32,10 +32,10 @@ class cbDiff : public cbPlugin
         virtual void OnAttach() override;
         virtual void OnRelease(bool appShutDown) override;
 
-        void OnMenuDiffFiles(wxCommandEvent& event);
-        void OnContextDiffFiles(wxCommandEvent& event);
-        void OnAppDoneStartup(CodeBlocksEvent& event);
-        void OnAppCmdLine(CodeBlocksEvent& event);
+        void OnMenuDiffFiles(wxCommandEvent &event);
+        void OnContextDiffFiles(wxCommandEvent &event);
+        void OnAppDoneStartup(CodeBlocksEvent &event);
+        void OnAppCmdLine(CodeBlocksEvent &event);
         void EvalCmdLine();
         bool m_prevSelectionValid;
         wxString m_prevFileName;

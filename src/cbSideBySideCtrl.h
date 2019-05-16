@@ -11,7 +11,7 @@ class cbSideBySideCtrl : public cbDiffCtrl
 public:
     cbSideBySideCtrl(wxWindow* parent);
     virtual ~cbSideBySideCtrl();
-    virtual void Init(cbDiffColors colset) override;
+    virtual void Init(cbDiffColors colset, bool left_read_only=true, bool right_read_only=true) override;
     virtual void ShowDiff(wxDiff diff) override;
     void Synchronize();
 private:
@@ -20,6 +20,14 @@ private:
 
     wxScrollBar* VScrollBar;
     wxScrollBar* HScrollBar;
+
+    int lineNumbersWidthLeft;
+    int lineNumbersWidthRight;
+
+    bool left_read_only_;
+    bool right_read_only_;
+
+    static void setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth);
 
     int m_vscrollpos;
     int m_hscrollpos;
