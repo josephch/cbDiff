@@ -24,7 +24,7 @@ namespace
 }
 
 /// Function for other plugins
-EXPORT_FFP void DiffFilesRO(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_ro, bool right_ro)
+EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_ro, bool right_ro)
 {
     new cbDiffEditor(firstfile, secondfile, viewmode, left_ro, right_ro);
 }
