@@ -11,10 +11,15 @@ class cbSideBySideCtrl : public cbDiffCtrl
 public:
     cbSideBySideCtrl(wxWindow* parent);
     virtual ~cbSideBySideCtrl();
-    virtual void Init(cbDiffColors colset, bool left_read_only=true, bool right_read_only=true) override;
+    virtual void Init(cbDiffColors colset, bool leftReadOnly = true, bool rightReadOnly = true) override;
     virtual void ShowDiff(wxDiff diff) override;
     void Synchronize();
+
+    virtual bool GetModified() const override;
+    virtual bool QueryClose() override;
+    virtual bool Save() override;
 private:
+    bool Save(bool left, bool right);
     cbStyledTextCtrl* TCLeft;
     cbStyledTextCtrl* TCRight;
 
@@ -24,8 +29,12 @@ private:
     int lineNumbersWidthLeft;
     int lineNumbersWidthRight;
 
-    bool left_read_only_;
-    bool right_read_only_;
+    bool leftReadOnly_;
+    bool rightReadOnly_;
+    wxString leftFilename_;
+    wxString rightFilename_;
+    bool closeUnsavedLeft_;
+    bool closeUnsavedRight_;
 
     static void setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth);
 

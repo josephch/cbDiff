@@ -43,7 +43,9 @@ END_EVENT_TABLE()
 cbSideBySideCtrl::cbSideBySideCtrl(wxWindow* parent):
     cbDiffCtrl(parent),
     lineNumbersWidthLeft(0),
-    lineNumbersWidthRight(0)
+    lineNumbersWidthRight(0),
+    closeUnsavedLeft_(false),
+    closeUnsavedRight_(false)
 {
     wxBoxSizer* VBoxSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* HBoxSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -79,10 +81,10 @@ cbSideBySideCtrl::~cbSideBySideCtrl()
     wxDELETE(m_timer);
 }
 
-void cbSideBySideCtrl::Init(cbDiffColors colset, bool left_read_only, bool right_read_only)
+void cbSideBySideCtrl::Init(cbDiffColors colset, bool leftReadOnly, bool rightReadOnly)
 {
-    left_read_only_ = left_read_only;
-    right_read_only_ = right_read_only;
+    leftReadOnly_ = leftReadOnly;
+    rightReadOnly_ = rightReadOnly;
     const wxColor marbkg = TCLeft->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
     cbEditor::ApplyStyles(TCLeft);
@@ -137,6 +139,9 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     std::map<long, int> left_empty   = diff.GetLeftEmptyLines();
     std::map<long, int> left_removed = diff.GetRemovedLines();
 
+    leftFilename_ = diff.GetFromFilename();
+    rightFilename_ = diff.GetToFilename();
+
     TCLeft->SetReadOnly(false);
     TCLeft->ClearAll();
     TCLeft->LoadFile(diff.GetFromFilename());
@@ -158,7 +163,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         wxString annotationStr('\n', len-1);
         TCLeft->AnnotationSetText(line-1, annotationStr);
     }
-    if(left_read_only_)
+    if(leftReadOnly_)
         TCLeft->SetReadOnly(true);
     TCLeft->SetMarginType(0, wxSCI_MARGIN_NUMBER);
     setLineNumberMarginWidth(TCLeft, lineNumbersWidthLeft);
@@ -184,7 +189,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         wxString annotationStr('\n', len-1);
         TCRight->AnnotationSetText(line-1, annotationStr);
     }
-    if(right_read_only_)
+    if(rightReadOnly_)
         TCRight->SetReadOnly(true);
     TCRight->SetMarginType(0, wxSCI_MARGIN_NUMBER);
     setLineNumberMarginWidth(TCRight, lineNumbersWidthRight);
@@ -244,6 +249,88 @@ void cbSideBySideCtrl::Synchronize()
         TCRight->SetXOffset(HScrollBar->GetThumbPosition());
         m_hscrollpos = HScrollBar->GetThumbPosition();
     }
+}
+
+bool cbSideBySideCtrl::GetModified() const
+{
+    return TCLeft->GetModify() || TCRight->GetModify();
+}
+
+bool cbSideBySideCtrl::QueryClose()
+{
+    if ((!TCLeft->GetModify() || closeUnsavedLeft_) &&
+        (!TCRight->GetModify() || closeUnsavedRight_))
+        return true;
+
+    bool save_left = false;
+    bool save_right = false;
+
+    if(TCLeft->GetModify() && TCRight->GetModify())
+    {
+        wxArrayString choices;
+        choices.Add("none");
+        choices.Add("left only");
+        choices.Add("right only");
+        choices.Add("both");
+        switch(wxGetSingleChoiceIndex("save", "Confirm", choices))
+        {
+        default:
+        case -1: return false;
+        case  0: closeUnsavedLeft_ = true; closeUnsavedRight_ = true; break;
+        case  1: save_left = true;         closeUnsavedRight_ = true; break;
+        case  2: closeUnsavedLeft_ = true; save_right = true;         break;
+        case  3: save_left = true;         save_right = true;         break;
+        }
+    }
+    else if ( TCLeft->GetModify() )
+    {
+        int answer = wxMessageBox("Save Left?", "Confirm", wxYES_NO | wxCANCEL);
+        if (answer == wxCANCEL)
+            return false;
+        else if (answer == wxYES)
+            save_left = true;
+        else
+            closeUnsavedLeft_ = true;
+    }
+    else if ( TCRight->GetModify() )
+    {
+        int answer = wxMessageBox("Save Right?", "Confirm", wxYES_NO | wxCANCEL);
+        if (answer == wxCANCEL)
+            return false;
+        else if (answer == wxYES)
+            save_right = true;
+        else
+            closeUnsavedRight_ = true;
+    }
+
+    return Save(save_left, save_right);
+}
+
+bool cbSideBySideCtrl::Save()
+{
+    return Save(true, true);
+}
+
+bool cbSideBySideCtrl::Save(bool left, bool right)
+{
+    bool ret = true;
+    if(TCLeft->GetModify() && left)
+    {
+        if(TCLeft->SaveFile(leftFilename_))
+            closeUnsavedLeft_ = false;
+        else
+            ret = false;
+    }
+
+    if(TCRight->GetModify() && right)
+    {
+        if(TCRight->SaveFile(rightFilename_))
+            closeUnsavedRight_ = false;
+        else
+            ret = false;
+    }
+
+    return ret;
 }
 
 void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth)

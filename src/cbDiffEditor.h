@@ -38,6 +38,12 @@ public:
     bool SaveAsUnifiedDiff();
     static void CloseAllEditors();
 
+    virtual bool GetModified() const override;
+    virtual bool QueryClose() override;
+    virtual bool Save() override;
+
+    virtual bool VisibleToTree() const override{ return false; }
+
     void Swap();
     void Reload();
     int GetMode();

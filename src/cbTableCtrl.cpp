@@ -12,7 +12,8 @@
 
 cbTableCtrl::cbTableCtrl(wxWindow* parent):
     cbDiffCtrl(parent),
-    lineNumbersWidthRight(0)
+    lineNumbersWidthRight(0),
+    closeUnsaved_(false)
 {
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxHORIZONTAL);
     m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
@@ -20,9 +21,9 @@ cbTableCtrl::cbTableCtrl(wxWindow* parent):
     SetSizer(BoxSizer);
 }
 
-void cbTableCtrl::Init(cbDiffColors colset, bool, bool right_read_only)
+void cbTableCtrl::Init(cbDiffColors colset, bool, bool rightReadOnly)
 {
-    right_read_only_ = right_read_only;
+    rightReadOnly_ = rightReadOnly;
 
     wxColor marbkg = m_txtctrl->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
@@ -56,6 +57,8 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
     std::map<long, int> left_empty   = diff.GetLeftEmptyLines();
     std::map<long, int> left_removed = diff.GetRemovedLines();
     std::map<long, long> line_pos    = diff.GetLinePositions();
+
+    rightFilename_ = diff.GetToFilename();
 
     m_txtctrl->SetReadOnly(false);
     m_txtctrl->ClearAll();
@@ -99,9 +102,41 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
         }
     }
 
-    if(right_read_only_)
+    if(rightReadOnly_)
         m_txtctrl->SetReadOnly(true);
     setLineNumberMarginWidth();
+}
+
+bool cbTableCtrl::GetModified() const
+{
+    return m_txtctrl->GetModify();
+}
+
+bool cbTableCtrl::QueryClose()
+{
+    if(!m_txtctrl->GetModify() || closeUnsaved_)
+        return true;
+
+    int answer = wxMessageBox("Save File?", "Confirm", wxYES_NO | wxCANCEL);
+    if (answer == wxCANCEL)
+        return false;
+    else if (answer == wxYES)
+        Save();
+    else
+        closeUnsaved_ = true;
+
+    return true;
+}
+
+bool cbTableCtrl::Save()
+{
+    if(m_txtctrl->GetModify())
+    {
+        if(!m_txtctrl->SaveFile(rightFilename_))
+            return false;
+        closeUnsaved_ = false;
+    }
+    return true;
 }
 
 void cbTableCtrl::setLineNumberMarginWidth()

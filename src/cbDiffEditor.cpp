@@ -198,3 +198,19 @@ void cbDiffEditor::CloseAllEditors()
     }
     assert(m_AllEditors.empty());
 }
+
+bool cbDiffEditor::GetModified() const
+{
+    return m_diffctrl->GetModified();
+}
+
+bool cbDiffEditor::QueryClose()
+{
+    return m_diffctrl->QueryClose();
+}
+
+bool cbDiffEditor::Save()
+{
+    return m_diffctrl->Save();
+}
+

@@ -17,6 +17,9 @@ public:
     virtual void Init(cbDiffColors colset, bool left_read_only=true, bool right_read_only=true) = 0;
     virtual void ShowDiff(wxDiff diff) = 0;
 
+    virtual bool GetModified() const = 0;
+    virtual bool QueryClose() = 0;
+    virtual bool Save() = 0;
 protected:
     EditorColourSet *m_theme;
 private:
