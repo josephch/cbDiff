@@ -12,8 +12,7 @@
 
 cbTableCtrl::cbTableCtrl(wxWindow* parent):
     cbDiffCtrl(parent),
-    lineNumbersWidthRight(0),
-    closeUnsaved_(false)
+    lineNumbersWidthRight(0)
 {
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxHORIZONTAL);
     m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
@@ -23,7 +22,7 @@ cbTableCtrl::cbTableCtrl(wxWindow* parent):
 
 void cbTableCtrl::Init(cbDiffColors colset, bool, bool rightReadOnly)
 {
-    rightReadOnly_ = rightReadOnly;
+    readOnly_ = rightReadOnly;
 
     wxColor marbkg = m_txtctrl->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
@@ -102,7 +101,7 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
         }
     }
 
-    if(rightReadOnly_)
+    if(readOnly_)
         m_txtctrl->SetReadOnly(true);
     setLineNumberMarginWidth();
 }
@@ -114,16 +113,16 @@ bool cbTableCtrl::GetModified() const
 
 bool cbTableCtrl::QueryClose()
 {
-    if(!m_txtctrl->GetModify() || closeUnsaved_)
+    if(!m_txtctrl->GetModify())
         return true;
 
     int answer = wxMessageBox("Save File?", "Confirm", wxYES_NO | wxCANCEL);
     if (answer == wxCANCEL)
         return false;
     else if (answer == wxYES)
-        Save();
+        return Save();
     else
-        closeUnsaved_ = true;
+        m_txtctrl->SetSavePoint();
 
     return true;
 }
@@ -131,11 +130,8 @@ bool cbTableCtrl::QueryClose()
 bool cbTableCtrl::Save()
 {
     if(m_txtctrl->GetModify())
-    {
         if(!m_txtctrl->SaveFile(rightFilename_))
             return false;
-        closeUnsaved_ = false;
-    }
     return true;
 }
 

@@ -19,7 +19,8 @@ public:
     virtual bool QueryClose() override;
     virtual bool Save() override;
 private:
-    bool Save(bool left, bool right);
+    bool SaveLeft();
+    bool SaveRight();
     cbStyledTextCtrl* TCLeft;
     cbStyledTextCtrl* TCRight;
 
@@ -33,8 +34,6 @@ private:
     bool rightReadOnly_;
     wxString leftFilename_;
     wxString rightFilename_;
-    bool closeUnsavedLeft_;
-    bool closeUnsavedRight_;
 
     static void setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth);
 

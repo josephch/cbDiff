@@ -19,8 +19,7 @@ private:
     cbStyledTextCtrl* m_txtctrl;
     wxString rightFilename_;
     int lineNumbersWidthRight;
-    bool rightReadOnly_;
-    bool closeUnsaved_;
+    bool readOnly_;
     void setLineNumberMarginWidth();
 };
 

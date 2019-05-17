@@ -43,9 +43,7 @@ END_EVENT_TABLE()
 cbSideBySideCtrl::cbSideBySideCtrl(wxWindow* parent):
     cbDiffCtrl(parent),
     lineNumbersWidthLeft(0),
-    lineNumbersWidthRight(0),
-    closeUnsavedLeft_(false),
-    closeUnsavedRight_(false)
+    lineNumbersWidthRight(0)
 {
     wxBoxSizer* VBoxSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer* HBoxSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -258,12 +256,8 @@ bool cbSideBySideCtrl::GetModified() const
 
 bool cbSideBySideCtrl::QueryClose()
 {
-    if ((!TCLeft->GetModify() || closeUnsavedLeft_) &&
-        (!TCRight->GetModify() || closeUnsavedRight_))
+    if (!GetModified())
         return true;
-
-    bool save_left = false;
-    bool save_right = false;
 
     if(TCLeft->GetModify() && TCRight->GetModify())
     {
@@ -276,10 +270,10 @@ bool cbSideBySideCtrl::QueryClose()
         {
         default:
         case -1: return false;
-        case  0: closeUnsavedLeft_ = true; closeUnsavedRight_ = true; break;
-        case  1: save_left = true;         closeUnsavedRight_ = true; break;
-        case  2: closeUnsavedLeft_ = true; save_right = true;         break;
-        case  3: save_left = true;         save_right = true;         break;
+        case  0: TCLeft->SetSavePoint(); TCRight->SetSavePoint(); return true;
+        case  1: TCRight->SetSavePoint(); return SaveLeft();
+        case  2: TCLeft->SetSavePoint();  return SaveRight();
+        case  3: return Save();
         }
     }
     else if ( TCLeft->GetModify() )
@@ -288,9 +282,9 @@ bool cbSideBySideCtrl::QueryClose()
         if (answer == wxCANCEL)
             return false;
         else if (answer == wxYES)
-            save_left = true;
+            return SaveLeft();
         else
-            closeUnsavedLeft_ = true;
+            TCLeft->SetSavePoint();
     }
     else if ( TCRight->GetModify() )
     {
@@ -298,39 +292,35 @@ bool cbSideBySideCtrl::QueryClose()
         if (answer == wxCANCEL)
             return false;
         else if (answer == wxYES)
-            save_right = true;
+            return SaveRight();
         else
-            closeUnsavedRight_ = true;
+            TCRight->SetSavePoint();
     }
 
-    return Save(save_left, save_right);
+    return true;
 }
 
 bool cbSideBySideCtrl::Save()
 {
-    return Save(true, true);
+    const bool leftOk = SaveLeft();
+    const bool rightOk = SaveRight();
+    return rightOk && leftOk;
 }
 
-bool cbSideBySideCtrl::Save(bool left, bool right)
+bool cbSideBySideCtrl::SaveLeft()
 {
-    bool ret = true;
-    if(TCLeft->GetModify() && left)
-    {
-        if(TCLeft->SaveFile(leftFilename_))
-            closeUnsavedLeft_ = false;
-        else
-            ret = false;
-    }
+    if(TCLeft->GetModify())
+        if(!TCLeft->SaveFile(leftFilename_))
+            return false;
+    return true;
+}
 
-    if(TCRight->GetModify() && right)
-    {
-        if(TCRight->SaveFile(rightFilename_))
-            closeUnsavedRight_ = false;
-        else
-            ret = false;
-    }
-
-    return ret;
+bool cbSideBySideCtrl::SaveRight()
+{
+    if(TCRight->GetModify())
+        if(!TCRight->SaveFile(rightFilename_))
+            return false;
+    return true;
 }
 
 void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth)
