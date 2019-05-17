@@ -12,12 +12,8 @@
 class cbDiffCtrl: public wxPanel
 {
 public:
-    cbDiffCtrl(wxWindow* parent):
-        wxPanel(parent, -1, wxPoint(1000, 1000)), m_theme(0)
-    {
-        m_theme = new EditorColourSet( Manager::Get()->GetConfigManager(_T("editor"))->Read(_T("/colour_sets/active_colour_set"), COLORSET_DEFAULT));
-    }
-    virtual ~cbDiffCtrl() { wxDELETE(m_theme); }
+    cbDiffCtrl(wxWindow* parent);
+    virtual ~cbDiffCtrl();
     virtual void Init(cbDiffColors colset, bool left_read_only=true, bool right_read_only=true) = 0;
     virtual void ShowDiff(wxDiff diff) = 0;
 
