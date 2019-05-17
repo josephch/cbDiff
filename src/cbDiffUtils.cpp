@@ -16,11 +16,10 @@ namespace cbDiffUtils
     wxArrayString GetActiveProjectFilesRelative(ProjectFile* exclude)
     {
         wxArrayString ar;
-        cbProject* project = Manager::Get()->GetProjectManager()
-                                           ->GetActiveProject();
+        cbProject* project = Manager::Get()->GetProjectManager()->GetActiveProject();
         if(project)
         {
-            for(int i = 0; i < project->GetFilesCount(); i++)
+            for(int i = 0; i < project->GetFilesCount(); ++i)
                 if(project->GetFile(i) && project->GetFile(i) != exclude)
                     ar.Add(project->GetFile(i)->relativeFilename);
         }
@@ -30,11 +29,10 @@ namespace cbDiffUtils
     wxArrayString GetActiveProjectFilesAbsolute(ProjectFile* exclude)
     {
         wxArrayString ar;
-        cbProject* project = Manager::Get()->GetProjectManager()
-                                           ->GetActiveProject();
+        cbProject* project = Manager::Get()->GetProjectManager()->GetActiveProject();
         if(project)
         {
-            for(int i = 0; i < project->GetFilesCount(); i++)
+            for(int i = 0; i < project->GetFilesCount(); ++i)
                 if(project->GetFile(i) && project->GetFile(i) != exclude)
                     ar.Add(project->GetFile(i)->file.GetFullPath());
         }
@@ -78,9 +76,8 @@ namespace cbDiffUtils
     {
         wxArrayString ar;
         EditorManager* em = Manager::Get()->GetEditorManager();
-        for(int i = 0; i < em->GetEditorsCount(); i++)
-            if(em->GetBuiltinEditor(i) &&
-                    excludefile != em->GetBuiltinEditor(i)->GetFilename())
+        for(int i = 0; i < em->GetEditorsCount(); ++i)
+            if(em->GetBuiltinEditor(i) && excludefile != em->GetBuiltinEditor(i)->GetFilename())
                 ar.Add(em->GetBuiltinEditor(i)->GetFilename());
         return ar;
     }

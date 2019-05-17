@@ -36,7 +36,7 @@ BEGIN_EVENT_TABLE(cbDiffEditor,EditorBase)
     EVT_CONTEXT_MENU(cbDiffEditor::OnContextMenu)
 END_EVENT_TABLE()
 
-cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_ro, bool right_ro):
+cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int viewmode, bool leftReadOnly, bool rightReadOnly):
     EditorBase((wxWindow*)Manager::Get()->GetEditorManager()->GetNotebook(), firstfile + secondfile),
     m_diffctrl(0)
 {
@@ -74,7 +74,7 @@ cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxVERTICAL);
     BoxSizer->Add(difftoolbar, 0, wxALL|wxEXPAND, 0);
     SetSizer(BoxSizer);
-    InitDiffCtrl(viewmode, left_ro, right_ro);
+    InitDiffCtrl(viewmode, leftReadOnly, rightReadOnly);
 
     m_AllEditors.insert(this);
 
@@ -156,10 +156,10 @@ int cbDiffEditor::GetMode()
     return m_viewingmode;
 }
 
-void cbDiffEditor::InitDiffCtrl(int mode, bool left_ro, bool right_ro)
+void cbDiffEditor::InitDiffCtrl(int mode, bool leftReadOnly, bool rightReadOnly)
 {
-    left_ro_ = left_ro;
-    right_ro_ = right_ro;
+    leftReadOnly_ = leftReadOnly;
+    rightReadOnly_ = rightReadOnly;
     assert(m_diffctrl == nullptr);
 
     if(mode == TABLE)
@@ -170,7 +170,7 @@ void cbDiffEditor::InitDiffCtrl(int mode, bool left_ro, bool right_ro)
         m_diffctrl = new cbSideBySideCtrl(this);
 
     GetSizer()->Add(m_diffctrl, 1, wxEXPAND, 5);
-    m_diffctrl->Init(m_colorset, left_ro, right_ro);
+    m_diffctrl->Init(m_colorset, leftReadOnly_, rightReadOnly_);
     m_viewingmode = mode;
 
     GetSizer()->Layout();
@@ -185,7 +185,7 @@ void cbDiffEditor::SetMode(int mode)
         GetSizer()->Detach(m_diffctrl);
         wxDELETE(m_diffctrl);
     }
-    InitDiffCtrl(mode, left_ro_, right_ro_);
+    InitDiffCtrl(mode, leftReadOnly_, rightReadOnly_);
 }
 
 void cbDiffEditor::CloseAllEditors()
@@ -214,3 +214,7 @@ bool cbDiffEditor::Save()
     return m_diffctrl->Save();
 }
 
+//const wxString &cbDiffEditor::GetShortName() const
+//{
+//    return "L R";//m_diffctrl->GetShortName();
+//}

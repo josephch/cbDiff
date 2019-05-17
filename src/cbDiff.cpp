@@ -176,12 +176,8 @@ void cbDiff::OnMenuDiffFiles(wxCommandEvent& event)
 
     cbDiffSelectFiles sdf(Manager::Get()->GetAppWindow());
 
-    if(sdf.ShowModal() == wxID_OK &&
-       wxFile::Exists(sdf.GetFromFile()) &&
-       wxFile::Exists(sdf.GetToFile()))
-    {
+    if(sdf.ShowModal() == wxID_OK && wxFile::Exists(sdf.GetFromFile()) && wxFile::Exists(sdf.GetToFile()))
         new cbDiffEditor(sdf.GetFromFile(), sdf.GetToFile(), sdf.GetViewingMode());
-    }
 }
 
 void cbDiff::OnContextDiffFiles(wxCommandEvent& event)
