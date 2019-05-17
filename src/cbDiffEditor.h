@@ -35,8 +35,7 @@ public:
     virtual ~cbDiffEditor();
 
     /// Saves the diff as .diff file
-    virtual bool Save();
-    virtual bool SaveAs(){return Save();}
+    bool SaveAsUnifiedDiff();
     static void CloseAllEditors();
 
     void Swap();

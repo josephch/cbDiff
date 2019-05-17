@@ -34,6 +34,9 @@ class cbDiff : public cbPlugin
 
         void OnMenuDiffFiles(wxCommandEvent &event);
         void OnContextDiffFiles(wxCommandEvent &event);
+        void OnMenuSaveAsUnifiedDiff(wxCommandEvent &event);
+        void OnUpdateUiSaveAsUnifiedDiff(wxUpdateUIEvent &event);
+
         void OnAppDoneStartup(CodeBlocksEvent &event);
         void OnAppCmdLine(CodeBlocksEvent &event);
         void EvalCmdLine();

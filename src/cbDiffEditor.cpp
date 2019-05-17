@@ -105,7 +105,7 @@ void cbDiffEditor::ShowDiff()
     m_diffctrl->ShowDiff(diff);
 }
 
-bool cbDiffEditor::Save()
+bool cbDiffEditor::SaveAsUnifiedDiff()
 {
     ConfigManager* mgr = Manager::Get()->GetConfigManager(_T("app"));
     wxString Path = wxGetCwd();
@@ -132,7 +132,7 @@ bool cbDiffEditor::Save()
         wxString msg;
         msg.Printf(_("File %s could not be saved..."), GetFilename().c_str());
         cbMessageBox(msg, _("Error saving file"), wxICON_ERROR);
-        return false; // failed; file is read-only?
+        return false;
     }
     return true;
 }
