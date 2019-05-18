@@ -9,7 +9,7 @@ class cbStyledTextCtrl;
 class cbSideBySideCtrl : public cbDiffCtrl
 {
 public:
-    cbSideBySideCtrl(wxWindow* parent);
+    cbSideBySideCtrl(cbDiffEditor* parent);
     virtual ~cbSideBySideCtrl();
     virtual void Init(cbDiffColors colset, bool leftReadOnly = true, bool rightReadOnly = true) override;
     virtual void ShowDiff(wxDiff diff) override;
@@ -18,7 +18,11 @@ public:
     virtual bool GetModified() const override;
     virtual bool QueryClose() override;
     virtual bool Save() override;
+protected:
+    virtual bool LeftModified() override;
+    virtual bool RightModified() override;
 private:
+    void OnEditorChange(wxScintillaEvent &event);
     bool SaveLeft();
     bool SaveRight();
     cbStyledTextCtrl* TCLeft;
@@ -29,11 +33,6 @@ private:
 
     int lineNumbersWidthLeft;
     int lineNumbersWidthRight;
-
-    bool leftReadOnly_;
-    bool rightReadOnly_;
-    wxString leftFilename_;
-    wxString rightFilename_;
 
     static void setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth);
 

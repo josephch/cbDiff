@@ -57,6 +57,7 @@ public:
         SIDEBYSIDE
     };
 
+    void updateTitle();
 private:
     void InitDiffCtrl(int mode, bool leftReadOnly, bool rightReadOnly);
     void ShowDiff();        /// Makes the diff and shows it

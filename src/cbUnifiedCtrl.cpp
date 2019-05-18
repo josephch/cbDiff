@@ -7,7 +7,7 @@
 #include <cbstyledtextctrl.h>
 #include <cbeditor.h>
 
-cbUnifiedCtrl::cbUnifiedCtrl(wxWindow* parent):
+cbUnifiedCtrl::cbUnifiedCtrl(cbDiffEditor* parent):
     cbDiffCtrl(parent)
 {
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -18,6 +18,9 @@ cbUnifiedCtrl::cbUnifiedCtrl(wxWindow* parent):
 
 void cbUnifiedCtrl::Init(cbDiffColors colset, bool, bool)
 {
+    leftReadOnly_ = true;
+    rightReadOnly_ = true;
+
     cbEditor::ApplyStyles(m_txtctrl);
     m_txtctrl->SetMargins(0,0);
     m_txtctrl->SetMarginWidth(0,0);    // don't show linenumber

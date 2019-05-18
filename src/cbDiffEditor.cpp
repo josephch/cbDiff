@@ -94,7 +94,7 @@ void cbDiffEditor::ShowDiff()
 {
     /* Diff creation */
     wxDiff diff(m_fromfile, m_tofile);
-    SetTitle(_T("Diff: ") + wxFileNameFromPath(m_fromfile) + _T(" ") + wxFileNameFromPath(m_tofile));
+    updateTitle();
 
     wxString different = diff.IsDifferent();
     if(different != wxEmptyString)
@@ -214,10 +214,13 @@ bool cbDiffEditor::Save()
     return m_diffctrl->Save();
 }
 
-//const wxString &cbDiffEditor::GetShortName() const
-//{
-//    return "L R";//m_diffctrl->GetShortName();
-//}
+void cbDiffEditor::updateTitle()
+{
+    SetTitle(_T("Diff: ") +
+             (m_diffctrl->LeftModified() ? _("*") : _("")) + wxFileNameFromPath(m_fromfile) +
+             _T(" ") +
+             (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_tofile));
+}
 
 //void EditorManager::MarkReadOnly(int page, bool readOnly)
 //{

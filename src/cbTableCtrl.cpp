@@ -10,7 +10,7 @@
 
 #define SCI_ANNOTATIONSETSTYLES 2544
 
-cbTableCtrl::cbTableCtrl(wxWindow* parent):
+cbTableCtrl::cbTableCtrl(cbDiffEditor* parent):
     cbDiffCtrl(parent),
     lineNumbersWidthRight(0)
 {
@@ -22,7 +22,8 @@ cbTableCtrl::cbTableCtrl(wxWindow* parent):
 
 void cbTableCtrl::Init(cbDiffColors colset, bool, bool rightReadOnly)
 {
-    readOnly_ = rightReadOnly;
+    leftReadOnly_ = true;
+    rightReadOnly_ = rightReadOnly;
 
     wxColor marbkg = m_txtctrl->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
@@ -47,6 +48,7 @@ void cbTableCtrl::Init(cbDiffColors colset, bool, bool rightReadOnly)
     const auto lang = colset.m_hlang;
     const bool isC = lang == "C/C++";
     m_theme->Apply(m_theme->GetHighlightLanguage(lang), m_txtctrl, isC, true);
+    Connect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
 }
 
 void cbTableCtrl::ShowDiff(wxDiff diff)
@@ -101,7 +103,7 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
         }
     }
 
-    if(readOnly_)
+    if(rightReadOnly_)
         m_txtctrl->SetReadOnly(true);
     setLineNumberMarginWidth();
 }
@@ -124,15 +126,25 @@ bool cbTableCtrl::QueryClose()
     else
         m_txtctrl->SetSavePoint();
 
+    parent_->updateTitle();
     return true;
 }
 
 bool cbTableCtrl::Save()
 {
     if(m_txtctrl->GetModify())
+    {
         if(!m_txtctrl->SaveFile(rightFilename_))
             return false;
+        else
+            parent_->updateTitle();
+    }
     return true;
+}
+
+bool cbTableCtrl::RightModified()
+{
+    return m_txtctrl->GetModify();
 }
 
 void cbTableCtrl::setLineNumberMarginWidth()
@@ -159,3 +171,9 @@ void cbTableCtrl::setLineNumberMarginWidth()
     else
         m_txtctrl->SetMarginWidth(0, pixelWidth * 0.75 + cfg->ReadInt(_T("/margin/width_chars"), 6) * pixelWidth);
 }
+
+void cbTableCtrl::OnEditorChange(wxScintillaEvent &event)
+{
+    parent_->updateTitle();
+}
+

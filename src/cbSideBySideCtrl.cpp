@@ -40,7 +40,7 @@ public:
 BEGIN_EVENT_TABLE(cbSideBySideCtrl, cbDiffCtrl)
 END_EVENT_TABLE()
 
-cbSideBySideCtrl::cbSideBySideCtrl(wxWindow* parent):
+cbSideBySideCtrl::cbSideBySideCtrl(cbDiffEditor* parent):
     cbDiffCtrl(parent),
     lineNumbersWidthLeft(0),
     lineNumbersWidthRight(0)
@@ -107,6 +107,7 @@ void cbSideBySideCtrl::Init(cbDiffColors colset, bool leftReadOnly, bool rightRe
     const auto lang = colset.m_hlang;
     const bool isC = lang == "C/C++";
     m_theme->Apply(m_theme->GetHighlightLanguage(lang), TCLeft, isC, true);
+    Connect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 
     cbEditor::ApplyStyles(TCRight);
     TCRight->SetMarginWidth(1, 16);
@@ -128,6 +129,7 @@ void cbSideBySideCtrl::Init(cbDiffColors colset, bool leftReadOnly, bool rightRe
         TCRight->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
     }
     m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCRight, isC, true);
+    Connect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 }
 
 void cbSideBySideCtrl::ShowDiff(wxDiff diff)
@@ -251,7 +253,12 @@ void cbSideBySideCtrl::Synchronize()
 
 bool cbSideBySideCtrl::GetModified() const
 {
-    return TCLeft->GetModify() || TCRight->GetModify();
+    if(TCLeft->HasFocus())
+        return TCLeft->GetModify();
+    else if(TCRight->HasFocus())
+        return TCRight->GetModify();
+    else
+        return TCLeft->GetModify() || TCRight->GetModify();
 }
 
 bool cbSideBySideCtrl::QueryClose()
@@ -268,12 +275,17 @@ bool cbSideBySideCtrl::QueryClose()
         choices.Add("both");
         switch(wxGetSingleChoiceIndex("save", "Confirm", choices))
         {
-        default:
-        case -1: return false;
-        case  0: TCLeft->SetSavePoint(); TCRight->SetSavePoint(); return true;
+        case  0: TCLeft->SetSavePoint(); TCRight->SetSavePoint();break;
         case  1: TCRight->SetSavePoint(); return SaveLeft();
         case  2: TCLeft->SetSavePoint();  return SaveRight();
-        case  3: return Save();
+        case  3:
+        {
+            const bool leftOk = SaveLeft();
+            const bool rightOk = SaveRight();
+            return rightOk && leftOk;
+        }
+        default:
+        case -1: return false;
         }
     }
     else if ( TCLeft->GetModify() )
@@ -297,30 +309,57 @@ bool cbSideBySideCtrl::QueryClose()
             TCRight->SetSavePoint();
     }
 
+    parent_->updateTitle();
     return true;
 }
 
 bool cbSideBySideCtrl::Save()
 {
-    const bool leftOk = SaveLeft();
-    const bool rightOk = SaveRight();
-    return rightOk && leftOk;
+    if(TCLeft->HasFocus())
+        return SaveLeft();
+    else if(TCRight->HasFocus())
+        return SaveRight();
+    else
+    {
+        bool sl = SaveLeft();
+        bool sr = SaveRight();
+        return sl && sr;
+    }
+
 }
 
 bool cbSideBySideCtrl::SaveLeft()
 {
     if(TCLeft->GetModify())
+    {
         if(!TCLeft->SaveFile(leftFilename_))
             return false;
+        else
+            parent_->updateTitle();
+    }
     return true;
 }
 
 bool cbSideBySideCtrl::SaveRight()
 {
     if(TCRight->GetModify())
+    {
         if(!TCRight->SaveFile(rightFilename_))
             return false;
+        else
+            parent_->updateTitle();
+    }
     return true;
+}
+
+bool cbSideBySideCtrl::LeftModified()
+{
+    return TCLeft->GetModify();
+}
+
+bool cbSideBySideCtrl::RightModified()
+{
+    return TCRight->GetModify();
 }
 
 void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth)
@@ -348,4 +387,9 @@ void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &curr
     }
     else
         stc->SetMarginWidth(0, pixelWidth * 0.75 + cfg->ReadInt(_T("/margin/width_chars"), 6) * pixelWidth);
+}
+
+void cbSideBySideCtrl::OnEditorChange(wxScintillaEvent &event)
+{
+    parent_->updateTitle();
 }
