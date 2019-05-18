@@ -42,6 +42,9 @@ END_EVENT_TABLE()
 
 cbSideBySideCtrl::cbSideBySideCtrl(cbDiffEditor *parent):
     cbDiffCtrl(parent),
+    lastSyncedLine_(-1),
+    lastSyncedLHandle(-1),
+    lastSyncedRHandle(-1),
     lineNumbersWidthLeft(0),
     lineNumbersWidthRight(0)
 {
@@ -197,29 +200,26 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
 
 void cbSideBySideCtrl::Synchronize()
 {
-    static int last_lhandle = -1;
-    static int last_rhandle = -1;
-    static int last_line = -1;
-
     int curr_line = 0;
     if(TCLeft->GetSCIFocus())   // which scintilla control has the focus?
-        curr_line = TCLeft->GetCurrentLine();
+        curr_line = TCLeft->VisibleFromDocLine(TCLeft->GetCurrentLine());
 
     if(TCRight->GetSCIFocus())
-        curr_line = TCRight->GetCurrentLine();
+        curr_line = TCRight->VisibleFromDocLine(TCRight->GetCurrentLine());
 
     /* Caretline background synchronisation */
-    if(curr_line != last_line)
+    if(curr_line != lastSyncedLine_)
     {
-        TCLeft->MarkerDeleteHandle(last_lhandle);
-        TCRight->MarkerDeleteHandle(last_rhandle);
+        TCLeft->MarkerDeleteHandle(lastSyncedLHandle);
+        TCRight->MarkerDeleteHandle(lastSyncedRHandle);
 
-        last_lhandle = TCLeft->MarkerAdd(curr_line, CARET_LINE_MARKER);
-        last_rhandle = TCRight->MarkerAdd(curr_line, CARET_LINE_MARKER);
+        lastSyncedLHandle = TCLeft->MarkerAdd(TCLeft->DocLineFromVisible(curr_line), CARET_LINE_MARKER);
+        lastSyncedRHandle = TCRight->MarkerAdd(TCRight->DocLineFromVisible(curr_line), CARET_LINE_MARKER);
 
-        last_line = curr_line;
+        lastSyncedLine_ = curr_line;
         return;
     }
+
     int curr_scroll_focus = 0;
     // which wxcontrol has the scrollfocus?
     if(TCLeft->GetRect().Contains(ScreenToClient(wxGetMousePosition())))

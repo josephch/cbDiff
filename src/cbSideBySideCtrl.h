@@ -35,6 +35,9 @@ protected:
     virtual bool LeftModified() override;
     virtual bool RightModified() override;
 private:
+    int lastSyncedLine_;
+    int lastSyncedLHandle;
+    int lastSyncedRHandle;
     void OnEditorChange(wxScintillaEvent &event);
     bool SaveLeft();
     bool SaveRight();
