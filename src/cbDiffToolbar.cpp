@@ -19,7 +19,7 @@
 BEGIN_EVENT_TABLE(cbDiffToolbar, wxEvtHandler)
 END_EVENT_TABLE()
 
-cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent, int viewmode):
+cbDiffToolbar::cbDiffToolbar(cbDiffEditor *parent, int viewmode):
     wxPanel(parent),
     m_parent(parent)
 {
@@ -53,7 +53,7 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent, int viewmode):
     BBSwap->SetToolTip(_("Swap files"));
 #endif
 
-    wxBoxSizer* boxsizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *boxsizer = new wxBoxSizer(wxHORIZONTAL);
 #if ( wxCHECK_VERSION(3, 0, 0) || isUseWxAuiToolbar || isUseWxToolbar )
     // after adding the buttons to the toolbar, must call Realize() to reflect
     // the changes
@@ -108,7 +108,7 @@ cbDiffToolbar::cbDiffToolbar(cbDiffEditor* parent, int viewmode):
 #endif
 }
 
-void cbDiffToolbar::OnButton(wxCommandEvent& event)
+void cbDiffToolbar::OnButton(wxCommandEvent &event)
 {
     if(event.GetId() == ID_BBSWAP)
     {

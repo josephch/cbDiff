@@ -3,7 +3,7 @@
 BEGIN_EVENT_TABLE(cbDiffCtrl, wxPanel)
 END_EVENT_TABLE()
 
-cbDiffCtrl::cbDiffCtrl(cbDiffEditor* parent):
+cbDiffCtrl::cbDiffCtrl(cbDiffEditor *parent):
     wxPanel(parent, -1, wxPoint(1000, 1000)),
     parent_(parent),
     m_theme(nullptr)

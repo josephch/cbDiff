@@ -37,3 +37,23 @@ void cbUnifiedCtrl::ShowDiff(wxDiff diff)
     m_txtctrl->AppendText(diff.GetDiff());
     m_txtctrl->SetReadOnly(true);
 }
+
+void cbUnifiedCtrl::Copy()
+{
+    m_txtctrl->Copy();
+}
+
+bool cbUnifiedCtrl::HasSelection() const
+{
+    return m_txtctrl->GetSelectionStart() != m_txtctrl->GetSelectionEnd();
+}
+
+bool cbUnifiedCtrl::CanSelectAll() const
+{
+    return m_txtctrl->GetLength() > 0;
+}
+
+void cbUnifiedCtrl::SelectAll()
+{
+    m_txtctrl->SelectAll();
+}

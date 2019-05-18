@@ -25,9 +25,9 @@ namespace
 }
 
 /// Function for other plugins
-EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_ro, bool right_ro)
+EXPORT_FFP void DiffFiles(const wxString &firstfile, const wxString &secondfile, int viewmode, bool leftReadOnly, bool rightReadOnly)
 {
-    new cbDiffEditor(firstfile, secondfile, viewmode, left_ro, right_ro);
+    new cbDiffEditor(firstfile, secondfile, viewmode, leftReadOnly, rightReadOnly);
 }
 
 // events handling
@@ -63,13 +63,13 @@ void cbDiff::OnAttach()
     Manager::Get()->RegisterEventSink(cbEVT_APP_CMDLINE, new cbEventFunctor<cbDiff, CodeBlocksEvent>(this, &cbDiff::OnAppCmdLine));
 }
 
-void cbDiff::OnAppDoneStartup(CodeBlocksEvent& event)
+void cbDiff::OnAppDoneStartup(CodeBlocksEvent &event)
 {
     EvalCmdLine();
     event.Skip();
 }
 
-void cbDiff::OnAppCmdLine(CodeBlocksEvent& event)
+void cbDiff::OnAppCmdLine(CodeBlocksEvent &event)
 {
     EvalCmdLine();
     event.Skip();
@@ -81,14 +81,14 @@ void cbDiff::OnRelease(bool appShutDown)
         cbDiffEditor::CloseAllEditors();
 }
 
-cbConfigurationPanel* cbDiff::GetConfigurationPanel(wxWindow* parent)
+cbConfigurationPanel *cbDiff::GetConfigurationPanel(wxWindow *parent)
 {
     if(!m_IsAttached)
         return NULL;
     return new cbDiffConfigPanel(parent);
 }
 
-void cbDiff::BuildMenu(wxMenuBar* menuBar)
+void cbDiff::BuildMenu(wxMenuBar *menuBar)
 {
     int fileMenuIndex = menuBar->FindMenu( _("&File") );
     if(fileMenuIndex == wxNOT_FOUND )
@@ -123,7 +123,7 @@ void cbDiff::BuildMenu(wxMenuBar* menuBar)
     fileMenu->Append(ID_MENU_SAVE_UNIFIED_DIFF, _("Save as unified diff file"), _("Saves the current diff as unified diff file"));
 }
 
-void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTreeData* data)
+void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTreeData *data)
 {
     if ( type == mtProjectManager && data != 0 && data->GetKind() == FileTreeData::ftdkFile )
     {
@@ -169,7 +169,7 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTree
     }
 }
 
-void cbDiff::OnMenuDiffFiles(wxCommandEvent& event)
+void cbDiff::OnMenuDiffFiles(wxCommandEvent &event)
 {
     if(!m_IsAttached)
         return;
@@ -180,7 +180,7 @@ void cbDiff::OnMenuDiffFiles(wxCommandEvent& event)
         new cbDiffEditor(sdf.GetFromFile(), sdf.GetToFile(), sdf.GetViewingMode());
 }
 
-void cbDiff::OnContextDiffFiles(wxCommandEvent& event)
+void cbDiff::OnContextDiffFiles(wxCommandEvent &event)
 {
     if ( wxFileName::Exists(m_names.file1) && wxFileName::Exists(m_names.file2) )
     {

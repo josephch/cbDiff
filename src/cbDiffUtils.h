@@ -12,9 +12,9 @@ class ProjectFile;
 
 namespace cbDiffUtils
 {
-    wxArrayString GetActiveProjectFilesRelative(ProjectFile* exclude);
-    wxArrayString GetActiveProjectFilesAbsolute(ProjectFile* exclude);
-    ProjectFile* IsFileInActiveProject(wxString filename);
+    wxArrayString GetActiveProjectFilesRelative(ProjectFile *exclude);
+    wxArrayString GetActiveProjectFilesAbsolute(ProjectFile *exclude);
+    ProjectFile *IsFileInActiveProject(wxString filename);
     wxArrayString GetOpenFilesShort(wxString excludefile);
     wxArrayString GetOpenFilesLong(wxString excludefile);
     wxBitmap _wxGetBitmapFromMemory(const unsigned char *data, int length);

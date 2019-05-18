@@ -10,11 +10,11 @@
 
 #define SCI_ANNOTATIONSETSTYLES 2544
 
-cbTableCtrl::cbTableCtrl(cbDiffEditor* parent):
+cbTableCtrl::cbTableCtrl(cbDiffEditor *parent):
     cbDiffCtrl(parent),
     lineNumbersWidthRight(0)
 {
-    wxBoxSizer* BoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *BoxSizer = new wxBoxSizer(wxHORIZONTAL);
     m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
     BoxSizer->Add(m_txtctrl, 1,wxEXPAND, 0);
     SetSizer(BoxSizer);
@@ -175,5 +175,72 @@ void cbTableCtrl::setLineNumberMarginWidth()
 void cbTableCtrl::OnEditorChange(wxScintillaEvent &event)
 {
     parent_->updateTitle();
+}
+
+void cbTableCtrl::Undo()
+{
+    if(!rightReadOnly_)
+        m_txtctrl->Undo();
+}
+
+void cbTableCtrl::Redo()
+{
+    if(!rightReadOnly_)
+        m_txtctrl->Redo();
+}
+
+void cbTableCtrl::ClearHistory()
+{
+    m_txtctrl->EmptyUndoBuffer();
+}
+
+void cbTableCtrl::Cut()
+{
+    if(!rightReadOnly_)
+        m_txtctrl->Cut();
+}
+
+void cbTableCtrl::Copy()
+{
+    m_txtctrl->Copy();
+}
+
+void cbTableCtrl::Paste()
+{
+    if(!rightReadOnly_)
+        m_txtctrl->Paste();
+}
+
+bool cbTableCtrl::CanUndo() const
+{
+    return !rightReadOnly_ && m_txtctrl->CanUndo();
+}
+
+bool cbTableCtrl::CanRedo() const
+{
+    return !rightReadOnly_ && m_txtctrl->CanRedo();
+}
+
+bool cbTableCtrl::HasSelection() const
+{
+    return m_txtctrl->GetSelectionStart() != m_txtctrl->GetSelectionEnd();
+}
+
+bool cbTableCtrl::CanPaste() const
+{
+    if (platform::gtk)
+        return !rightReadOnly_;
+
+    return m_txtctrl->CanPaste() && !rightReadOnly_;
+}
+
+bool cbTableCtrl::CanSelectAll() const
+{
+    return m_txtctrl->GetLength() > 0;
+}
+
+void cbTableCtrl::SelectAll()
+{
+    m_txtctrl->SelectAll();
 }
 

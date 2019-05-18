@@ -20,7 +20,7 @@ class cbDiffSelectFiles: public wxDialog
 {
 	public:
 
-		cbDiffSelectFiles(wxWindow* parent, wxWindowID id = wxID_ANY);
+		cbDiffSelectFiles(wxWindow *parent, wxWindowID id = wxID_ANY);
 		virtual ~cbDiffSelectFiles();
 
         wxString GetFromFile();

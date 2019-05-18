@@ -16,7 +16,7 @@ namespace cbDiffUtils
     wxArrayString GetActiveProjectFilesRelative(ProjectFile* exclude)
     {
         wxArrayString ar;
-        cbProject* project = Manager::Get()->GetProjectManager()->GetActiveProject();
+        cbProject *project = Manager::Get()->GetProjectManager()->GetActiveProject();
         if(project)
         {
             for(int i = 0; i < project->GetFilesCount(); ++i)
@@ -29,7 +29,7 @@ namespace cbDiffUtils
     wxArrayString GetActiveProjectFilesAbsolute(ProjectFile* exclude)
     {
         wxArrayString ar;
-        cbProject* project = Manager::Get()->GetProjectManager()->GetActiveProject();
+        cbProject *project = Manager::Get()->GetProjectManager()->GetActiveProject();
         if(project)
         {
             for(int i = 0; i < project->GetFilesCount(); ++i)
@@ -42,7 +42,7 @@ namespace cbDiffUtils
     wxArrayString GetOpenFilesShort(wxString excludefile)
     {
         wxArrayString arlong = GetOpenFilesLong(excludefile);
-        EditorManager* em = Manager::Get()->GetEditorManager();
+        EditorManager *em = Manager::Get()->GetEditorManager();
         wxArrayString ar;
         wxString exclShort = wxEmptyString;
         if ( em->GetBuiltinEditor(excludefile) )
@@ -75,16 +75,16 @@ namespace cbDiffUtils
     wxArrayString GetOpenFilesLong(wxString excludefile)
     {
         wxArrayString ar;
-        EditorManager* em = Manager::Get()->GetEditorManager();
+        EditorManager *em = Manager::Get()->GetEditorManager();
         for(int i = 0; i < em->GetEditorsCount(); ++i)
             if(em->GetBuiltinEditor(i) && excludefile != em->GetBuiltinEditor(i)->GetFilename())
                 ar.Add(em->GetBuiltinEditor(i)->GetFilename());
         return ar;
     }
 
-    ProjectFile* IsFileInActiveProject(wxString filename)
+    ProjectFile *IsFileInActiveProject(wxString filename)
     {
-        cbProject* pr = Manager::Get()->GetProjectManager()->GetActiveProject();
+        cbProject *pr = Manager::Get()->GetProjectManager()->GetActiveProject();
         if(pr)
             return pr->GetFileByFilename(filename, false);
         return NULL;

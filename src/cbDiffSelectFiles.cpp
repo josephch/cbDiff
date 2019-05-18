@@ -35,7 +35,7 @@ BEGIN_EVENT_TABLE(cbDiffSelectFiles,wxDialog)
 	//*)
 END_EVENT_TABLE()
 
-cbDiffSelectFiles::cbDiffSelectFiles(wxWindow* parent,wxWindowID id)
+cbDiffSelectFiles::cbDiffSelectFiles(wxWindow *parent,wxWindowID id)
 {
 	//(*Initialize(cbDiffSelectFiles)
 	wxBoxSizer* BoxSizer1;

@@ -35,7 +35,7 @@ BEGIN_EVENT_TABLE(cbDiffConfigPanel, cbConfigurationPanel)
 	//*)
 END_EVENT_TABLE()
 
-cbDiffConfigPanel::cbDiffConfigPanel(wxWindow* parent)
+cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
 {
 	//(*Initialize(cbDiffConfigPanel)
 	wxBoxSizer* BoxSizer1;

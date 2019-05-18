@@ -7,7 +7,7 @@
 class cbDiffMenu : public wxMenu
 {
 public:
-    cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelected, wxString &prevFileName, std::vector<long> &ids);
+    cbDiffMenu(wxEvtHandler *parent, wxString basefile, bool &prevSelected, wxString &prevFileName, std::vector<long> &ids);
     virtual ~cbDiffMenu(){}
 private:
     wxString m_basefile;
@@ -19,11 +19,11 @@ private:
     bool &m_prevValid;
     wxString &m_prevFileName;
 
-    void OnSelectProject(wxCommandEvent& event);
-    void OnSelectOpen(wxCommandEvent& event);
-    void OnSelectLocal(wxCommandEvent& event);
-    void OnSelectFirst(wxCommandEvent& event);
-    void OnSelectSecond(wxCommandEvent& event);
+    void OnSelectProject(wxCommandEvent &event);
+    void OnSelectOpen(wxCommandEvent &event);
+    void OnSelectLocal(wxCommandEvent &event);
+    void OnSelectFirst(wxCommandEvent &event);
+    void OnSelectSecond(wxCommandEvent &event);
     DECLARE_EVENT_TABLE();
 };
 

@@ -18,7 +18,7 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 {
 	public:
 
-		cbDiffConfigPanel(wxWindow* parent);
+		cbDiffConfigPanel(wxWindow *parent);
 		virtual ~cbDiffConfigPanel();
 
         virtual wxString GetTitle() const;

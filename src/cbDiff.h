@@ -12,7 +12,7 @@ class cbConfigurationPanel;
     #define EXPORT_FFP WXIMPORT
 #endif
 
-extern "C" EXPORT_FFP void DiffFiles(const wxString& firstfile, const wxString& secondfile, int viewmode, bool left_readonly, bool right_readonly);
+extern "C" EXPORT_FFP void DiffFiles(const wxString &firstfile, const wxString &secondfile, int viewmode, bool left_readonly, bool right_readonly);
 
 class cbDiff : public cbPlugin
 {
@@ -22,11 +22,11 @@ class cbDiff : public cbPlugin
 
         virtual int GetConfigurationPriority() const  override{ return 50; }
         virtual int GetConfigurationGroup() const  override{ return cgUnknown; }
-        virtual cbConfigurationPanel* GetConfigurationPanel(wxWindow* parent) override;
-        virtual cbConfigurationPanel* GetProjectConfigurationPanel(wxWindow* parent, cbProject* project) override{ return 0; }
-        virtual void BuildMenu(wxMenuBar* menuBar) override;
-        virtual void BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTreeData* data = 0) override;
-        virtual bool BuildToolBar(wxToolBar* toolBar) override{ return false; }
+        virtual cbConfigurationPanel *GetConfigurationPanel(wxWindow *parent) override;
+        virtual cbConfigurationPanel *GetProjectConfigurationPanel(wxWindow *parent, cbProject *project) override{ return 0; }
+        virtual void BuildMenu(wxMenuBar *menuBar) override;
+        virtual void BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTreeData *data = 0) override;
+        virtual bool BuildToolBar(wxToolBar *toolBar) override{ return false; }
 
     protected:
         virtual void OnAttach() override;

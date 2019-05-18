@@ -36,7 +36,7 @@ BEGIN_EVENT_TABLE(cbDiffEditor,EditorBase)
     EVT_CONTEXT_MENU(cbDiffEditor::OnContextMenu)
 END_EVENT_TABLE()
 
-cbDiffEditor::cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int viewmode, bool leftReadOnly, bool rightReadOnly):
+cbDiffEditor::cbDiffEditor(const wxString &firstfile, const wxString &secondfile, int viewmode, bool leftReadOnly, bool rightReadOnly):
     EditorBase((wxWindow*)Manager::Get()->GetEditorManager()->GetNotebook(), firstfile + secondfile),
     m_diffctrl(0)
 {
@@ -221,6 +221,20 @@ void cbDiffEditor::updateTitle()
              _T(" ") +
              (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_tofile));
 }
+
+
+void cbDiffEditor::Undo()                      {m_diffctrl->Undo();}
+void cbDiffEditor::Redo()                      {m_diffctrl->Redo();}
+void cbDiffEditor::ClearHistory()              {m_diffctrl->ClearHistory();}
+void cbDiffEditor::Cut()                       {m_diffctrl->Cut();}
+void cbDiffEditor::Copy()                      {m_diffctrl->Copy();}
+void cbDiffEditor::Paste()                     {m_diffctrl->Paste();}
+bool cbDiffEditor::CanUndo() const      {return m_diffctrl->CanUndo();}
+bool cbDiffEditor::CanRedo() const      {return m_diffctrl->CanRedo();}
+bool cbDiffEditor::HasSelection() const {return m_diffctrl->HasSelection();}
+bool cbDiffEditor::CanPaste() const     {return m_diffctrl->CanPaste();}
+bool cbDiffEditor::CanSelectAll() const {return m_diffctrl->CanSelectAll();}
+void cbDiffEditor::SelectAll()                 {m_diffctrl->SelectAll();}
 
 //void EditorManager::MarkReadOnly(int page, bool readOnly)
 //{

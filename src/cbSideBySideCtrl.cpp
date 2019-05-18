@@ -21,9 +21,9 @@
 **/
 class LineChangedTimer : public wxTimer
 {
-    cbSideBySideCtrl* m_pane;
+    cbSideBySideCtrl *m_pane;
 public:
-    LineChangedTimer(cbSideBySideCtrl* pane) : wxTimer()
+    LineChangedTimer(cbSideBySideCtrl *pane) : wxTimer()
     {
         m_pane = pane;
     }
@@ -40,13 +40,13 @@ public:
 BEGIN_EVENT_TABLE(cbSideBySideCtrl, cbDiffCtrl)
 END_EVENT_TABLE()
 
-cbSideBySideCtrl::cbSideBySideCtrl(cbDiffEditor* parent):
+cbSideBySideCtrl::cbSideBySideCtrl(cbDiffEditor *parent):
     cbDiffCtrl(parent),
     lineNumbersWidthLeft(0),
     lineNumbersWidthRight(0)
 {
-    wxBoxSizer* VBoxSizer = new wxBoxSizer(wxVERTICAL);
-    wxBoxSizer* HBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *VBoxSizer = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer *HBoxSizer = new wxBoxSizer(wxHORIZONTAL);
     VScrollBar = new wxScrollBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSB_VERTICAL);
     HScrollBar = new wxScrollBar(this, wxID_ANY);
     wxSplitterWindow *splitWindow = new wxSplitterWindow(this, wxID_ANY);
@@ -362,9 +362,9 @@ bool cbSideBySideCtrl::RightModified()
     return TCRight->GetModify();
 }
 
-void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth)
+void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl *stc, int &currWidth)
 {
-    ConfigManager* cfg = Manager::Get()->GetConfigManager(_T("editor"));
+    ConfigManager *cfg = Manager::Get()->GetConfigManager(_T("editor"));
     int pixelWidth = stc->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));
     if (cfg->ReadBool(_T("/margin/dynamic_width"), false))
     {
@@ -393,3 +393,130 @@ void cbSideBySideCtrl::OnEditorChange(wxScintillaEvent &event)
 {
     parent_->updateTitle();
 }
+
+void cbSideBySideCtrl::Undo()
+{
+    if(!leftReadOnly_ && TCLeft->HasFocus())
+        TCLeft->Undo();
+
+    if(!rightReadOnly_ && TCRight->HasFocus())
+        TCRight->Undo();
+}
+
+void cbSideBySideCtrl::Redo()
+{
+    if(!leftReadOnly_ && TCLeft->HasFocus())
+        TCLeft->Redo();
+
+    if(!rightReadOnly_ && TCRight->HasFocus())
+        TCRight->Redo();
+}
+
+void cbSideBySideCtrl::ClearHistory()
+{
+    if(TCLeft->HasFocus())
+        TCLeft->EmptyUndoBuffer();
+
+    if(TCRight->HasFocus())
+        TCRight->EmptyUndoBuffer();
+}
+
+void cbSideBySideCtrl::Cut()
+{
+    if(!leftReadOnly_ && TCLeft->HasFocus())
+        TCLeft->Cut();
+
+    if(!rightReadOnly_ && TCRight->HasFocus())
+        TCRight->Cut();
+}
+
+void cbSideBySideCtrl::Copy()
+{
+    if(TCLeft->HasFocus())
+        TCLeft->Copy();
+
+    if(TCRight->HasFocus())
+        TCRight->Copy();
+}
+
+void cbSideBySideCtrl::Paste()
+{
+    if(!leftReadOnly_ && TCLeft->HasFocus())
+        TCLeft->Paste();
+
+    if(!rightReadOnly_ && TCRight->HasFocus())
+        TCRight->Paste();
+}
+
+bool cbSideBySideCtrl::CanUndo() const
+{
+    if(TCLeft->HasFocus())
+        return !leftReadOnly_ && TCLeft->CanUndo();
+
+    if(TCRight->HasFocus())
+        return !rightReadOnly_ && TCRight->CanUndo();
+
+    return false;
+}
+
+bool cbSideBySideCtrl::CanRedo() const
+{
+    if(TCLeft->HasFocus())
+        return !leftReadOnly_ && TCLeft->CanRedo();
+
+    if(TCRight->HasFocus())
+        return !rightReadOnly_ && TCRight->CanRedo();
+
+    return false;
+}
+
+bool cbSideBySideCtrl::HasSelection() const
+{
+    if(TCLeft->HasFocus())
+        return TCLeft->GetSelectionStart() != TCLeft->GetSelectionEnd();
+
+    if(TCRight->HasFocus())
+        return TCRight->GetSelectionStart() != TCRight->GetSelectionEnd();
+
+    return false;
+}
+
+bool cbSideBySideCtrl::CanPaste() const
+{
+    if(TCLeft->HasFocus())
+    {
+        if (platform::gtk)
+            return !leftReadOnly_;
+        return TCLeft->CanPaste() && !leftReadOnly_;
+    }
+
+    if(TCRight->HasFocus())
+    {
+        if (platform::gtk)
+            return !rightReadOnly_;
+        return TCRight->CanPaste() && !rightReadOnly_;
+    }
+
+    return false;
+}
+
+bool cbSideBySideCtrl::CanSelectAll() const
+{
+    if(TCLeft->HasFocus())
+        return TCLeft->GetLength() > 0;
+
+    if(TCRight->HasFocus())
+        return TCLeft->GetLength() > 0;
+
+    return false;
+}
+
+void cbSideBySideCtrl::SelectAll()
+{
+    if(TCLeft->HasFocus())
+        TCLeft->SelectAll();
+
+    if(TCRight->HasFocus())
+        TCRight->SelectAll();
+}
+

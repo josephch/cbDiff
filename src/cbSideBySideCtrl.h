@@ -9,7 +9,7 @@ class cbStyledTextCtrl;
 class cbSideBySideCtrl : public cbDiffCtrl
 {
 public:
-    cbSideBySideCtrl(cbDiffEditor* parent);
+    cbSideBySideCtrl(cbDiffEditor *parent);
     virtual ~cbSideBySideCtrl();
     virtual void Init(cbDiffColors colset, bool leftReadOnly = true, bool rightReadOnly = true) override;
     virtual void ShowDiff(wxDiff diff) override;
@@ -18,6 +18,19 @@ public:
     virtual bool GetModified() const override;
     virtual bool QueryClose() override;
     virtual bool Save() override;
+
+    virtual void Undo()override;
+    virtual void Redo()override;
+    virtual void ClearHistory()override;
+    virtual void Cut()override;
+    virtual void Copy()override;
+    virtual void Paste()override;
+    virtual bool CanUndo() const override;
+    virtual bool CanRedo() const override;
+    virtual bool HasSelection() const override;
+    virtual bool CanPaste() const override;
+    virtual bool CanSelectAll() const override;
+    virtual void SelectAll() override;
 protected:
     virtual bool LeftModified() override;
     virtual bool RightModified() override;
@@ -25,21 +38,21 @@ private:
     void OnEditorChange(wxScintillaEvent &event);
     bool SaveLeft();
     bool SaveRight();
-    cbStyledTextCtrl* TCLeft;
-    cbStyledTextCtrl* TCRight;
+    cbStyledTextCtrl *TCLeft;
+    cbStyledTextCtrl *TCRight;
 
-    wxScrollBar* VScrollBar;
-    wxScrollBar* HScrollBar;
+    wxScrollBar *VScrollBar;
+    wxScrollBar *HScrollBar;
 
     int lineNumbersWidthLeft;
     int lineNumbersWidthRight;
 
-    static void setLineNumberMarginWidth(cbStyledTextCtrl* stc, int &currWidth);
+    static void setLineNumberMarginWidth(cbStyledTextCtrl *stc, int &currWidth);
 
     int m_vscrollpos;
     int m_hscrollpos;
 
-    LineChangedTimer* m_timer;
+    LineChangedTimer *m_timer;
     DECLARE_EVENT_TABLE()
 };
 

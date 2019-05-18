@@ -28,7 +28,7 @@ class cbDiffEditor;
 class cbDiffToolbar : public wxPanel
 {
 public:
-    cbDiffToolbar(cbDiffEditor* parent, int viewmode);
+    cbDiffToolbar(cbDiffEditor *parent, int viewmode);
     virtual ~cbDiffToolbar(){}
 protected:
 private:
@@ -38,12 +38,12 @@ private:
         ID_BBRELOAD = 1545,
         ID_BBSWAP
     };
-    cbDiffEditor* m_parent;
+    cbDiffEditor *m_parent;
 #if isUseWxAuiToolbar
     wxAuiToolBar* toolbar;
 #else
     #if ( wxCHECK_VERSION(3, 0, 0) || isUseWxToolbar )
-    wxToolBar* toolbar;
+    wxToolBar *toolbar;
     #else
     wxBitmapButton* BBTable;
     wxBitmapButton* BBUnified;
@@ -51,7 +51,7 @@ private:
     #endif
 #endif
 
-    void OnButton(wxCommandEvent& event);
+    void OnButton(wxCommandEvent &event);
     DECLARE_EVENT_TABLE()
 };
 

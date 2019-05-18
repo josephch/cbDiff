@@ -8,7 +8,7 @@ class cbStyledTextCtrl;
 class cbUnifiedCtrl : public cbDiffCtrl
 {
 public:
-    cbUnifiedCtrl(cbDiffEditor* parent);
+    cbUnifiedCtrl(cbDiffEditor *parent);
     virtual ~cbUnifiedCtrl(){}
     virtual void Init(cbDiffColors colset, bool, bool) override;
     virtual void ShowDiff(wxDiff diff) override;
@@ -17,12 +17,16 @@ public:
     virtual bool QueryClose() override{return true;}
     virtual bool Save() override{return true;}
 
+    virtual void Copy()override;
+    virtual bool HasSelection() const override;
+    virtual bool CanSelectAll() const override;
+    virtual void SelectAll() override;
 protected:
     virtual bool LeftModified() override{return false;}
     virtual bool RightModified() override{return false;}
 
 private:
-    cbStyledTextCtrl* m_txtctrl;
+    cbStyledTextCtrl *m_txtctrl;
 };
 
 #endif

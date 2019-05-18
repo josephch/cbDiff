@@ -23,7 +23,7 @@ namespace
 BEGIN_EVENT_TABLE(cbDiffMenu, wxMenu)
 END_EVENT_TABLE()
 
-cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelectionValid, wxString &prevFileName, std::vector<long> &ids):
+cbDiffMenu::cbDiffMenu(wxEvtHandler *parent, wxString basefile, bool &prevSelectionValid, wxString &prevFileName, std::vector<long> &ids):
     wxMenu(),
     m_basefile(basefile),
     m_ids(ids),
@@ -46,7 +46,7 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     }
 
     // the project or NULL
-    ProjectFile* file = IsFileInActiveProject(basefile);
+    ProjectFile *file = IsFileInActiveProject(basefile);
     m_projectfilenames = GetActiveProjectFilesAbsolute(file);
     m_openfilenames = cbDiffUtils::GetOpenFilesLong(basefile);
 
@@ -61,7 +61,7 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     // project open?
     if(projectFiles)
     {
-        wxMenu* projmenu = new wxMenu();
+        wxMenu *projmenu = new wxMenu();
         bool hasEntries = false;
         for(unsigned int i = 0; i < shortnames.GetCount(); ++i)
         {
@@ -81,7 +81,7 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     // files open?
     if(openFiles)
     {
-        wxMenu* openmenu = new wxMenu();
+        wxMenu *openmenu = new wxMenu();
         bool hasEntries = false;
         for(unsigned int i = 0; i < openFiles; i++)
         {
@@ -100,7 +100,7 @@ cbDiffMenu::cbDiffMenu(wxEvtHandler* parent, wxString basefile, bool &prevSelect
     parent->Connect(ID_SELECT_LOCAL, wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&cbDiffMenu::OnSelectLocal, NULL, this);
 }
 
-void cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
+void cbDiffMenu::OnSelectOpen(wxCommandEvent &event)
 {
     if(!wxFileExists(m_basefile))
         return;
@@ -119,7 +119,7 @@ void cbDiffMenu::OnSelectOpen(wxCommandEvent& event)
         new cbDiffEditor(m_basefile, m_openfilenames[idx]);
 }
 
-void cbDiffMenu::OnSelectProject(wxCommandEvent& event)
+void cbDiffMenu::OnSelectProject(wxCommandEvent &event)
 {
     if(!wxFileExists(m_basefile))
         return;
@@ -136,7 +136,7 @@ void cbDiffMenu::OnSelectProject(wxCommandEvent& event)
         new cbDiffEditor(m_basefile, m_projectfilenames[idx]);
 }
 
-void cbDiffMenu::OnSelectLocal(wxCommandEvent& event)
+void cbDiffMenu::OnSelectLocal(wxCommandEvent &event)
 {
     if(!wxFileExists(m_basefile))
         return;
@@ -150,14 +150,14 @@ void cbDiffMenu::OnSelectLocal(wxCommandEvent& event)
         new cbDiffEditor(m_basefile, selfile.GetPath());
 }
 
-void cbDiffMenu::OnSelectFirst(wxCommandEvent& event)
+void cbDiffMenu::OnSelectFirst(wxCommandEvent &event)
 {
     m_prevFileName = m_basefile;
     m_prevValid = true;
 
 }
 
-void cbDiffMenu::OnSelectSecond(wxCommandEvent& event)
+void cbDiffMenu::OnSelectSecond(wxCommandEvent &event)
 {
     if ( m_prevValid )
     {

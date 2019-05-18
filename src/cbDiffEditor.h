@@ -30,7 +30,7 @@ class cbDiffEditor : public EditorBase
 {
 public:
 
-    cbDiffEditor(const wxString& firstfile, const wxString& secondfile, int diffmode = DEFAULT, bool leftReadOnly = true, bool rightReadOnly = true);
+    cbDiffEditor(const wxString &firstfile, const wxString &secondfile, int diffmode = DEFAULT, bool leftReadOnly = true, bool rightReadOnly = true);
 
     virtual ~cbDiffEditor();
 
@@ -40,9 +40,29 @@ public:
     virtual bool GetModified() const override;
     virtual bool QueryClose() override;
     virtual bool Save() override;
-    //virtual const wxString &GetShortName() const override;
+    virtual bool SaveAs()override{return SaveAsUnifiedDiff();}
 
     virtual bool VisibleToTree() const override{ return false; }
+
+
+    virtual void Undo()override;
+    virtual void Redo()override;
+ /** Clear Undo- (and Changebar-) history */
+    virtual void ClearHistory()override;
+    virtual void Cut()override;
+    virtual void Copy()override;
+    virtual void Paste()override;
+    virtual bool CanUndo() const override;
+    virtual bool CanRedo() const override;
+    virtual bool HasSelection() const override;
+    virtual bool CanPaste() const override;
+    virtual bool CanSelectAll() const override;
+    virtual void SelectAll()override;
+
+//    /** @return True if the editor is read-only, false if not.*/
+//    virtual bool IsReadOnly() const override;
+//    /** @param readonly If true, mark as readonly. If false, mark as read-write.*/
+//    virtual void SetReadOnly(bool /*readonly*/ = true)override;
 
     void Swap();
     void Reload();
