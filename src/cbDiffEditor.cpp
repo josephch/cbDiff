@@ -216,10 +216,12 @@ bool cbDiffEditor::Save()
 
 void cbDiffEditor::updateTitle()
 {
-    SetTitle(_T("Diff: ") +
-             (m_diffctrl->LeftModified() ? _("*") : _("")) + wxFileNameFromPath(m_fromfile) +
-             _T(" ") +
-             (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_tofile));
+    //SetTitle(...) calls Manager::Get()->GetEditorManager() which can fail during shutdown
+    if(!Manager::Get()->IsAppShuttingDown())
+        SetTitle(_T("Diff: ") +
+                 (m_diffctrl->LeftModified() ? _("*") : _("")) + wxFileNameFromPath(m_fromfile) +
+                 _T(" ") +
+                 (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_tofile));
 }
 
 
