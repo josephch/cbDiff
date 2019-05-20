@@ -151,12 +151,21 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     TCLeft->AnnotationClearAll();
     for(auto itr = left_removed.begin() ; itr != left_removed.end() ; ++itr)
     {
-        long line = itr->first;
-        unsigned int len = itr->second;
-        for(unsigned int k = 0 ; k < len ; ++k)
+        long line_removed = itr->first;
+        unsigned int removed = itr->second;
+        for(unsigned int k = 0 ; k < removed ; ++k)
         {
-            TCLeft->MarkerAdd(line+k, MINUS_MARKER);
-            TCLeft->MarkerAdd(line+k, RED_BKG_MARKER);
+            TCLeft->MarkerAdd(line_removed+k, MINUS_MARKER);
+            TCLeft->MarkerAdd(line_removed+k, RED_BKG_MARKER);
+        }
+        auto it = left_empty.find(line_removed);
+        if(it != left_empty.end())
+        {
+            long line_empty = line_removed + removed;
+            unsigned int empty = it->second - removed;
+            wxString annotationStr('\n', empty-1);
+            TCLeft->AnnotationSetText(line_empty-1, annotationStr);
+            left_empty.erase(it);
         }
     }
     for(auto itr = left_empty.begin(); itr != left_empty.end() ; ++itr )
@@ -177,12 +186,21 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     TCRight->AnnotationClearAll();
     for(auto itr = right_added.begin() ; itr != right_added.end() ; ++itr)
     {
-        long line = itr->first;
-        unsigned int len = itr->second;
-        for(unsigned int k = 0 ; k < len ; ++k)
+        long line_added = itr->first;
+        unsigned int added = itr->second;
+        for(unsigned int k = 0 ; k < added ; ++k)
         {
-            TCRight->MarkerAdd(line+k, PLUS_MARKER);
-            TCRight->MarkerAdd(line+k, GREEN_BKG_MARKER);
+            TCRight->MarkerAdd(line_added+k, PLUS_MARKER);
+            TCRight->MarkerAdd(line_added+k, GREEN_BKG_MARKER);
+        }
+        auto it = right_empty.find(line_added);
+        if(it != right_empty.end())
+        {
+            long line_empty = line_added + added;
+            unsigned int empty = it->second - added;
+            wxString annotationStr('\n', empty-1);
+            TCRight->AnnotationSetText(line_empty-1, annotationStr);
+            right_empty.erase(it);
         }
     }
     for(auto itr = right_empty.begin(); itr != right_empty.end() ; ++itr )

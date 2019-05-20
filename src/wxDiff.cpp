@@ -159,9 +159,9 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
                 }
 
                 if(added > removed)
-                    m_left_empty_lines[block_start_left+removed] = added - removed;
+                    m_left_empty_lines[block_start_left] = added;
                 if(removed > added)
-                    m_right_empty_lines[block_start_right+added] = removed - added;
+                    m_right_empty_lines[block_start_right] = removed;
                 added = 0;
                 removed = 0;
                 ++start_left;
