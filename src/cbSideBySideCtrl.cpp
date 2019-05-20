@@ -145,6 +145,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     leftFilename_ = diff.GetFromFilename();
     rightFilename_ = diff.GetToFilename();
 
+    linesLeftWithDifferences_.clear();
     TCLeft->SetReadOnly(false);
     TCLeft->ClearAll();
     TCLeft->LoadFile(diff.GetFromFilename());
@@ -167,6 +168,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
             TCLeft->AnnotationSetText(line_empty-1, annotationStr);
             left_empty.erase(it);
         }
+        linesLeftWithDifferences_.push_back(line_removed);
     }
     for(auto itr = left_empty.begin(); itr != left_empty.end() ; ++itr )
     {
@@ -174,12 +176,15 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         unsigned int len = itr->second;
         wxString annotationStr('\n', len-1);
         TCLeft->AnnotationSetText(line-1, annotationStr);
+        auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), line);
+        linesLeftWithDifferences_.insert(i, line);
     }
     if(leftReadOnly_)
         TCLeft->SetReadOnly(true);
     TCLeft->SetMarginType(0, wxSCI_MARGIN_NUMBER);
     setLineNumberMarginWidth(TCLeft, lineNumbersWidthLeft);
 
+    linesRightWithDifferences_.clear();
     TCRight->SetReadOnly(false);
     TCRight->ClearAll();
     TCRight->LoadFile(diff.GetToFilename());
@@ -202,6 +207,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
             TCRight->AnnotationSetText(line_empty-1, annotationStr);
             right_empty.erase(it);
         }
+        linesRightWithDifferences_.push_back(line_added);
     }
     for(auto itr = right_empty.begin(); itr != right_empty.end() ; ++itr )
     {
@@ -209,6 +215,8 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         unsigned int len = itr->second;
         wxString annotationStr('\n', len-1);
         TCRight->AnnotationSetText(line-1, annotationStr);
+        auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), line);
+        linesRightWithDifferences_.insert(i, line);
     }
     if(rightReadOnly_)
         TCRight->SetReadOnly(true);
@@ -536,5 +544,108 @@ void cbSideBySideCtrl::SelectAll()
 
     if(TCRight->HasFocus())
         TCRight->SelectAll();
+}
+
+void cbSideBySideCtrl::NextDifference()
+{
+    if(TCLeft->GetSCIFocus())
+    {
+        if(linesLeftWithDifferences_.empty())
+            return;
+
+        auto i = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+
+        if(i == linesLeftWithDifferences_.end())
+            return;
+
+        TCLeft->GotoLine(*i);
+    }
+    else if(TCRight->GetSCIFocus())
+    {
+        if(linesRightWithDifferences_.empty())
+            return;
+
+        auto i = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+
+        if(i == linesRightWithDifferences_.end())
+            return;
+
+        TCRight->GotoLine(*i);
+    }
+}
+
+void cbSideBySideCtrl::PrevDifference()
+{
+    if(TCLeft->GetSCIFocus())
+    {
+        if(linesLeftWithDifferences_.empty())
+            return;
+
+        auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+
+        if(i == linesLeftWithDifferences_.begin())
+            return;
+
+        TCLeft->GotoLine(*(--i));
+    }
+    else if(TCRight->GetSCIFocus())
+    {
+        if(linesRightWithDifferences_.empty())
+            return;
+
+        auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+
+        if(i == linesRightWithDifferences_.begin())
+            return;
+
+        TCRight->GotoLine(*(--i));
+    }
+}
+
+bool cbSideBySideCtrl::CanGotoNextDiff()
+{
+    if(TCLeft->GetSCIFocus())
+    {
+        if(linesLeftWithDifferences_.empty())
+            return false;
+
+        auto i = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+
+        return i != linesLeftWithDifferences_.end();
+    }
+    else if(TCRight->GetSCIFocus())
+    {
+        if(linesRightWithDifferences_.empty())
+            return false;
+
+        auto i = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+
+        return i != linesRightWithDifferences_.end();
+    }
+    return false;
+}
+
+bool cbSideBySideCtrl::CanGotoPrevDiff()
+{
+
+    if(TCLeft->GetSCIFocus())
+    {
+        if(linesLeftWithDifferences_.empty())
+            return false;
+
+        auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+
+        return i != linesLeftWithDifferences_.begin();
+    }
+    else if(TCRight->GetSCIFocus())
+    {
+        if(linesRightWithDifferences_.empty())
+            return false;
+
+        auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+
+        return i != linesRightWithDifferences_.begin();
+    }
+    return false;
 }
 

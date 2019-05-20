@@ -15,6 +15,11 @@ public:
     virtual void ShowDiff(wxDiff diff) override;
     void Synchronize();
 
+    virtual void NextDifference()override;
+    virtual void PrevDifference()override;
+    virtual bool CanGotoNextDiff()override;
+    virtual bool CanGotoPrevDiff()override;
+
     virtual bool GetModified() const override;
     virtual bool QueryClose() override;
     virtual bool Save() override;
@@ -47,6 +52,8 @@ private:
     wxScrollBar *VScrollBar;
     wxScrollBar *HScrollBar;
 
+    std::vector<long> linesRightWithDifferences_;
+    std::vector<long> linesLeftWithDifferences_;
     int lineNumbersWidthLeft;
     int lineNumbersWidthRight;
 

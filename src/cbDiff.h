@@ -36,7 +36,10 @@ class cbDiff : public cbPlugin
         void OnContextDiffFiles(wxCommandEvent &event);
         void OnMenuSaveAsUnifiedDiff(wxCommandEvent &event);
         void OnUpdateUiSaveAsUnifiedDiff(wxUpdateUIEvent &event);
-
+        void OnNextDifference(wxCommandEvent &event);
+        void OnPrevDifference(wxCommandEvent &event);
+        void OnUpdateNextDifference(wxUpdateUIEvent &event);
+        void OnUpdatePrevDifference(wxUpdateUIEvent &event);
         void OnAppDoneStartup(CodeBlocksEvent &event);
         void OnAppCmdLine(CodeBlocksEvent &event);
         void EvalCmdLine();

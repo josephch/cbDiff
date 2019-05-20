@@ -22,6 +22,8 @@ namespace
     const int ID_MENU_DIFF_FILES        = wxNewId();
     const int ID_CONTEXT_DIFF_TWO_FILES = wxNewId();
     const int ID_MENU_SAVE_UNIFIED_DIFF = wxNewId();
+    const int ID_NEXT_DIFFERENCE  = wxNewId();
+    const int ID_PREV_DIFFERENCE  = wxNewId();
 }
 
 /// Function for other plugins
@@ -36,6 +38,10 @@ BEGIN_EVENT_TABLE(cbDiff, cbPlugin)
     EVT_MENU        (ID_CONTEXT_DIFF_TWO_FILES, cbDiff::OnContextDiffFiles)
     EVT_MENU        (ID_MENU_SAVE_UNIFIED_DIFF, cbDiff::OnMenuSaveAsUnifiedDiff)
     EVT_UPDATE_UI   (ID_MENU_SAVE_UNIFIED_DIFF, cbDiff::OnUpdateUiSaveAsUnifiedDiff)
+    EVT_MENU        (ID_NEXT_DIFFERENCE,        cbDiff::OnNextDifference)
+    EVT_MENU        (ID_PREV_DIFFERENCE,        cbDiff::OnPrevDifference)
+    EVT_UPDATE_UI   (ID_NEXT_DIFFERENCE,        cbDiff::OnUpdateNextDifference)
+    EVT_UPDATE_UI   (ID_PREV_DIFFERENCE,        cbDiff::OnUpdatePrevDifference)
 END_EVENT_TABLE()
 
 // constructor
@@ -115,12 +121,16 @@ void cbDiff::BuildMenu(wxMenuBar *menuBar)
             fileMenu->InsertSeparator(pos + 1);
             fileMenu->Insert(pos + 2, ID_MENU_DIFF_FILES, _("Diff files..."), _("Shows the differences between two files"));
             fileMenu->Insert(pos + 3, ID_MENU_SAVE_UNIFIED_DIFF, _("Save as unified diff file"), _("Saves the current diff as unified diff file"));
+            fileMenu->Insert(pos + 4, ID_NEXT_DIFFERENCE, _("Next Difference"),     _("Goto next difference"));
+            fileMenu->Insert(pos + 5, ID_PREV_DIFFERENCE, _("Previous Difference"), _("Goto previous difference"));
             return;
         }
     }
     fileMenu->AppendSeparator();
     fileMenu->Append(ID_MENU_DIFF_FILES,        _("Diff files..."), _("Shows the differences between two files"));
     fileMenu->Append(ID_MENU_SAVE_UNIFIED_DIFF, _("Save as unified diff file"), _("Saves the current diff as unified diff file"));
+    fileMenu->Append(ID_NEXT_DIFFERENCE, _("Next Difference"),     _("Goto next difference"));
+    fileMenu->Append(ID_PREV_DIFFERENCE, _("Previous Difference"), _("Goto previous difference"));
 }
 
 void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTreeData *data)
@@ -214,6 +224,52 @@ void cbDiff::OnUpdateUiSaveAsUnifiedDiff(wxUpdateUIEvent &event)
 
     cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(edMan->GetActiveEditor());
     event.Enable(ed != nullptr);
+}
+
+void cbDiff::OnNextDifference(wxCommandEvent& event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->NextDifference();
+    }
+}
+
+void cbDiff::OnPrevDifference(wxCommandEvent& event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->PrevDifference();
+    }
+}
+
+void cbDiff::OnUpdateNextDifference(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanGotoNextDiff();
+    }
+    event.Enable(enable);
+}
+
+void cbDiff::OnUpdatePrevDifference(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanGotoPrevDiff();
+    }
+    event.Enable(enable);
 }
 
 void cbDiff::EvalCmdLine()

@@ -224,7 +224,6 @@ void cbDiffEditor::updateTitle()
                  (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_tofile));
 }
 
-
 void cbDiffEditor::Undo()                      {m_diffctrl->Undo();}
 void cbDiffEditor::Redo()                      {m_diffctrl->Redo();}
 void cbDiffEditor::ClearHistory()              {m_diffctrl->ClearHistory();}
@@ -237,6 +236,26 @@ bool cbDiffEditor::HasSelection() const {return m_diffctrl->HasSelection();}
 bool cbDiffEditor::CanPaste() const     {return m_diffctrl->CanPaste();}
 bool cbDiffEditor::CanSelectAll() const {return m_diffctrl->CanSelectAll();}
 void cbDiffEditor::SelectAll()                 {m_diffctrl->SelectAll();}
+
+void cbDiffEditor::NextDifference()
+{
+    m_diffctrl->NextDifference();
+}
+
+void cbDiffEditor::PrevDifference()
+{
+    m_diffctrl->PrevDifference();
+}
+
+bool cbDiffEditor::CanGotoNextDiff()
+{
+    return m_diffctrl->CanGotoNextDiff();
+}
+
+bool cbDiffEditor::CanGotoPrevDiff()
+{
+    return m_diffctrl->CanGotoPrevDiff();
+}
 
 //void EditorManager::MarkReadOnly(int page, bool readOnly)
 //{

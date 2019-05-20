@@ -13,6 +13,11 @@ public:
     virtual void Init(cbDiffColors colset, bool, bool) override;
     virtual void ShowDiff(wxDiff diff) override;
 
+    virtual void NextDifference()override{}
+    virtual void PrevDifference()override{}
+    virtual bool CanGotoNextDiff()override{return false;}
+    virtual bool CanGotoPrevDiff()override{return false;}
+
     virtual bool GetModified() const override{return false;}
     virtual bool QueryClose() override{return true;}
     virtual bool Save() override{return true;}

@@ -16,6 +16,11 @@ public:
     virtual bool QueryClose() override;
     virtual bool Save() override;
 
+    virtual void NextDifference()override;
+    virtual void PrevDifference()override;
+    virtual bool CanGotoNextDiff()override;
+    virtual bool CanGotoPrevDiff()override;
+
     virtual void Undo()override;
     virtual void Redo()override;
     virtual void ClearHistory()override;/** Clear Undo- (and Changebar-) history */
@@ -32,6 +37,7 @@ protected:
     virtual bool LeftModified() override{return false;}
     virtual bool RightModified() override;
 private:
+    std::vector<long> linesWithDifferences_;
     void OnEditorChange(wxScintillaEvent &event);
     cbStyledTextCtrl *m_txtctrl;
     int lineNumbersWidthRight;

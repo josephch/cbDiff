@@ -69,6 +69,12 @@ public:
     int GetMode();
     void SetMode(int mode);
 
+    void NextDifference();
+    void PrevDifference();
+
+    bool CanGotoNextDiff();
+    bool CanGotoPrevDiff();
+
     enum
     {
         DEFAULT = -1,
