@@ -80,10 +80,16 @@ cbSideBySideCtrl::cbSideBySideCtrl(cbDiffEditor *parent):
 cbSideBySideCtrl::~cbSideBySideCtrl()
 {
     wxDELETE(m_timer);
+
+    Disconnect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 }
 
 void cbSideBySideCtrl::Init(cbDiffColors colset, bool leftReadOnly, bool rightReadOnly)
 {
+    Disconnect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+
     leftReadOnly_ = leftReadOnly;
     rightReadOnly_ = rightReadOnly;
     const wxColor marbkg = TCLeft->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
@@ -110,7 +116,6 @@ void cbSideBySideCtrl::Init(cbDiffColors colset, bool leftReadOnly, bool rightRe
     const auto lang = colset.m_hlang;
     const bool isC = lang == "C/C++";
     m_theme->Apply(m_theme->GetHighlightLanguage(lang), TCLeft, isC, true);
-    Connect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 
     cbEditor::ApplyStyles(TCRight);
     TCRight->SetMarginWidth(1, 16);
@@ -132,11 +137,13 @@ void cbSideBySideCtrl::Init(cbDiffColors colset, bool leftReadOnly, bool rightRe
         TCRight->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
     }
     m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCRight, isC, true);
-    Connect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 }
 
 void cbSideBySideCtrl::ShowDiff(wxDiff diff)
 {
+    Disconnect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+
     std::map<long, int> right_added  = diff.GetAddedLines();
     std::map<long, int> right_empty  = diff.GetRightEmptyLines();
     std::map<long, int> left_empty   = diff.GetLeftEmptyLines();
@@ -222,6 +229,9 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         TCRight->SetReadOnly(true);
     TCRight->SetMarginType(0, wxSCI_MARGIN_NUMBER);
     setLineNumberMarginWidth(TCRight, lineNumbersWidthRight);
+
+    Connect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Connect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 }
 
 void cbSideBySideCtrl::Synchronize()

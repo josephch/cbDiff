@@ -85,6 +85,7 @@ public:
 
     void updateTitle();
 private:
+    void MarkReadOnly();
     void InitDiffCtrl(int mode, bool leftReadOnly, bool rightReadOnly);
     void ShowDiff();        /// Makes the diff and shows it
 
@@ -104,6 +105,9 @@ private:
     cbDiffCtrl *m_diffctrl;
     bool leftReadOnly_;
     bool rightReadOnly_;
+    wxBitmap readonlyReadonlyBitmap;
+    wxBitmap readonlyReadwriteBitmap;
+    wxBitmap readwriteReadonlyBitmap;
 
     /// static Members (thx to Bartlomiej Swiecki for hexedit!)
     typedef std::set< EditorBase* > EditorsSet;

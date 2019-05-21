@@ -8,8 +8,6 @@
 #include <cbeditor.h>
 #include <wx/textfile.h>
 
-#define SCI_ANNOTATIONSETSTYLES 2544
-
 cbTableCtrl::cbTableCtrl(cbDiffEditor *parent):
     cbDiffCtrl(parent),
     lineNumbersWidthRight(0)
@@ -20,8 +18,15 @@ cbTableCtrl::cbTableCtrl(cbDiffEditor *parent):
     SetSizer(BoxSizer);
 }
 
+cbTableCtrl::~cbTableCtrl()
+{
+    Disconnect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
+}
+
 void cbTableCtrl::Init(cbDiffColors colset, bool, bool rightReadOnly)
 {
+    Disconnect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
+
     leftReadOnly_ = true;
     rightReadOnly_ = rightReadOnly;
 
@@ -50,16 +55,18 @@ void cbTableCtrl::Init(cbDiffColors colset, bool, bool rightReadOnly)
     const auto lang = colset.m_hlang;
     const bool isC = lang == "C/C++";
     m_theme->Apply(m_theme->GetHighlightLanguage(lang), m_txtctrl, isC, true);
-    Connect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
 }
 
 void cbTableCtrl::ShowDiff(wxDiff diff)
 {
+    Disconnect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
+
     std::map<long, int> right_added  = diff.GetAddedLines();
     std::map<long, int> left_removed = diff.GetRemovedLines();
     std::map<long, long> line_pos    = diff.GetLinePositions();
 
     rightFilename_ = diff.GetToFilename();
+    leftFilename_ = diff.GetFromFilename();
 
     m_txtctrl->SetReadOnly(false);
     m_txtctrl->ClearAll();
@@ -111,6 +118,8 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
     if(rightReadOnly_)
         m_txtctrl->SetReadOnly(true);
     setLineNumberMarginWidth();
+
+    Connect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
 }
 
 bool cbTableCtrl::GetModified() const

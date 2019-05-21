@@ -5,6 +5,7 @@
 #include <configmanager.h>
 #include <logmanager.h>
 #include <cbeditor.h>
+#include <cbauibook.h>
 
 #include "wxDiff.h"
 
@@ -14,6 +15,10 @@
 #include "cbTableCtrl.h"
 #include "cbUnifiedCtrl.h"
 #include "cbSideBySideCtrl.h"
+
+#include "../images/readonly_readonly.xpm"
+#include "../images/readonly_readwrite.xpm"
+#include "../images/readwrite_readonly.xpm"
 
 
 
@@ -38,7 +43,10 @@ END_EVENT_TABLE()
 
 cbDiffEditor::cbDiffEditor(const wxString &firstfile, const wxString &secondfile, int viewmode, bool leftReadOnly, bool rightReadOnly):
     EditorBase((wxWindow*)Manager::Get()->GetEditorManager()->GetNotebook(), firstfile + secondfile),
-    m_diffctrl(0)
+    m_diffctrl(0),
+    readonlyReadonlyBitmap(readonly_readonly),
+    readonlyReadwriteBitmap(readonly_readwrite),
+    readwriteReadonlyBitmap(readwrite_readonly)
 {
     m_fromfile = firstfile;
     m_tofile = secondfile;
@@ -78,9 +86,8 @@ cbDiffEditor::cbDiffEditor(const wxString &firstfile, const wxString &secondfile
 
     m_AllEditors.insert(this);
 
-    ShowDiff();
+    Reload();
 
-    m_diffctrl->Layout();
     BoxSizer->Layout();
     Layout();
 }
@@ -103,6 +110,7 @@ void cbDiffEditor::ShowDiff()
     m_diff = diff.GetDiff();
 
     m_diffctrl->ShowDiff(diff);
+    m_diffctrl->Layout();
 }
 
 bool cbDiffEditor::SaveAsUnifiedDiff()
@@ -222,6 +230,7 @@ void cbDiffEditor::updateTitle()
                  (m_diffctrl->LeftModified() ? _("*") : _("")) + wxFileNameFromPath(m_fromfile) +
                  _T(" ") +
                  (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_tofile));
+    MarkReadOnly();
 }
 
 void cbDiffEditor::Undo()                      {m_diffctrl->Undo();}
@@ -257,12 +266,29 @@ bool cbDiffEditor::CanGotoPrevDiff()
     return m_diffctrl->CanGotoPrevDiff();
 }
 
-//void EditorManager::MarkReadOnly(int page, bool readOnly)
-//{
-//    if (page > -1)
-//    {
-//        wxBitmap bmp = readOnly ? cbLoadBitmap(ConfigManager::GetDataFolder() + _T("/images/") + _T("readonly.png")) : wxNullBitmap;
-//        if (m_pNotebook)
-//            m_pNotebook->SetPageBitmap(page, bmp);
-//    }
-//}
+void cbDiffEditor::MarkReadOnly()
+{
+    if(Manager::Get()->IsAppShuttingDown())
+        return;
+
+    EditorManager *edMan = Manager::Get()->GetEditorManager();
+    if(!edMan)
+        return;
+
+    cbAuiNotebook *notebook = edMan->GetNotebook();
+    if(!notebook)
+        return;
+
+    int pageIndex = notebook->GetPageIndex(this);
+    if (pageIndex > -1)
+    {
+        if (leftReadOnly_ && rightReadOnly_)
+            notebook->SetPageBitmap(pageIndex, readonlyReadonlyBitmap);
+        else if (leftReadOnly_)
+            notebook->SetPageBitmap(pageIndex, readonlyReadwriteBitmap);
+        else if (rightReadOnly_)
+            notebook->SetPageBitmap(pageIndex, readwriteReadonlyBitmap);
+        else
+            notebook->SetPageBitmap(pageIndex, wxNullBitmap);
+    }
+}
