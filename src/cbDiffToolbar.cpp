@@ -19,6 +19,11 @@
 BEGIN_EVENT_TABLE(cbDiffToolbar, wxEvtHandler)
 END_EVENT_TABLE()
 
+namespace {
+    static const int ID_BBRELOAD = wxNewId();
+    static const int ID_BBSWAP   = wxNewId();
+}
+
 cbDiffToolbar::cbDiffToolbar(cbDiffEditor *parent, int viewmode):
     wxPanel(parent),
     m_parent(parent)

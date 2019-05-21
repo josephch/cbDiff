@@ -32,22 +32,16 @@ public:
     virtual ~cbDiffToolbar(){}
 protected:
 private:
-    /// IDs
-    enum
-    {
-        ID_BBRELOAD = 1545,
-        ID_BBSWAP
-    };
     cbDiffEditor *m_parent;
 #if isUseWxAuiToolbar
-    wxAuiToolBar* toolbar;
+    wxAuiToolBar *toolbar;
 #else
     #if ( wxCHECK_VERSION(3, 0, 0) || isUseWxToolbar )
     wxToolBar *toolbar;
     #else
-    wxBitmapButton* BBTable;
-    wxBitmapButton* BBUnified;
-    wxBitmapButton* BBSideBySide;
+    wxBitmapButton *BBTable;
+    wxBitmapButton *BBUnified;
+    wxBitmapButton *BBSideBySide;
     #endif
 #endif
 
