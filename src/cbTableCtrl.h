@@ -10,7 +10,7 @@ class cbTableCtrl : public cbDiffCtrl
 public:
     cbTableCtrl(cbDiffEditor* parent);
     virtual ~cbTableCtrl();
-    virtual void Init(cbDiffColors colset, bool, bool rightReadOnly) override;
+    virtual void Init(cbDiffColors colset) override;
     virtual void ShowDiff(wxDiff diff) override;
     virtual bool GetModified() const override;
     virtual bool QueryClose() override;

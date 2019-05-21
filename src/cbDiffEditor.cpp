@@ -16,15 +16,8 @@
 #include "cbUnifiedCtrl.h"
 #include "cbSideBySideCtrl.h"
 
-#include "../images/readonly_readonly.xpm"
-#include "../images/readonly_readwrite.xpm"
-#include "../images/readwrite_readonly.xpm"
-
-
-
 //! static Editor set
 cbDiffEditor::EditorsSet cbDiffEditor::m_AllEditors;
-
 
 namespace {
 
@@ -44,13 +37,11 @@ END_EVENT_TABLE()
 cbDiffEditor::cbDiffEditor(const wxString &firstfile, const wxString &secondfile, int viewmode, bool leftReadOnly, bool rightReadOnly):
     EditorBase((wxWindow*)Manager::Get()->GetEditorManager()->GetNotebook(), firstfile + secondfile),
     m_diffctrl(0),
-    readonlyReadonlyBitmap(readonly_readonly),
-    readonlyReadwriteBitmap(readonly_readwrite),
-    readwriteReadonlyBitmap(readwrite_readonly)
+    m_leftFile(firstfile),
+    m_rightFile(secondfile),
+    leftReadOnly_(leftReadOnly),
+    rightReadOnly_(rightReadOnly)
 {
-    m_fromfile = firstfile;
-    m_tofile = secondfile;
-
     m_colorset.m_addedlines = wxColour(0,255,0,50);
     m_colorset.m_removedlines = wxColour(255,0,0,50);
     m_colorset.m_caretlinetype = 0;
@@ -82,7 +73,7 @@ cbDiffEditor::cbDiffEditor(const wxString &firstfile, const wxString &secondfile
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxVERTICAL);
     BoxSizer->Add(difftoolbar, 0, wxALL|wxEXPAND, 0);
     SetSizer(BoxSizer);
-    InitDiffCtrl(viewmode, leftReadOnly, rightReadOnly);
+    InitDiffCtrl(viewmode);
 
     m_AllEditors.insert(this);
 
@@ -100,7 +91,7 @@ cbDiffEditor::~cbDiffEditor()
 void cbDiffEditor::ShowDiff()
 {
     /* Diff creation */
-    wxDiff diff(m_fromfile, m_tofile);
+    wxDiff diff(m_leftFile, m_rightFile, leftReadOnly_, rightReadOnly_);
     updateTitle();
 
     wxString different = diff.IsDifferent();
@@ -147,15 +138,18 @@ bool cbDiffEditor::SaveAsUnifiedDiff()
 
 void cbDiffEditor::Swap()
 {
-    wxString temp = m_fromfile;
-    m_fromfile = m_tofile;
-    m_tofile = temp;
+    wxString temp = m_leftFile;
+    m_leftFile = m_rightFile;
+    m_rightFile = temp;
+    bool tmp_ro = leftReadOnly_;
+    leftReadOnly_ = rightReadOnly_;
+    rightReadOnly_ = tmp_ro;
     Reload();
 }
 
 void cbDiffEditor::Reload()
 {
-    if(!m_fromfile.IsEmpty() && !m_tofile.IsEmpty())
+    if(!m_leftFile.IsEmpty() && !m_rightFile.IsEmpty())
         ShowDiff();
 }
 
@@ -164,10 +158,8 @@ int cbDiffEditor::GetMode()
     return m_viewingmode;
 }
 
-void cbDiffEditor::InitDiffCtrl(int mode, bool leftReadOnly, bool rightReadOnly)
+void cbDiffEditor::InitDiffCtrl(int mode)
 {
-    leftReadOnly_ = leftReadOnly;
-    rightReadOnly_ = rightReadOnly;
     assert(m_diffctrl == nullptr);
 
     if(mode == TABLE)
@@ -178,7 +170,7 @@ void cbDiffEditor::InitDiffCtrl(int mode, bool leftReadOnly, bool rightReadOnly)
         m_diffctrl = new cbSideBySideCtrl(this);
 
     GetSizer()->Add(m_diffctrl, 1, wxEXPAND, 5);
-    m_diffctrl->Init(m_colorset, leftReadOnly_, rightReadOnly_);
+    m_diffctrl->Init(m_colorset);
     m_viewingmode = mode;
 
     GetSizer()->Layout();
@@ -193,7 +185,7 @@ void cbDiffEditor::SetMode(int mode)
         GetSizer()->Detach(m_diffctrl);
         wxDELETE(m_diffctrl);
     }
-    InitDiffCtrl(mode, leftReadOnly_, rightReadOnly_);
+    InitDiffCtrl(mode);
 }
 
 void cbDiffEditor::CloseAllEditors()
@@ -227,10 +219,10 @@ void cbDiffEditor::updateTitle()
     //SetTitle(...) calls Manager::Get()->GetEditorManager() which can fail during shutdown
     if(!Manager::Get()->IsAppShuttingDown())
         SetTitle(_T("Diff: ") +
-                 (m_diffctrl->LeftModified() ? _("*") : _("")) + wxFileNameFromPath(m_fromfile) +
+                 (m_diffctrl->LeftModified() ? _("*") : _("")) + wxFileNameFromPath(m_leftFile) +
                  _T(" ") +
-                 (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_tofile));
-    MarkReadOnly();
+                 (m_diffctrl->RightModified() ? _("*") : _("")) + wxFileNameFromPath(m_rightFile));
+
 }
 
 void cbDiffEditor::Undo()                      {m_diffctrl->Undo();}
@@ -266,29 +258,3 @@ bool cbDiffEditor::CanGotoPrevDiff()
     return m_diffctrl->CanGotoPrevDiff();
 }
 
-void cbDiffEditor::MarkReadOnly()
-{
-    if(Manager::Get()->IsAppShuttingDown())
-        return;
-
-    EditorManager *edMan = Manager::Get()->GetEditorManager();
-    if(!edMan)
-        return;
-
-    cbAuiNotebook *notebook = edMan->GetNotebook();
-    if(!notebook)
-        return;
-
-    int pageIndex = notebook->GetPageIndex(this);
-    if (pageIndex > -1)
-    {
-        if (leftReadOnly_ && rightReadOnly_)
-            notebook->SetPageBitmap(pageIndex, readonlyReadonlyBitmap);
-        else if (leftReadOnly_)
-            notebook->SetPageBitmap(pageIndex, readonlyReadwriteBitmap);
-        else if (rightReadOnly_)
-            notebook->SetPageBitmap(pageIndex, readwriteReadonlyBitmap);
-        else
-            notebook->SetPageBitmap(pageIndex, wxNullBitmap);
-    }
-}

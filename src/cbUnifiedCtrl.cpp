@@ -16,7 +16,7 @@ cbUnifiedCtrl::cbUnifiedCtrl(cbDiffEditor* parent):
     SetSizer(BoxSizer);
 }
 
-void cbUnifiedCtrl::Init(cbDiffColors colset, bool, bool)
+void cbUnifiedCtrl::Init(cbDiffColors colset)
 {
     leftReadOnly_ = true;
     rightReadOnly_ = true;
@@ -57,3 +57,4 @@ void cbUnifiedCtrl::SelectAll()
 {
     m_txtctrl->SelectAll();
 }
+

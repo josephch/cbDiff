@@ -86,28 +86,22 @@ public:
     void updateTitle();
 private:
     void MarkReadOnly();
-    void InitDiffCtrl(int mode, bool leftReadOnly, bool rightReadOnly);
+    void InitDiffCtrl(int mode);
     void ShowDiff();        /// Makes the diff and shows it
 
-    /// Diff properties
-    wxString m_fromfile;    /// File to diff from
-    wxString m_tofile;      /// File to diff to
-    int m_viewingmode;      /// the diff viewingmode currently Table, Unified and SidebySide
+    cbDiffCtrl *m_diffctrl;
+
+    wxString m_leftFile;
+    wxString m_rightFile;
+    int m_viewingmode;      /// the diff viewingmode currently Table, Unified and SideBySide
     wxString m_diff;        /// the unified diff file, used to save
 
-    /// graphical properties
     cbDiffColors m_colorset;
 
-    /// Events
     void OnContextMenu(wxContextMenuEvent& event){} /// Just override it for now
 
-    /// Controls
-    cbDiffCtrl *m_diffctrl;
     bool leftReadOnly_;
     bool rightReadOnly_;
-    wxBitmap readonlyReadonlyBitmap;
-    wxBitmap readonlyReadwriteBitmap;
-    wxBitmap readwriteReadonlyBitmap;
 
     /// static Members (thx to Bartlomiej Swiecki for hexedit!)
     typedef std::set< EditorBase* > EditorsSet;

@@ -17,14 +17,16 @@ using std::string;
 using std::ifstream;
 using std::vector;
 
-wxDiff::wxDiff(wxString filename1, wxString filename2):
-    m_filename1(filename1),
-    m_filename2(filename2)
+wxDiff::wxDiff(wxString leftFilename, wxString rightFilename, bool leftReadOnly, bool rightReadOnly):
+    m_leftFilename(leftFilename),
+    m_rightFilename(rightFilename),
+    m_leftReadOnly_(leftReadOnly),
+    m_rightReadOnly_(rightReadOnly)
 {
     typedef string elem;
     typedef pair<elem, elemInfo> sesElem;
-    ifstream Aifs(filename1.mbc_str());
-    ifstream Bifs(filename2.mbc_str());
+    ifstream Aifs(leftFilename.mbc_str());
+    ifstream Bifs(rightFilename.mbc_str());
     elem buf;
     vector<elem> ALines, BLines;
 
@@ -73,13 +75,13 @@ wxDiff::wxDiff(wxString filename1, wxString filename2):
 
 wxString wxDiff::IsDifferent()
 {
-    wxFileName filename(m_filename1);
+    wxFileName filename(m_leftFilename);
     wxDateTime modifyTime;
     wxDateTime modifyTime2;
     filename.GetTimes(0, &modifyTime, 0);
-    filename.Assign(m_filename2);
+    filename.Assign(m_rightFilename);
     filename.GetTimes(0, &modifyTime2, 0);
-    if(modifyTime == modifyTime2 && m_filename1 == m_filename2)
+    if(modifyTime == modifyTime2 && m_leftFilename == m_rightFilename)
         return _("Same file => Same content!");
     if(m_added_lines.empty() && m_removed_lines.empty())
         return _("Different files, but same content!");
@@ -89,15 +91,15 @@ wxString wxDiff::IsDifferent()
 wxString wxDiff::CreateHeader()
 {
     wxString header;
-    wxFileName filename(m_filename1);
+    wxFileName filename(m_leftFilename);
     wxDateTime modifyTime;
     filename.GetTimes(0, &modifyTime, 0);
-    header << _T("--- ") << m_filename1
+    header << _T("--- ") << m_leftFilename
            << _T("\t") << modifyTime.Format(_T("%Y-%m-%d %H:%M:%S %z"))
            << _T("\n");
-    filename.Assign(m_filename2);
+    filename.Assign(m_rightFilename);
     filename.GetTimes(0, &modifyTime, 0);
-    header << _T("+++ ") << m_filename2
+    header << _T("+++ ") << m_rightFilename
            << _T("\t") << modifyTime.Format(_T("%Y-%m-%d %H:%M:%S %z"))
            << _T("\n");
     return header;
@@ -201,12 +203,22 @@ std::map<long, int> wxDiff::GetRemovedLines()
     return m_removed_lines;
 }
 
-wxString wxDiff::GetFromFilename()
+wxString wxDiff::GetLeftFilename()
 {
-    return m_filename1;
+    return m_leftFilename;
 }
 
-wxString wxDiff::GetToFilename()
+wxString wxDiff::GetRightFilename()
 {
-    return m_filename2;
+    return m_rightFilename;
 }
+bool wxDiff::RightReadOnly()const
+{
+    return m_rightReadOnly_;
+}
+
+bool wxDiff::LeftReadOnly()const
+{
+    return m_leftReadOnly_;
+}
+

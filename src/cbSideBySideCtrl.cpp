@@ -85,13 +85,11 @@ cbSideBySideCtrl::~cbSideBySideCtrl()
     Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 }
 
-void cbSideBySideCtrl::Init(cbDiffColors colset, bool leftReadOnly, bool rightReadOnly)
+void cbSideBySideCtrl::Init(cbDiffColors colset)
 {
     Disconnect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
     Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 
-    leftReadOnly_ = leftReadOnly;
-    rightReadOnly_ = rightReadOnly;
     const wxColor marbkg = TCLeft->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
     cbEditor::ApplyStyles(TCLeft);
@@ -149,13 +147,15 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     std::map<long, int> left_empty   = diff.GetLeftEmptyLines();
     std::map<long, int> left_removed = diff.GetRemovedLines();
 
-    leftFilename_ = diff.GetFromFilename();
-    rightFilename_ = diff.GetToFilename();
+    leftFilename_ = diff.GetLeftFilename();
+    rightFilename_ = diff.GetRightFilename();
+    leftReadOnly_ = diff.LeftReadOnly();
+    rightReadOnly_ = diff.RightReadOnly();
 
     linesLeftWithDifferences_.clear();
     TCLeft->SetReadOnly(false);
     TCLeft->ClearAll();
-    TCLeft->LoadFile(diff.GetFromFilename());
+    TCLeft->LoadFile(diff.GetLeftFilename());
     TCLeft->AnnotationClearAll();
     for(auto itr = left_removed.begin() ; itr != left_removed.end() ; ++itr)
     {
@@ -194,7 +194,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     linesRightWithDifferences_.clear();
     TCRight->SetReadOnly(false);
     TCRight->ClearAll();
-    TCRight->LoadFile(diff.GetToFilename());
+    TCRight->LoadFile(diff.GetRightFilename());
     TCRight->AnnotationClearAll();
     for(auto itr = right_added.begin() ; itr != right_added.end() ; ++itr)
     {

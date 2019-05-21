@@ -11,7 +11,7 @@ class cbSideBySideCtrl : public cbDiffCtrl
 public:
     cbSideBySideCtrl(cbDiffEditor *parent);
     virtual ~cbSideBySideCtrl();
-    virtual void Init(cbDiffColors colset, bool leftReadOnly = true, bool rightReadOnly = true) override;
+    virtual void Init(cbDiffColors colset) override;
     virtual void ShowDiff(wxDiff diff) override;
     void Synchronize();
 

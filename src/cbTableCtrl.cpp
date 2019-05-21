@@ -23,12 +23,9 @@ cbTableCtrl::~cbTableCtrl()
     Disconnect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
 }
 
-void cbTableCtrl::Init(cbDiffColors colset, bool, bool rightReadOnly)
+void cbTableCtrl::Init(cbDiffColors colset)
 {
     Disconnect( m_txtctrl->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbTableCtrl::OnEditorChange));
-
-    leftReadOnly_ = true;
-    rightReadOnly_ = rightReadOnly;
 
     linesWithDifferences_.clear();
 
@@ -65,15 +62,17 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
     std::map<long, int> left_removed = diff.GetRemovedLines();
     std::map<long, long> line_pos    = diff.GetLinePositions();
 
-    rightFilename_ = diff.GetToFilename();
-    leftFilename_ = diff.GetFromFilename();
+    rightFilename_ = diff.GetRightFilename();
+    leftFilename_ = diff.GetLeftFilename();
+    leftReadOnly_ = true;
+    rightReadOnly_ = diff.RightReadOnly();
 
     m_txtctrl->SetReadOnly(false);
     m_txtctrl->ClearAll();
-    m_txtctrl->LoadFile(diff.GetToFilename());
+    m_txtctrl->LoadFile(diff.GetRightFilename());
     m_txtctrl->AnnotationClearAll();
     m_txtctrl->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
-    wxTextFile tff(diff.GetFromFilename());
+    wxTextFile tff(diff.GetLeftFilename());
     tff.Open();
 
     for(auto itr = right_added.begin() ; itr != right_added.end() ; ++itr)

@@ -14,7 +14,7 @@ class cbDiffCtrl: public wxPanel
 public:
     cbDiffCtrl(cbDiffEditor *parent);
     virtual ~cbDiffCtrl();
-    virtual void Init(cbDiffColors colset, bool leftReadOnly=true, bool rightReadOnly=true) = 0;
+    virtual void Init(cbDiffColors colset) = 0;
     virtual void ShowDiff(wxDiff diff) = 0;
 
     virtual void NextDifference() = 0;

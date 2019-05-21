@@ -108,6 +108,7 @@
 				<doxyfile_dot />
 				<general />
 			</DoxyBlocks>
+			<fortran_project />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

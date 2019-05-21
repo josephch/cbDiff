@@ -9,7 +9,7 @@
 class wxDiff
 {
 public:
-    wxDiff(wxString filename1, wxString filename2);
+    wxDiff(wxString filename1, wxString filename2, bool leftReadOnly, bool rightReadOnly);
     virtual ~wxDiff(){}
 
     wxString IsDifferent();
@@ -20,14 +20,18 @@ public:
     std::map<long, int> GetLeftEmptyLines();
     std::map<long, int> GetRightEmptyLines();
     std::map<long, long> GetLinePositions();
-    wxString GetFromFilename();
-    wxString GetToFilename();
+    wxString GetLeftFilename();
+    wxString GetRightFilename();
+    bool RightReadOnly()const;
+    bool LeftReadOnly()const;
 private:
     wxString CreateHeader();
     void ParseDiff(std::vector<wxArrayString> diffs);
 
-    wxString m_filename1;
-    wxString m_filename2;
+    wxString m_leftFilename;
+    wxString m_rightFilename;
+    bool m_leftReadOnly_;
+    bool m_rightReadOnly_;
     wxString m_diff;
     wxArrayString m_diff_lines;
     std::map<long, int> m_added_lines;

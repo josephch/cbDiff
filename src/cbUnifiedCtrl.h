@@ -10,7 +10,7 @@ class cbUnifiedCtrl : public cbDiffCtrl
 public:
     cbUnifiedCtrl(cbDiffEditor *parent);
     virtual ~cbUnifiedCtrl(){}
-    virtual void Init(cbDiffColors colset, bool, bool) override;
+    virtual void Init(cbDiffColors colset) override;
     virtual void ShowDiff(wxDiff diff) override;
 
     virtual void NextDifference()override{}
