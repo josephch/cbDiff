@@ -14,7 +14,7 @@ cbTableCtrl::cbTableCtrl(cbDiffEditor *parent):
 {
     wxBoxSizer *BoxSizer = new wxBoxSizer(wxHORIZONTAL);
     m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
-    BoxSizer->Add(m_txtctrl, 1,wxEXPAND, 0);
+    BoxSizer->Add(m_txtctrl, 1, wxEXPAND, 0);
     SetSizer(BoxSizer);
 }
 
@@ -32,7 +32,6 @@ void cbTableCtrl::Init(cbDiffColors colset)
     wxColor marbkg = m_txtctrl->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
     cbEditor::ApplyStyles(m_txtctrl);
-    //cbEditor::ApplyStyles(m_hiddenctrl);
     m_txtctrl->SetMarginType(0, wxSCI_MARGIN_NUMBER);
     m_txtctrl->SetMarginWidth(1, 16);
     m_txtctrl->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
