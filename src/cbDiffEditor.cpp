@@ -9,8 +9,6 @@
 
 #include "wxDiff.h"
 
-#include "cbDiffToolbar.h"
-
 /// diffctrls
 #include "cbTableCtrl.h"
 #include "cbUnifiedCtrl.h"
@@ -18,17 +16,6 @@
 
 //! static Editor set
 cbDiffEditor::EditorsSet cbDiffEditor::m_AllEditors;
-
-namespace {
-
-    /// IDs
-    const long int ID_BBRELOAD          = wxNewId();
-    const long int ID_BBSWAP            = wxNewId();
-    const long int ID_BUTTON_TABLE      = wxNewId();
-    const long int ID_BUTTON_UNIFIED    = wxNewId();
-    const long int ID_BUTTON_SIDEBYSIDE = wxNewId();
-
-};
 
 BEGIN_EVENT_TABLE(cbDiffEditor,EditorBase)
     EVT_CONTEXT_MENU(cbDiffEditor::OnContextMenu)
@@ -68,10 +55,7 @@ cbDiffEditor::cbDiffEditor(const wxString &firstfile, const wxString &secondfile
     if (hl != HL_NONE)
         m_colorset.m_hlang = Manager::Get()->GetEditorManager()->GetColourSet()->GetLanguageName(hl);
 
-    cbDiffToolbar* difftoolbar = new cbDiffToolbar(this, viewmode);
-
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxVERTICAL);
-    BoxSizer->Add(difftoolbar, 0, wxALL|wxEXPAND, 0);
     SetSizer(BoxSizer);
     InitDiffCtrl(viewmode);
 
@@ -248,6 +232,16 @@ void cbDiffEditor::PrevDifference()
     m_diffctrl->PrevDifference();
 }
 
+void cbDiffEditor::FirstDifference()
+{
+    m_diffctrl->FirstDifference();
+}
+
+void cbDiffEditor::LastDifference()
+{
+    m_diffctrl->LastDifference();
+}
+
 bool cbDiffEditor::CanGotoNextDiff()
 {
     return m_diffctrl->CanGotoNextDiff();
@@ -256,5 +250,15 @@ bool cbDiffEditor::CanGotoNextDiff()
 bool cbDiffEditor::CanGotoPrevDiff()
 {
     return m_diffctrl->CanGotoPrevDiff();
+}
+
+bool cbDiffEditor::CanGotoFirstDiff()
+{
+    return m_diffctrl->CanGotoFirstDiff();
+}
+
+bool cbDiffEditor::CanGotoLastDiff()
+{
+    return m_diffctrl->CanGotoLastDiff();
 }
 

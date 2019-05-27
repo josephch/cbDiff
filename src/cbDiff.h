@@ -2,6 +2,7 @@
 #define CBDIFF_H
 
 #include <wx/string.h>
+#include <wx/toolbar.h>
 #include <cbplugin.h>
 
 class cbConfigurationPanel;
@@ -26,7 +27,6 @@ class cbDiff : public cbPlugin
         virtual cbConfigurationPanel *GetProjectConfigurationPanel(wxWindow *parent, cbProject *project) override{ return 0; }
         virtual void BuildMenu(wxMenuBar *menuBar) override;
         virtual void BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTreeData *data = 0) override;
-        virtual bool BuildToolBar(wxToolBar *toolBar) override{ return false; }
 
     protected:
         virtual void OnAttach() override;
@@ -43,6 +43,20 @@ class cbDiff : public cbPlugin
         void OnAppDoneStartup(CodeBlocksEvent &event);
         void OnAppCmdLine(CodeBlocksEvent &event);
         void EvalCmdLine();
+        void OnSwitchView(wxCommandEvent &event);
+        void OnUpdateSwitchView(wxUpdateUIEvent &event);
+        void OnReloadFiles(wxCommandEvent &event);
+        void OnUpdateReloadFiles(wxUpdateUIEvent &event);
+        void OnSwapFiles(wxCommandEvent &event);
+        void OnUpdateSwapFiles(wxUpdateUIEvent &event);
+
+        void OnFirstDifference(wxCommandEvent &event);
+        void OnUpdateFirstDifference(wxUpdateUIEvent &event);
+        void OnLastDifference(wxCommandEvent &event);
+        void OnUpdateLastDifference(wxUpdateUIEvent &event);
+
+
+
         bool m_prevSelectionValid;
         wxString m_prevFileName;
         std::vector<long> MenuIds;
@@ -51,6 +65,8 @@ class cbDiff : public cbPlugin
         };
         FileNames m_names;
 
+        virtual bool BuildToolBar(wxToolBar* toolBar)override;
+        wxToolBar* toolbar_;
     private:
         DECLARE_EVENT_TABLE();
 };

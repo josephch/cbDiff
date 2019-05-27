@@ -8,6 +8,7 @@
 #include <logmanager.h>
 #include <cbeditor.h>
 #include <configmanager.h>
+#include <wx/xrc/xmlres.h>
 
 #include "cbDiffMenu.h"
 #include "cbDiffEditor.h"
@@ -22,8 +23,17 @@ namespace
     const int ID_MENU_DIFF_FILES        = wxNewId();
     const int ID_CONTEXT_DIFF_TWO_FILES = wxNewId();
     const int ID_MENU_SAVE_UNIFIED_DIFF = wxNewId();
-    const int ID_NEXT_DIFFERENCE  = wxNewId();
-    const int ID_PREV_DIFFERENCE  = wxNewId();
+
+    const int ID_NEXT_DIFFERENCE        = XRCID("CB_DIFF_NEXT_DIFFERENCE");
+    const int ID_PREV_DIFFERENCE        = XRCID("CB_DIFF_PREVIOUS_DIFFERENCE");
+    const int ID_FIRST_DIFFERENCE       = XRCID("CB_DIFF_FIRST_DIFFERENCE");
+    const int ID_LAST_DIFFERENCE        = XRCID("CB_DIFF_LAST_DIFFERENCE");
+
+    const int ID_VIEW_TABLE             = XRCID("CB_DIFF_ID_VIEW_TABLE");
+    const int ID_VIEW_UNIFIED           = XRCID("CB_DIFF_ID_VIEW_UNIFIED");
+    const int ID_VIEW_SIDEBYSIDE        = XRCID("CB_DIFF_ID_VIEW_SIDEBYSIDE");
+    const int ID_RELOAD_FILES           = XRCID("CB_DIFF_ID_RELOAD_FILES");
+    const int ID_SWAP_FILES             = XRCID("CB_DIFF_ID_SWAP_FILES");
 }
 
 /// Function for other plugins
@@ -38,10 +48,27 @@ BEGIN_EVENT_TABLE(cbDiff, cbPlugin)
     EVT_MENU        (ID_CONTEXT_DIFF_TWO_FILES, cbDiff::OnContextDiffFiles)
     EVT_MENU        (ID_MENU_SAVE_UNIFIED_DIFF, cbDiff::OnMenuSaveAsUnifiedDiff)
     EVT_UPDATE_UI   (ID_MENU_SAVE_UNIFIED_DIFF, cbDiff::OnUpdateUiSaveAsUnifiedDiff)
+
     EVT_MENU        (ID_NEXT_DIFFERENCE,        cbDiff::OnNextDifference)
-    EVT_MENU        (ID_PREV_DIFFERENCE,        cbDiff::OnPrevDifference)
     EVT_UPDATE_UI   (ID_NEXT_DIFFERENCE,        cbDiff::OnUpdateNextDifference)
+    EVT_MENU        (ID_PREV_DIFFERENCE,        cbDiff::OnPrevDifference)
     EVT_UPDATE_UI   (ID_PREV_DIFFERENCE,        cbDiff::OnUpdatePrevDifference)
+    EVT_MENU        (ID_FIRST_DIFFERENCE,       cbDiff::OnFirstDifference)
+    EVT_UPDATE_UI   (ID_FIRST_DIFFERENCE,       cbDiff::OnUpdateFirstDifference)
+    EVT_MENU        (ID_LAST_DIFFERENCE,        cbDiff::OnLastDifference)
+    EVT_UPDATE_UI   (ID_LAST_DIFFERENCE,        cbDiff::OnUpdateLastDifference)
+
+    EVT_MENU        (ID_VIEW_TABLE,             cbDiff::OnSwitchView)
+    EVT_UPDATE_UI   (ID_VIEW_TABLE,             cbDiff::OnUpdateSwitchView)
+    EVT_MENU        (ID_VIEW_UNIFIED,           cbDiff::OnSwitchView)
+    EVT_UPDATE_UI   (ID_VIEW_UNIFIED,           cbDiff::OnUpdateSwitchView)
+    EVT_MENU        (ID_VIEW_SIDEBYSIDE,        cbDiff::OnSwitchView)
+    EVT_UPDATE_UI   (ID_VIEW_SIDEBYSIDE,        cbDiff::OnUpdateSwitchView)
+
+    EVT_MENU        (ID_RELOAD_FILES,           cbDiff::OnReloadFiles)
+    EVT_UPDATE_UI   (ID_RELOAD_FILES,           cbDiff::OnUpdateReloadFiles)
+    EVT_MENU        (ID_SWAP_FILES,             cbDiff::OnSwapFiles)
+    EVT_UPDATE_UI   (ID_SWAP_FILES,             cbDiff::OnUpdateSwapFiles)
 END_EVENT_TABLE()
 
 // constructor
@@ -69,6 +96,21 @@ void cbDiff::OnAttach()
     Manager::Get()->RegisterEventSink(cbEVT_APP_CMDLINE, new cbEventFunctor<cbDiff, CodeBlocksEvent>(this, &cbDiff::OnAppCmdLine));
 }
 
+bool cbDiff::BuildToolBar(wxToolBar* toolBar)
+{
+    //The application is offering its toolbar for your plugin,
+    //to add any toolbar items you want...
+    //Append any items you need on the toolbar...
+    toolbar_ = toolBar;
+    if (!IsAttached() || !toolBar)
+        return false;
+
+    Manager::Get()->AddonToolBar(toolbar_, _T("cb_diff_toolbar"));
+    toolbar_->Realize();
+    toolbar_->SetInitialSize();
+
+    return true;
+}
 void cbDiff::OnAppDoneStartup(CodeBlocksEvent &event)
 {
     EvalCmdLine();
@@ -272,6 +314,52 @@ void cbDiff::OnUpdatePrevDifference(wxUpdateUIEvent &event)
     event.Enable(enable);
 }
 
+void cbDiff::OnFirstDifference(wxCommandEvent &event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->FirstDifference();
+    }
+}
+
+void cbDiff::OnLastDifference(wxCommandEvent &event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->LastDifference();
+    }
+}
+
+void cbDiff::OnUpdateFirstDifference(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanGotoFirstDiff();
+    }
+    event.Enable(enable);
+}
+
+void cbDiff::OnUpdateLastDifference(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanGotoLastDiff();
+    }
+    event.Enable(enable);
+}
+
 void cbDiff::EvalCmdLine()
 {
     wxString file1, file2;
@@ -289,4 +377,68 @@ void cbDiff::EvalCmdLine()
         }
     }
 }
+
+
+void cbDiff::OnSwitchView(wxCommandEvent &event)
+{
+    cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
+    if(!ed) return;
+
+    int mode;
+    if      (event.GetId() == ID_VIEW_TABLE)   mode = cbDiffEditor::TABLE;
+    else if (event.GetId() == ID_VIEW_UNIFIED) mode = cbDiffEditor::UNIFIED;
+    else /* ID_VIEW_SIDEBYSIDE*/               mode = cbDiffEditor::SIDEBYSIDE;
+
+    if(ed->GetMode() != mode)
+    {
+        ed->SetMode(mode);
+        ed->Reload();
+    }
+}
+
+void cbDiff::OnUpdateSwitchView(wxUpdateUIEvent &event)
+{
+    cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
+    if(!ed)
+    {
+        event.Enable(false);
+        return;
+    }
+
+    int mode;
+    if      (event.GetId() == ID_VIEW_TABLE)   mode = cbDiffEditor::TABLE;
+    else if (event.GetId() == ID_VIEW_UNIFIED) mode = cbDiffEditor::UNIFIED;
+    else /* ID_VIEW_SIDEBYSIDE*/               mode = cbDiffEditor::SIDEBYSIDE;
+
+    event.Enable(ed->GetMode() != mode);
+}
+
+void cbDiff::OnReloadFiles(wxCommandEvent &event)
+{
+    cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
+    if(!ed) return;
+
+    ed->Reload();
+}
+
+void cbDiff::OnUpdateReloadFiles(wxUpdateUIEvent &event)
+{
+    cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
+    event.Enable(ed!=nullptr);
+}
+
+void cbDiff::OnSwapFiles(wxCommandEvent &event)
+{
+    cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
+    if(!ed) return;
+
+    ed->Swap();
+}
+
+void cbDiff::OnUpdateSwapFiles(wxUpdateUIEvent &event)
+{
+    cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
+    event.Enable(ed!=nullptr);
+}
+
 

@@ -71,9 +71,13 @@ public:
 
     void NextDifference();
     void PrevDifference();
-
     bool CanGotoNextDiff();
     bool CanGotoPrevDiff();
+
+    void FirstDifference();
+    void LastDifference();
+    bool CanGotoFirstDiff();
+    bool CanGotoLastDiff();
 
     enum
     {

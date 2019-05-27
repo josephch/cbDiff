@@ -20,6 +20,10 @@ public:
     virtual void PrevDifference()override;
     virtual bool CanGotoNextDiff()override;
     virtual bool CanGotoPrevDiff()override;
+    virtual void FirstDifference()override;
+    virtual void LastDifference()override;
+    virtual bool CanGotoFirstDiff()override;
+    virtual bool CanGotoLastDiff()override;
 
     virtual void Undo()override;
     virtual void Redo()override;

@@ -258,21 +258,18 @@ void cbTableCtrl::SelectAll()
 
 void cbTableCtrl::NextDifference()
 {
-    if(linesWithDifferences_.empty())
-        return;
+    if(linesWithDifferences_.empty()) return;
 
     auto i = std::upper_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
 
-    if(i == linesWithDifferences_.end())
-        return;
+    if(i == linesWithDifferences_.end()) return;
 
     m_txtctrl->GotoLine(*i);
 }
 
 bool cbTableCtrl::CanGotoNextDiff()
 {
-    if(linesWithDifferences_.empty())
-        return false;
+    if(linesWithDifferences_.empty()) return false;
 
     auto i = std::upper_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
 
@@ -281,24 +278,44 @@ bool cbTableCtrl::CanGotoNextDiff()
 
 void cbTableCtrl::PrevDifference()
 {
-    if(linesWithDifferences_.empty())
-        return;
+    if(linesWithDifferences_.empty()) return;
 
     auto i = std::lower_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
 
-    if(i == linesWithDifferences_.begin())
-        return;
+    if(i == linesWithDifferences_.begin()) return;
 
     m_txtctrl->GotoLine(*(--i));
 }
 
 bool cbTableCtrl::CanGotoPrevDiff()
 {
-    if(linesWithDifferences_.empty())
-        return false;
+    if(linesWithDifferences_.empty()) return false;
 
     auto i = std::lower_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
 
     return i != linesWithDifferences_.begin();
 }
 
+void cbTableCtrl::FirstDifference()
+{
+    if(linesWithDifferences_.empty()) return;
+
+    m_txtctrl->GotoLine(linesWithDifferences_.front());
+}
+
+void cbTableCtrl::LastDifference()
+{
+   if(linesWithDifferences_.empty()) return;
+
+    m_txtctrl->GotoLine(linesWithDifferences_.back());
+}
+
+bool cbTableCtrl::CanGotoFirstDiff()
+{
+    return !linesWithDifferences_.empty();
+}
+
+bool cbTableCtrl::CanGotoLastDiff()
+{
+    return !linesWithDifferences_.empty();
+}

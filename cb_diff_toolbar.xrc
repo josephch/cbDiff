@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resource xmlns="http://www.wxwidgets.org/wxxrc" version="2.5.3.0">
+  <object class="wxToolBarAddOn" name="cb_gcov_toolbar">
+
+    <object class="tool" name="CB_DIFF_ID_VIEW_TABLE">
+      <tooltip>Display as a table</tooltip>
+      <longhelp>Display as a table</longhelp>
+      <bitmap>images/22x22/table.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_ID_VIEW_UNIFIED">
+      <tooltip>Display as unified diff</tooltip>
+      <longhelp>Display as unified diff</longhelp>
+      <bitmap>images/22x22/unified.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_ID_VIEW_SIDEBYSIDE">
+      <tooltip>Display side by side</tooltip>
+      <longhelp>Display side by side</longhelp>
+      <bitmap>images/22x22/sidebyside.png</bitmap>
+    </object>
+
+    <object class="separator"/>
+
+    <object class="tool" name="CB_DIFF_ID_RELOAD_FILES">
+      <tooltip>Reload files</tooltip>
+      <longhelp>Reload files</longhelp>
+      <bitmap>images/22x22/reload.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_ID_SWAP_FILES">
+      <tooltip>Swap files</tooltip>
+      <longhelp>Swap files</longhelp>
+      <bitmap>images/22x22/swap.png</bitmap>
+    </object>
+    
+    <object class="separator"/>
+
+    <object class="tool" name="CB_DIFF_NEXT_DIFFERENCE">
+      <tooltip>Next Difference</tooltip>
+      <longhelp>Goto next difference</longhelp>
+      <bitmap>images/22x22/nextDifference.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_PREVIOUS_DIFFERENCE">
+      <tooltip>Previous Difference</tooltip>
+      <longhelp>Goto previous difference</longhelp>
+      <bitmap>images/22x22/previousDifference.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_FIRST_DIFFERENCE">
+      <tooltip>First Difference</tooltip>
+      <longhelp>Goto first Difference</longhelp>
+      <bitmap>images/22x22/firstDifference.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_LAST_DIFFERENCE">
+      <tooltip>Last Difference</tooltip>
+      <longhelp>Goto last Difference</longhelp>
+      <bitmap>images/22x22/lastDifference.png</bitmap>
+    </object>
+
+
+  </object>
+</resource>

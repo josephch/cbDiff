@@ -637,7 +637,6 @@ bool cbSideBySideCtrl::CanGotoNextDiff()
 
 bool cbSideBySideCtrl::CanGotoPrevDiff()
 {
-
     if(TCLeft->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty())
@@ -656,6 +655,52 @@ bool cbSideBySideCtrl::CanGotoPrevDiff()
 
         return i != linesRightWithDifferences_.begin();
     }
+    return false;
+}
+
+void cbSideBySideCtrl::FirstDifference()
+{
+    if(TCLeft->GetSCIFocus())
+    {
+        if(linesLeftWithDifferences_.empty()) return;
+        TCLeft->GotoLine(linesLeftWithDifferences_.front());
+    }
+    else if(TCRight->GetSCIFocus())
+    {
+        if(linesRightWithDifferences_.empty()) return;
+        TCRight->GotoLine(linesRightWithDifferences_.front());
+    }
+}
+
+void cbSideBySideCtrl::LastDifference()
+{
+    if(TCLeft->GetSCIFocus())
+    {
+        if(linesLeftWithDifferences_.empty()) return;
+        TCLeft->GotoLine(linesLeftWithDifferences_.back());
+    }
+    else if(TCRight->GetSCIFocus())
+    {
+        if(linesRightWithDifferences_.empty()) return;
+        TCRight->GotoLine(linesRightWithDifferences_.back());
+    }
+}
+
+bool cbSideBySideCtrl::CanGotoFirstDiff()
+{
+    if(TCLeft->GetSCIFocus())
+        return !linesLeftWithDifferences_.empty();
+    else if(TCRight->GetSCIFocus())
+        return !linesRightWithDifferences_.empty();
+    return false;
+}
+
+bool cbSideBySideCtrl::CanGotoLastDiff()
+{
+    if(TCLeft->GetSCIFocus())
+        return !linesLeftWithDifferences_.empty();
+    else if(TCRight->GetSCIFocus())
+        return !linesRightWithDifferences_.empty();
     return false;
 }
 

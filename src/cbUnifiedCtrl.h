@@ -17,6 +17,10 @@ public:
     virtual void PrevDifference()override{}
     virtual bool CanGotoNextDiff()override{return false;}
     virtual bool CanGotoPrevDiff()override{return false;}
+    virtual void FirstDifference()override{}
+    virtual void LastDifference()override{}
+    virtual bool CanGotoFirstDiff()override{return false;}
+    virtual bool CanGotoLastDiff()override{return false;}
 
     virtual bool GetModified() const override{return false;}
     virtual bool QueryClose() override{return true;}
