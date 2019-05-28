@@ -43,7 +43,6 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
 	wxStaticBoxSizer* StaticBoxSizer1;
 	wxStaticBoxSizer* StaticBoxSizer2;
 	wxStaticBoxSizer* StaticBoxSizer3;
-	wxStaticBoxSizer* StaticBoxSizer4;
 	wxStaticText* StaticText1;
 	wxStaticText* StaticText2;
 
@@ -79,17 +78,15 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
 	BoxSizer2->Add(SLCarAlpha, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer3->Add(BoxSizer2, 1, wxALL|wxEXPAND, 0);
 	BoxSizer1->Add(StaticBoxSizer3, 0, wxALL|wxEXPAND, 5);
-	StaticBoxSizer4 = new wxStaticBoxSizer(wxVERTICAL, this, _("Default values:"));
 	wxString __wxRadioBoxChoices_1[3] =
 	{
 		_("Tabular"),
 		_("Unified Diff"),
 		_("Side by side")
 	};
-	RBViewing = new wxRadioBox(this, ID_RADIOBOX1, _("Displaytype:"), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
+	RBViewing = new wxRadioBox(this, ID_RADIOBOX1, _("Default Displaytype:"), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	RBViewing->SetSelection(0);
-	StaticBoxSizer4->Add(RBViewing, 0, wxALL|wxEXPAND, 5);
-	BoxSizer1->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND, 5);
+	BoxSizer1->Add(RBViewing, 0, wxALL|wxEXPAND, 5);
 	SetSizer(BoxSizer1);
 	BoxSizer1->Fit(this);
 	BoxSizer1->SetSizeHints(this);

@@ -119,26 +119,17 @@
 				<border>5</border>
 			</object>
 			<object class="sizeritem">
-				<object class="wxStaticBoxSizer" variable="StaticBoxSizer4" member="no">
-					<label>Default values:</label>
-					<orient>wxVERTICAL</orient>
-					<object class="sizeritem">
-						<object class="wxRadioBox" name="ID_RADIOBOX1" variable="RBViewing" member="yes">
-							<label>Displaytype:</label>
-							<content>
-								<item>Tabular</item>
-								<item>Unified Diff</item>
-								<item>Side by side</item>
-							</content>
-							<style>wxRA_VERTICAL</style>
-						</object>
-						<flag>wxALL|wxEXPAND</flag>
-						<border>5</border>
-					</object>
+				<object class="wxRadioBox" name="ID_RADIOBOX1" variable="RBViewing" member="yes">
+					<label>Default Displaytype:</label>
+					<content>
+						<item>Tabular</item>
+						<item>Unified Diff</item>
+						<item>Side by side</item>
+					</content>
+					<style>wxRA_VERTICAL</style>
 				</object>
 				<flag>wxALL|wxEXPAND</flag>
 				<border>5</border>
-				<option>1</option>
 			</object>
 		</object>
 	</object>
