@@ -53,8 +53,8 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
     leftReadOnly_ = true;
     rightReadOnly_ = diff.RightReadOnly();
 
-
     m_txtctrl->SetReadOnly(false);
+    int cursorPos = m_txtctrl->GetCurrentPos();
     m_txtctrl->ClearAll();
     wxTextFile left_text_file(diff.GetLeftFilename());
     wxTextFile right_text_file(diff.GetRightFilename());
@@ -124,6 +124,7 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
         m_txtctrl->MarginSetText(i, wxString::Format(_T("%9d%9d"), linenumberleft, linenumberright));
     }
     m_txtctrl->SetReadOnly(true);
+    m_txtctrl->GotoPos(cursorPos);
 }
 
 void cbTableCtrl::Copy()

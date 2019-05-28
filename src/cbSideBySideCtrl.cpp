@@ -153,6 +153,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     rightReadOnly_ = diff.RightReadOnly();
 
     linesLeftWithDifferences_.clear();
+    int leftCursorPos =   TCLeft->GetCurrentPos();
     TCLeft->SetReadOnly(false);
     TCLeft->ClearAll();
     TCLeft->LoadFile(diff.GetLeftFilename());
@@ -190,8 +191,10 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         TCLeft->SetReadOnly(true);
     TCLeft->SetMarginType(0, wxSCI_MARGIN_NUMBER);
     setLineNumberMarginWidth(TCLeft, lineNumbersWidthLeft);
+    TCLeft->GotoPos(leftCursorPos);
 
     linesRightWithDifferences_.clear();
+    int rightCursorPos = TCRight->GetCurrentPos();
     TCRight->SetReadOnly(false);
     TCRight->ClearAll();
     TCRight->LoadFile(diff.GetRightFilename());
@@ -229,6 +232,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         TCRight->SetReadOnly(true);
     TCRight->SetMarginType(0, wxSCI_MARGIN_NUMBER);
     setLineNumberMarginWidth(TCRight, lineNumbersWidthRight);
+    TCRight->GotoPos(rightCursorPos);
 
     Connect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
     Connect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
