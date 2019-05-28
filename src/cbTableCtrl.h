@@ -28,7 +28,6 @@ public:
     virtual bool CanGotoFirstDiff()override;
     virtual bool CanGotoLastDiff()override;
 
-    //virtual void Cut()override;
     virtual void Copy()override;
     virtual bool HasSelection() const override;
 protected:
@@ -37,7 +36,6 @@ protected:
 private:
     std::vector<long> linesWithDifferences_;
     cbStyledTextCtrl *m_txtctrl;
-    int lineNumbersWidthRight;
     void setLineNumberMarginWidth();
 };
 

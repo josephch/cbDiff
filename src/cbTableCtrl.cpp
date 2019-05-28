@@ -9,8 +9,7 @@
 #include <wx/textfile.h>
 
 cbTableCtrl::cbTableCtrl(cbDiffEditor *parent):
-    cbDiffCtrl(parent),
-    lineNumbersWidthRight(0)
+    cbDiffCtrl(parent)
 {
     wxBoxSizer *BoxSizer = new wxBoxSizer(wxHORIZONTAL);
     m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
@@ -83,7 +82,11 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
         auto litr = left_removed.find(linenumberleft);
         if(litr != left_removed.end() || removed)
         {
-            if(!removed) removed = litr->second;
+            if(!removed)
+            {
+                linesWithDifferences_.push_back(i);
+                removed = litr->second;
+            }
             --removed;
             m_txtctrl->AppendText(strleft + _T("\n"));
             refillleft = true;
@@ -97,7 +100,11 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
         auto ritr = right_added.find(linenumberright);
         if(ritr != right_added.end() || added)
         {
-            if(!added) added = ritr->second;
+            if(!added)
+            {
+                linesWithDifferences_.push_back(i);
+                added = ritr->second;
+            }
             --added;
             m_txtctrl->AppendText(strright + _T("\n"));
             refillleft = false;
