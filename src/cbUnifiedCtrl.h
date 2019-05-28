@@ -35,7 +35,7 @@ protected:
     virtual bool RightModified() override{return false;}
 
 private:
-    cbStyledTextCtrl *m_txtctrl;
+    cbStyledTextCtrl *txtctrl_;
 };
 
 #endif

@@ -18,10 +18,10 @@ using std::ifstream;
 using std::vector;
 
 wxDiff::wxDiff(wxString leftFilename, wxString rightFilename, bool leftReadOnly, bool rightReadOnly):
-    m_leftFilename(leftFilename),
-    m_rightFilename(rightFilename),
-    m_leftReadOnly_(leftReadOnly),
-    m_rightReadOnly_(rightReadOnly)
+    leftFilename_(leftFilename),
+    rightFilename_(rightFilename),
+    leftReadOnly_(leftReadOnly),
+    rightReadOnly_(rightReadOnly)
 {
     typedef string elem;
     typedef pair<elem, elemInfo> sesElem;
@@ -50,10 +50,10 @@ wxDiff::wxDiff(wxString leftFilename, wxString rightFilename, bool leftReadOnly,
     diff.printUnifiedFormat();
     diff.printUnifiedFormat(help);
 
-    m_diff = wxString(help.str().c_str(), wxConvUTF8);
+    diff_ = wxString(help.str().c_str(), wxConvUTF8);
 
     vector<wxArrayString> diffs;
-    wxStringTokenizer tkz(m_diff, wxT("\n"));
+    wxStringTokenizer tkz(diff_, wxT("\n"));
     wxArrayString currdiff;
     while(tkz.HasMoreTokens())
     {
@@ -75,15 +75,15 @@ wxDiff::wxDiff(wxString leftFilename, wxString rightFilename, bool leftReadOnly,
 
 wxString wxDiff::IsDifferent()
 {
-    wxFileName filename(m_leftFilename);
+    wxFileName filename(leftFilename_);
     wxDateTime modifyTime;
     wxDateTime modifyTime2;
     filename.GetTimes(0, &modifyTime, 0);
-    filename.Assign(m_rightFilename);
+    filename.Assign(rightFilename_);
     filename.GetTimes(0, &modifyTime2, 0);
-    if(modifyTime == modifyTime2 && m_leftFilename == m_rightFilename)
+    if(modifyTime == modifyTime2 && leftFilename_ == rightFilename_)
         return _("Same file => Same content!");
-    if(m_added_lines.empty() && m_removed_lines.empty())
+    if(added_lines_.empty() && removed_lines_.empty())
         return _("Different files, but same content!");
     return wxEmptyString;
 }
@@ -91,15 +91,15 @@ wxString wxDiff::IsDifferent()
 wxString wxDiff::CreateHeader()
 {
     wxString header;
-    wxFileName filename(m_leftFilename);
+    wxFileName filename(leftFilename_);
     wxDateTime modifyTime;
     filename.GetTimes(0, &modifyTime, 0);
-    header << _T("--- ") << m_leftFilename
+    header << _T("--- ") << leftFilename_
            << _T("\t") << modifyTime.Format(_T("%Y-%m-%d %H:%M:%S %z"))
            << _T("\n");
-    filename.Assign(m_rightFilename);
+    filename.Assign(rightFilename_);
     filename.GetTimes(0, &modifyTime, 0);
-    header << _T("+++ ") << m_rightFilename
+    header << _T("+++ ") << rightFilename_
            << _T("\t") << modifyTime.Format(_T("%Y-%m-%d %H:%M:%S %z"))
            << _T("\n");
     return header;
@@ -152,18 +152,18 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
             {
                 if (added > 0)
                 {
-                    m_added_lines[block_start_right] = added;
+                    added_lines_[block_start_right] = added;
                 }
                 if (removed > 0)
                 {
-                    m_removed_lines[block_start_left] = removed;
-                    m_line_pos[block_start_left] = block_start_right;
+                    removed_lines_[block_start_left] = removed;
+                    line_pos_[block_start_left] = block_start_right;
                 }
 
                 if(added > removed)
-                    m_left_empty_lines[block_start_left] = added;
+                    left_empty_lines_[block_start_left] = added;
                 if(removed > added)
-                    m_right_empty_lines[block_start_right] = removed;
+                    right_empty_lines_[block_start_right] = removed;
                 added = 0;
                 removed = 0;
                 ++start_left;
@@ -175,50 +175,50 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
 
 wxString wxDiff::GetDiff()
 {
-    return CreateHeader() + m_diff;
+    return CreateHeader() + diff_;
 }
 
 std::map<long, int> wxDiff::GetAddedLines()
 {
-    return m_added_lines;
+    return added_lines_;
 }
 
 std::map<long, int> wxDiff::GetLeftEmptyLines()
 {
-    return m_left_empty_lines;
+    return left_empty_lines_;
 }
 
 std::map<long, int> wxDiff::GetRightEmptyLines()
 {
-    return m_right_empty_lines;
+    return right_empty_lines_;
 }
 
 std::map<long, long> wxDiff::GetLinePositions()
 {
-    return m_line_pos;
+    return line_pos_;
 }
 
 std::map<long, int> wxDiff::GetRemovedLines()
 {
-    return m_removed_lines;
+    return removed_lines_;
 }
 
 wxString wxDiff::GetLeftFilename()
 {
-    return m_leftFilename;
+    return leftFilename_;
 }
 
 wxString wxDiff::GetRightFilename()
 {
-    return m_rightFilename;
+    return rightFilename_;
 }
 bool wxDiff::RightReadOnly()const
 {
-    return m_rightReadOnly_;
+    return rightReadOnly_;
 }
 
 bool wxDiff::LeftReadOnly()const
 {
-    return m_leftReadOnly_;
+    return leftReadOnly_;
 }
 

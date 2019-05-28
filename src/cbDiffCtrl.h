@@ -49,7 +49,7 @@ public:
 
 protected:
     cbDiffEditor *parent_;
-    EditorColourSet *m_theme;
+    EditorColourSet *theme_;
     wxString leftFilename_;
     wxString rightFilename_;
     bool leftReadOnly_;

@@ -182,20 +182,20 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTree
         ProjectFile *prjFile = data->GetProjectFile();
         if( prjFile )
         {
-            wxMenu *diffmenu = new cbDiffMenu(this, prjFile->file.GetFullPath(), m_prevSelectionValid, m_prevFileName, MenuIds);
+            wxMenu *diffmenu = new cbDiffMenu(this, prjFile->file.GetFullPath(), m_prevSelectionValid, m_prevFileName, menuIds_);
             menu->AppendSubMenu(diffmenu, _("Diff with"));
         }
     }
     else if ( type == mtEditorManager && Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor() )
     {
         wxString filename = Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor()->GetFilename();
-        wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, MenuIds);
+        wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, menuIds_);
         menu->AppendSubMenu(diffmenu, _("Diff with"));
     }
     else if ( type == mtEditorTab && Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor() )
     {
         wxString filename = Manager::Get()->GetEditorManager()->GetBuiltinActiveEditor()->GetFilename();
-        wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, MenuIds);
+        wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, menuIds_);
         menu->AppendSubMenu(diffmenu, _("Diff with"));
     }
     else if ( type == mtUnknown ) // assuming FileExplorer
@@ -205,16 +205,16 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTree
             wxFileName f(data->GetFolder());
             wxString filename=f.GetFullPath();
             wxString name=f.GetFullName();
-            menu->AppendSubMenu(new cbDiffMenu(this, name, m_prevSelectionValid, m_prevFileName, MenuIds), _("Diff with"));
+            menu->AppendSubMenu(new cbDiffMenu(this, name, m_prevSelectionValid, m_prevFileName, menuIds_), _("Diff with"));
 	    }
 	    else if( data && (data->GetKind() == FileTreeData::ftdkVirtualGroup) )
         {
             wxString paths = data->GetFolder(); //get folder contains a space separated list of the files/directories selected
             if( paths.Find('*') != wxNOT_FOUND && paths.Find('*') == paths.Find('*', true) )
             {
-                m_names.file1 = paths.BeforeFirst('*');
-                m_names.file2 = paths.AfterFirst('*');
-                if( wxFileName::Exists(m_names.file1) && wxFileName::Exists(m_names.file2) )
+                names_.file1 = paths.BeforeFirst('*');
+                names_.file2 = paths.AfterFirst('*');
+                if( wxFileName::Exists(names_.file1) && wxFileName::Exists(names_.file2) )
                     menu->Append(ID_CONTEXT_DIFF_TWO_FILES, _("Diff"), _("Shows the differences between two files"));
             }
         }
@@ -234,13 +234,13 @@ void cbDiff::OnMenuDiffFiles(wxCommandEvent &event)
 
 void cbDiff::OnContextDiffFiles(wxCommandEvent &event)
 {
-    if ( wxFileName::Exists(m_names.file1) && wxFileName::Exists(m_names.file2) )
+    if ( wxFileName::Exists(names_.file1) && wxFileName::Exists(names_.file2) )
     {
         int dm = cbDiffEditor::DEFAULT;
         ConfigManager *cfg = Manager::Get()->GetConfigManager(_T("cbdiffsettings"));
         if (cfg)
             dm = cfg->ReadInt(_T("viewmode"), dm);
-        new cbDiffEditor(m_names.file1, m_names.file2, dm);
+        new cbDiffEditor(names_.file1, names_.file2, dm);
     }
 }
 

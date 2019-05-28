@@ -59,11 +59,11 @@ class cbDiff : public cbPlugin
 
         bool m_prevSelectionValid;
         wxString m_prevFileName;
-        std::vector<long> MenuIds;
+        std::vector<long> menuIds_;
         struct FileNames{
             wxString file1, file2;
         };
-        FileNames m_names;
+        FileNames names_;
 
         virtual bool BuildToolBar(wxToolBar* toolBar)override;
         wxToolBar* toolbar_;

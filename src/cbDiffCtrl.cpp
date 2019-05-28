@@ -6,12 +6,12 @@ END_EVENT_TABLE()
 cbDiffCtrl::cbDiffCtrl(cbDiffEditor *parent):
     wxPanel(parent, -1, wxPoint(1000, 1000)),
     parent_(parent),
-    m_theme(nullptr)
+    theme_(nullptr)
 {
-    m_theme = new EditorColourSet( Manager::Get()->GetConfigManager(_T("editor"))->Read(_T("/colour_sets/active_colour_set"), COLORSET_DEFAULT));
+    theme_ = new EditorColourSet( Manager::Get()->GetConfigManager(_T("editor"))->Read(_T("/colour_sets/active_colour_set"), COLORSET_DEFAULT));
 }
 
 cbDiffCtrl::~cbDiffCtrl()
 {
-    wxDELETE(m_theme);
+    wxDELETE(theme_);
 }

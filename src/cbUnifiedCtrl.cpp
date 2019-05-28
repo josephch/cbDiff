@@ -11,8 +11,8 @@ cbUnifiedCtrl::cbUnifiedCtrl(cbDiffEditor* parent):
     cbDiffCtrl(parent)
 {
     wxBoxSizer* BoxSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
-    BoxSizer->Add(m_txtctrl, 1, wxEXPAND, 0);
+    txtctrl_ = new cbStyledTextCtrl(this, wxID_ANY);
+    BoxSizer->Add(txtctrl_, 1, wxEXPAND, 0);
     SetSizer(BoxSizer);
 }
 
@@ -21,40 +21,40 @@ void cbUnifiedCtrl::Init(cbDiffColors colset)
     leftReadOnly_ = true;
     rightReadOnly_ = true;
 
-    cbEditor::ApplyStyles(m_txtctrl);
-    m_txtctrl->SetMargins(0,0);
-    m_txtctrl->SetMarginWidth(0,0);    // don't show linenumber
-    m_txtctrl->SetMarginWidth(1,0);    // don't show +-= symbol margin
-    m_txtctrl->SetMarginWidth(2,0);    // to hide the change and fold
-    m_txtctrl->SetMarginWidth(3,0);    // margin made by cbEditor::ApplyStyles
-    m_theme->Apply(_T("DiffPatch"), m_txtctrl, false, true);
+    cbEditor::ApplyStyles(txtctrl_);
+    txtctrl_->SetMargins(0,0);
+    txtctrl_->SetMarginWidth(0,0);    // don't show linenumber
+    txtctrl_->SetMarginWidth(1,0);    // don't show +-= symbol margin
+    txtctrl_->SetMarginWidth(2,0);    // to hide the change and fold
+    txtctrl_->SetMarginWidth(3,0);    // margin made by cbEditor::ApplyStyles
+    theme_->Apply(_T("DiffPatch"), txtctrl_, false, true);
 }
 
 void cbUnifiedCtrl::ShowDiff(wxDiff diff)
 {
-    m_txtctrl->SetReadOnly(false);
-    m_txtctrl->ClearAll();
-    m_txtctrl->AppendText(diff.GetDiff());
-    m_txtctrl->SetReadOnly(true);
+    txtctrl_->SetReadOnly(false);
+    txtctrl_->ClearAll();
+    txtctrl_->AppendText(diff.GetDiff());
+    txtctrl_->SetReadOnly(true);
 }
 
 void cbUnifiedCtrl::Copy()
 {
-    m_txtctrl->Copy();
+    txtctrl_->Copy();
 }
 
 bool cbUnifiedCtrl::HasSelection() const
 {
-    return m_txtctrl->GetSelectionStart() != m_txtctrl->GetSelectionEnd();
+    return txtctrl_->GetSelectionStart() != txtctrl_->GetSelectionEnd();
 }
 
 bool cbUnifiedCtrl::CanSelectAll() const
 {
-    return m_txtctrl->GetLength() > 0;
+    return txtctrl_->GetLength() > 0;
 }
 
 void cbUnifiedCtrl::SelectAll()
 {
-    m_txtctrl->SelectAll();
+    txtctrl_->SelectAll();
 }
 

@@ -19,18 +19,18 @@ class cbDiffCtrl;
 class cbDiffColors
 {
 public:
-    wxString m_hlang;       /// the highlightlanguage in Table/SidebySide mode
-    wxColour m_addedlines;
-    wxColour m_removedlines;
-    int m_caretlinetype;
-    wxColour m_caretline;
+    wxString hlang_;       /// the highlightlanguage in Table/SidebySide mode
+    wxColour addedlines_;
+    wxColour removedlines_;
+    int caretlinetype_;
+    wxColour caretline_;
 };
 
 class cbDiffEditor : public EditorBase
 {
 public:
 
-    cbDiffEditor(const wxString &firstfile, const wxString &secondfile, int diffmode = DEFAULT, bool leftReadOnly = true, bool rightReadOnly = true);
+    cbDiffEditor(const wxString &leftFile, const wxString &rightFile, int diffmode = DEFAULT, bool leftReadOnly = true, bool rightReadOnly = true);
 
     virtual ~cbDiffEditor();
 
@@ -93,14 +93,14 @@ private:
     void InitDiffCtrl(int mode);
     void ShowDiff();        /// Makes the diff and shows it
 
-    cbDiffCtrl *m_diffctrl;
+    cbDiffCtrl *diffctrl_;
 
-    wxString m_leftFile;
-    wxString m_rightFile;
-    int m_viewingmode;      /// the diff viewingmode currently Table, Unified and SideBySide
-    wxString m_diff;        /// the unified diff file, used to save
+    wxString leftFile_;
+    wxString rightFile_;
+    int viewingmode_;      /// the diff viewingmode currently Table, Unified and SideBySide
+    wxString diff_;        /// the unified diff file, used to save
 
-    cbDiffColors m_colorset;
+    cbDiffColors colorset_;
 
     void OnContextMenu(wxContextMenuEvent& event){} /// Just override it for now
 
@@ -111,7 +111,7 @@ private:
     typedef std::set< EditorBase* > EditorsSet;
     ///< \brief Set of all opened editors,
     ///   used to close all editors when plugin is being unloaded
-    static EditorsSet        m_AllEditors;
+    static EditorsSet        allEditors_;
     DECLARE_EVENT_TABLE()
 };
 

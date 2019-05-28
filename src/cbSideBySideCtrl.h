@@ -45,28 +45,28 @@ protected:
     virtual bool RightModified() override;
 private:
     int lastSyncedLine_;
-    int lastSyncedLHandle;
-    int lastSyncedRHandle;
+    int lastSyncedLHandle_;
+    int lastSyncedRHandle_;
     void OnEditorChange(wxScintillaEvent &event);
     bool SaveLeft();
     bool SaveRight();
-    cbStyledTextCtrl *TCLeft;
-    cbStyledTextCtrl *TCRight;
+    cbStyledTextCtrl *tcLeft_;
+    cbStyledTextCtrl *tcRight_;
 
-    wxScrollBar *VScrollBar;
-    wxScrollBar *HScrollBar;
+    wxScrollBar *vScrollBar_;
+    wxScrollBar *hScrollBar_;
 
     std::vector<long> linesRightWithDifferences_;
     std::vector<long> linesLeftWithDifferences_;
-    int lineNumbersWidthLeft;
-    int lineNumbersWidthRight;
+    int lineNumbersWidthLeft_;
+    int lineNumbersWidthRight_;
 
     static void setLineNumberMarginWidth(cbStyledTextCtrl *stc, int &currWidth);
 
-    int m_vscrollpos;
-    int m_hscrollpos;
+    int vscrollpos_;
+    int hscrollpos_;
 
-    LineChangedTimer *m_timer;
+    LineChangedTimer *timer_;
     DECLARE_EVENT_TABLE()
 };
 

@@ -10,14 +10,14 @@ public:
     cbDiffMenu(wxEvtHandler *parent, wxString basefile, bool &prevSelected, wxString &prevFileName, std::vector<long> &ids);
     virtual ~cbDiffMenu(){}
 private:
-    wxString m_basefile;
-    wxArrayString m_projectfilenames;
-    wxArrayString m_openfilenames;
+    wxString basefile_;
+    wxArrayString projectFileNames_;
+    wxArrayString openFileNames_;
 
-    std::vector<long> &m_ids;
+    std::vector<long> &ids_;
 
-    bool &m_prevValid;
-    wxString &m_prevFileName;
+    bool &prevValid_;
+    wxString &prevFileName_;
 
     void OnSelectProject(wxCommandEvent &event);
     void OnSelectOpen(wxCommandEvent &event);

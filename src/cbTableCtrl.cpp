@@ -12,8 +12,8 @@ cbTableCtrl::cbTableCtrl(cbDiffEditor *parent):
     cbDiffCtrl(parent)
 {
     wxBoxSizer *BoxSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_txtctrl = new cbStyledTextCtrl(this, wxID_ANY);
-    BoxSizer->Add(m_txtctrl, 1, wxEXPAND, 0);
+    txtctrl_ = new cbStyledTextCtrl(this, wxID_ANY);
+    BoxSizer->Add(txtctrl_, 1, wxEXPAND, 0);
     SetSizer(BoxSizer);
 }
 
@@ -21,24 +21,24 @@ void cbTableCtrl::Init(cbDiffColors colset)
 {
     linesWithDifferences_.clear();
 
-    wxColor marbkg = m_txtctrl->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
-    int width = 20 * m_txtctrl->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));
+    wxColor marbkg = txtctrl_->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
+    int width = 20 * txtctrl_->TextWidth(wxSCI_STYLE_LINENUMBER, _T("9"));
 
-    cbEditor::ApplyStyles(m_txtctrl);
-    m_txtctrl->SetMargins(0, 0);
-    m_txtctrl->SetMarginWidth(0, width);
-    m_txtctrl->SetMarginType(0, wxSCI_MARGIN_RTEXT);
-    m_txtctrl->SetMarginWidth(1, 0);
-    m_txtctrl->SetMarginWidth(2, 0);
-    m_txtctrl->SetMarginWidth(3, 0);
-    m_txtctrl->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_removedlines, colset.m_removedlines);
-    m_txtctrl->MarkerSetAlpha(RED_BKG_MARKER, colset.m_removedlines.Alpha());
-    m_txtctrl->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_addedlines, colset.m_addedlines);
-    m_txtctrl->MarkerSetAlpha(GREEN_BKG_MARKER, colset.m_addedlines.Alpha());
+    cbEditor::ApplyStyles(txtctrl_);
+    txtctrl_->SetMargins(0, 0);
+    txtctrl_->SetMarginWidth(0, width);
+    txtctrl_->SetMarginType(0, wxSCI_MARGIN_RTEXT);
+    txtctrl_->SetMarginWidth(1, 0);
+    txtctrl_->SetMarginWidth(2, 0);
+    txtctrl_->SetMarginWidth(3, 0);
+    txtctrl_->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.removedlines_, colset.removedlines_);
+    txtctrl_->MarkerSetAlpha(RED_BKG_MARKER, colset.removedlines_.Alpha());
+    txtctrl_->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.addedlines_, colset.addedlines_);
+    txtctrl_->MarkerSetAlpha(GREEN_BKG_MARKER, colset.addedlines_.Alpha());
 
-    const auto lang = colset.m_hlang;
+    const auto lang = colset.hlang_;
     const bool isC = lang == "C/C++";
-    m_theme->Apply(m_theme->GetHighlightLanguage(lang), m_txtctrl, isC, true);
+    theme_->Apply(theme_->GetHighlightLanguage(lang), txtctrl_, isC, true);
 }
 
 void cbTableCtrl::ShowDiff(wxDiff diff)
@@ -53,9 +53,9 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
     leftReadOnly_ = true;
     rightReadOnly_ = diff.RightReadOnly();
 
-    m_txtctrl->SetReadOnly(false);
-    int cursorPos = m_txtctrl->GetCurrentPos();
-    m_txtctrl->ClearAll();
+    txtctrl_->SetReadOnly(false);
+    int cursorPos = txtctrl_->GetCurrentPos();
+    txtctrl_->ClearAll();
     wxTextFile left_text_file(diff.GetLeftFilename());
     wxTextFile right_text_file(diff.GetRightFilename());
     left_text_file.Open();
@@ -88,13 +88,13 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
                 removed = litr->second;
             }
             --removed;
-            m_txtctrl->AppendText(strleft + _T("\n"));
+            txtctrl_->AppendText(strleft + _T("\n"));
             refillleft = true;
             refillright = false;
             ++linenumberleft;
-            m_txtctrl->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
-            m_txtctrl->MarginSetText(i, wxString::Format(_T("%9d%9c"), linenumberleft, ' '));
-            m_txtctrl->MarkerAdd(i, RED_BKG_MARKER);
+            txtctrl_->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
+            txtctrl_->MarginSetText(i, wxString::Format(_T("%9d%9c"), linenumberleft, ' '));
+            txtctrl_->MarkerAdd(i, RED_BKG_MARKER);
             continue;
         }
         auto ritr = right_added.find(linenumberright);
@@ -106,53 +106,53 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
                 added = ritr->second;
             }
             --added;
-            m_txtctrl->AppendText(strright + _T("\n"));
+            txtctrl_->AppendText(strright + _T("\n"));
             refillleft = false;
             refillright = true;
             ++linenumberright;
-            m_txtctrl->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
-            m_txtctrl->MarginSetText(i, wxString::Format(_T("%9d"), linenumberright));
-            m_txtctrl->MarkerAdd(i, GREEN_BKG_MARKER);
+            txtctrl_->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
+            txtctrl_->MarginSetText(i, wxString::Format(_T("%9d"), linenumberright));
+            txtctrl_->MarkerAdd(i, GREEN_BKG_MARKER);
             continue;
         }
-        m_txtctrl->AppendText(strleft + _T("\n"));
+        txtctrl_->AppendText(strleft + _T("\n"));
         refillleft = true;
         refillright = true;
         ++linenumberleft;
         ++linenumberright;
-        m_txtctrl->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
-        m_txtctrl->MarginSetText(i, wxString::Format(_T("%9d%9d"), linenumberleft, linenumberright));
+        txtctrl_->MarginSetStyle(i, wxSCI_STYLE_LINENUMBER);
+        txtctrl_->MarginSetText(i, wxString::Format(_T("%9d%9d"), linenumberleft, linenumberright));
     }
-    m_txtctrl->SetReadOnly(true);
-    m_txtctrl->GotoPos(cursorPos);
+    txtctrl_->SetReadOnly(true);
+    txtctrl_->GotoPos(cursorPos);
 }
 
 void cbTableCtrl::Copy()
 {
-    m_txtctrl->Copy();
+    txtctrl_->Copy();
 }
 
 bool cbTableCtrl::HasSelection() const
 {
-    return m_txtctrl->GetSelectionStart() != m_txtctrl->GetSelectionEnd();
+    return txtctrl_->GetSelectionStart() != txtctrl_->GetSelectionEnd();
 }
 
 void cbTableCtrl::NextDifference()
 {
     if(linesWithDifferences_.empty()) return;
 
-    auto i = std::upper_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
+    auto i = std::upper_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), txtctrl_->GetCurrentLine());
 
     if(i == linesWithDifferences_.end()) return;
 
-    m_txtctrl->GotoLine(*i);
+    txtctrl_->GotoLine(*i);
 }
 
 bool cbTableCtrl::CanGotoNextDiff()
 {
     if(linesWithDifferences_.empty()) return false;
 
-    auto i = std::upper_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
+    auto i = std::upper_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), txtctrl_->GetCurrentLine());
 
     return i != linesWithDifferences_.end();
 }
@@ -161,18 +161,18 @@ void cbTableCtrl::PrevDifference()
 {
     if(linesWithDifferences_.empty()) return;
 
-    auto i = std::lower_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
+    auto i = std::lower_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), txtctrl_->GetCurrentLine());
 
     if(i == linesWithDifferences_.begin()) return;
 
-    m_txtctrl->GotoLine(*(--i));
+    txtctrl_->GotoLine(*(--i));
 }
 
 bool cbTableCtrl::CanGotoPrevDiff()
 {
     if(linesWithDifferences_.empty()) return false;
 
-    auto i = std::lower_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), m_txtctrl->GetCurrentLine());
+    auto i = std::lower_bound(linesWithDifferences_.begin(), linesWithDifferences_.end(), txtctrl_->GetCurrentLine());
 
     return i != linesWithDifferences_.begin();
 }
@@ -181,14 +181,14 @@ void cbTableCtrl::FirstDifference()
 {
     if(linesWithDifferences_.empty()) return;
 
-    m_txtctrl->GotoLine(linesWithDifferences_.front());
+    txtctrl_->GotoLine(linesWithDifferences_.front());
 }
 
 void cbTableCtrl::LastDifference()
 {
    if(linesWithDifferences_.empty()) return;
 
-    m_txtctrl->GotoLine(linesWithDifferences_.back());
+    txtctrl_->GotoLine(linesWithDifferences_.back());
 }
 
 bool cbTableCtrl::CanGotoFirstDiff()
@@ -196,7 +196,7 @@ bool cbTableCtrl::CanGotoFirstDiff()
     if(linesWithDifferences_.empty())
         return false;
 
-    return m_txtctrl->GetCurrentLine() != linesWithDifferences_.front();
+    return txtctrl_->GetCurrentLine() != linesWithDifferences_.front();
 }
 
 bool cbTableCtrl::CanGotoLastDiff()
@@ -205,5 +205,5 @@ bool cbTableCtrl::CanGotoLastDiff()
     if(linesWithDifferences_.empty())
         return false;
 
-    return m_txtctrl->GetCurrentLine() != linesWithDifferences_.back();
+    return txtctrl_->GetCurrentLine() != linesWithDifferences_.back();
 }

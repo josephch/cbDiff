@@ -21,15 +21,15 @@
 **/
 class LineChangedTimer : public wxTimer
 {
-    cbSideBySideCtrl *m_pane;
+    cbSideBySideCtrl *pane_;
 public:
     LineChangedTimer(cbSideBySideCtrl *pane) : wxTimer()
     {
-        m_pane = pane;
+        pane_ = pane;
     }
     void Notify()
     {
-        m_pane->Synchronize();
+        pane_->Synchronize();
     }
     void start()
     {
@@ -43,104 +43,104 @@ END_EVENT_TABLE()
 cbSideBySideCtrl::cbSideBySideCtrl(cbDiffEditor *parent):
     cbDiffCtrl(parent),
     lastSyncedLine_(-1),
-    lastSyncedLHandle(-1),
-    lastSyncedRHandle(-1),
-    lineNumbersWidthLeft(0),
-    lineNumbersWidthRight(0)
+    lastSyncedLHandle_(-1),
+    lastSyncedRHandle_(-1),
+    lineNumbersWidthLeft_(0),
+    lineNumbersWidthRight_(0)
 {
     wxBoxSizer *VBoxSizer = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *HBoxSizer = new wxBoxSizer(wxHORIZONTAL);
-    VScrollBar = new wxScrollBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSB_VERTICAL);
-    HScrollBar = new wxScrollBar(this, wxID_ANY);
+    vScrollBar_ = new wxScrollBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSB_VERTICAL);
+    hScrollBar_ = new wxScrollBar(this, wxID_ANY);
     wxSplitterWindow *splitWindow = new wxSplitterWindow(this, wxID_ANY);
-    TCLeft = new cbStyledTextCtrl(splitWindow, wxID_ANY);
-    TCRight = new cbStyledTextCtrl(splitWindow, wxID_ANY);
-    splitWindow->SplitVertically(TCLeft, TCRight);
+    tcLeft_ = new cbStyledTextCtrl(splitWindow, wxID_ANY);
+    tcRight_ = new cbStyledTextCtrl(splitWindow, wxID_ANY);
+    splitWindow->SplitVertically(tcLeft_, tcRight_);
     HBoxSizer->Add(splitWindow, 1, wxEXPAND, 0);
-    HBoxSizer->Add(VScrollBar, 0, wxEXPAND, 0);
+    HBoxSizer->Add(vScrollBar_, 0, wxEXPAND, 0);
     VBoxSizer->Add(HBoxSizer, 1, wxEXPAND, 5);
-    VBoxSizer->Add(HScrollBar, 0, wxEXPAND, 0);
+    VBoxSizer->Add(hScrollBar_, 0, wxEXPAND, 0);
     SetSizer(VBoxSizer);
     VBoxSizer->Fit(this);
     VBoxSizer->SetSizeHints(this);
     splitWindow->SetSashGravity(0.5);
 
-    TCLeft->SetVScrollBar(VScrollBar);
-    TCLeft->SetHScrollBar(HScrollBar);
-    TCRight->SetVScrollBar(VScrollBar);
-    TCRight->SetHScrollBar(HScrollBar);
+    tcLeft_->SetVScrollBar(vScrollBar_);
+    tcLeft_->SetHScrollBar(hScrollBar_);
+    tcRight_->SetVScrollBar(vScrollBar_);
+    tcRight_->SetHScrollBar(hScrollBar_);
 
-    m_timer = new LineChangedTimer(this);
-    m_timer->start();
+    timer_ = new LineChangedTimer(this);
+    timer_->start();
 
-    m_vscrollpos = VScrollBar->GetThumbPosition();
-    m_hscrollpos = HScrollBar->GetThumbPosition();
+    vscrollpos_ = vScrollBar_->GetThumbPosition();
+    hscrollpos_ = hScrollBar_->GetThumbPosition();
 }
 
 cbSideBySideCtrl::~cbSideBySideCtrl()
 {
-    wxDELETE(m_timer);
+    wxDELETE(timer_);
 
-    Disconnect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
-    Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( tcLeft_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( tcRight_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 }
 
 void cbSideBySideCtrl::Init(cbDiffColors colset)
 {
-    Disconnect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
-    Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( tcLeft_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( tcRight_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 
-    const wxColor marbkg = TCLeft->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
+    const wxColor marbkg = tcLeft_->StyleGetBackground(wxSCI_STYLE_LINENUMBER);
 
-    cbEditor::ApplyStyles(TCLeft);
-    TCLeft->SetMarginWidth(1, 16);
-    TCLeft->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
-    TCLeft->SetMarginWidth(2,0);    // to hide the change and the fold margin
-    TCLeft->SetMarginWidth(3,0);    // made by cbEditor::ApplyStyles
-    TCLeft->MarkerDefine(MINUS_MARKER, wxSCI_MARK_MINUS, colset.m_removedlines, colset.m_removedlines);
-    TCLeft->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
-    TCLeft->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_removedlines, colset.m_removedlines);
-    TCLeft->MarkerSetAlpha(RED_BKG_MARKER, colset.m_removedlines.Alpha());
-    TCLeft->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
-    if(colset.m_caretlinetype == 0)
+    cbEditor::ApplyStyles(tcLeft_);
+    tcLeft_->SetMarginWidth(1, 16);
+    tcLeft_->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
+    tcLeft_->SetMarginWidth(2,0);    // to hide the change and the fold margin
+    tcLeft_->SetMarginWidth(3,0);    // made by cbEditor::ApplyStyles
+    tcLeft_->MarkerDefine(MINUS_MARKER, wxSCI_MARK_MINUS, colset.removedlines_, colset.removedlines_);
+    tcLeft_->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
+    tcLeft_->MarkerDefine(RED_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.removedlines_, colset.removedlines_);
+    tcLeft_->MarkerSetAlpha(RED_BKG_MARKER, colset.removedlines_.Alpha());
+    tcLeft_->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
+    if(colset.caretlinetype_ == 0)
     {
-        TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.m_caretline, colset.m_caretline);
+        tcLeft_->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.caretline_, colset.caretline_);
     }
     else
     {
-        TCLeft->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND, colset.m_caretline, colset.m_caretline);
-        TCLeft->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
+        tcLeft_->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND, colset.caretline_, colset.caretline_);
+        tcLeft_->MarkerSetAlpha(CARET_LINE_MARKER, colset.caretline_.Alpha());
     }
-    const auto lang = colset.m_hlang;
+    const auto lang = colset.hlang_;
     const bool isC = lang == "C/C++";
-    m_theme->Apply(m_theme->GetHighlightLanguage(lang), TCLeft, isC, true);
+    theme_->Apply(theme_->GetHighlightLanguage(lang), tcLeft_, isC, true);
 
-    cbEditor::ApplyStyles(TCRight);
-    TCRight->SetMarginWidth(1, 16);
-    TCRight->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
-    TCRight->SetMarginWidth(2,0);    // to hide the change and fold margin
-    TCRight->SetMarginWidth(3,0);    // made by cbEditor::ApplyStyles
-    TCRight->MarkerDefine(PLUS_MARKER, wxSCI_MARK_PLUS, colset.m_addedlines, colset.m_addedlines);
-    TCRight->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
-    TCRight->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.m_addedlines, colset.m_addedlines);
-    TCRight->MarkerSetAlpha(GREEN_BKG_MARKER, colset.m_addedlines.Alpha());
-    TCRight->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
-    if(colset.m_caretlinetype == 0)
+    cbEditor::ApplyStyles(tcRight_);
+    tcRight_->SetMarginWidth(1, 16);
+    tcRight_->SetMarginType(1, wxSCI_MARGIN_SYMBOL);
+    tcRight_->SetMarginWidth(2,0);    // to hide the change and fold margin
+    tcRight_->SetMarginWidth(3,0);    // made by cbEditor::ApplyStyles
+    tcRight_->MarkerDefine(PLUS_MARKER, wxSCI_MARK_PLUS, colset.addedlines_, colset.addedlines_);
+    tcRight_->MarkerDefine(EQUAL_MARKER, wxSCI_MARK_CHARACTER + 61, *wxWHITE, marbkg);
+    tcRight_->MarkerDefine(GREEN_BKG_MARKER, wxSCI_MARK_BACKGROUND, colset.addedlines_, colset.addedlines_);
+    tcRight_->MarkerSetAlpha(GREEN_BKG_MARKER, colset.addedlines_.Alpha());
+    tcRight_->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
+    if(colset.caretlinetype_ == 0)
     {
-        TCRight->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.m_caretline, colset.m_caretline);
+        tcRight_->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_UNDERLINE, colset.caretline_, colset.caretline_);
     }
     else
     {
-        TCRight->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND, colset.m_caretline, colset.m_caretline);
-        TCRight->MarkerSetAlpha(CARET_LINE_MARKER, colset.m_caretline.Alpha());
+        tcRight_->MarkerDefine(CARET_LINE_MARKER, wxSCI_MARK_BACKGROUND, colset.caretline_, colset.caretline_);
+        tcRight_->MarkerSetAlpha(CARET_LINE_MARKER, colset.caretline_.Alpha());
     }
-    m_theme->Apply(m_theme->GetHighlightLanguage(colset.m_hlang), TCRight, isC, true);
+    theme_->Apply(theme_->GetHighlightLanguage(colset.hlang_), tcRight_, isC, true);
 }
 
 void cbSideBySideCtrl::ShowDiff(wxDiff diff)
 {
-    Disconnect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
-    Disconnect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( tcLeft_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Disconnect( tcRight_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 
     std::map<long, int> right_added  = diff.GetAddedLines();
     std::map<long, int> right_empty  = diff.GetRightEmptyLines();
@@ -153,19 +153,19 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     rightReadOnly_ = diff.RightReadOnly();
 
     linesLeftWithDifferences_.clear();
-    int leftCursorPos =   TCLeft->GetCurrentPos();
-    TCLeft->SetReadOnly(false);
-    TCLeft->ClearAll();
-    TCLeft->LoadFile(diff.GetLeftFilename());
-    TCLeft->AnnotationClearAll();
+    int leftCursorPos =   tcLeft_->GetCurrentPos();
+    tcLeft_->SetReadOnly(false);
+    tcLeft_->ClearAll();
+    tcLeft_->LoadFile(diff.GetLeftFilename());
+    tcLeft_->AnnotationClearAll();
     for(auto itr = left_removed.begin() ; itr != left_removed.end() ; ++itr)
     {
         long line_removed = itr->first;
         unsigned int removed = itr->second;
         for(unsigned int k = 0 ; k < removed ; ++k)
         {
-            TCLeft->MarkerAdd(line_removed+k, MINUS_MARKER);
-            TCLeft->MarkerAdd(line_removed+k, RED_BKG_MARKER);
+            tcLeft_->MarkerAdd(line_removed+k, MINUS_MARKER);
+            tcLeft_->MarkerAdd(line_removed+k, RED_BKG_MARKER);
         }
         auto it = left_empty.find(line_removed);
         if(it != left_empty.end())
@@ -173,7 +173,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
             long line_empty = line_removed + removed;
             unsigned int empty = it->second - removed;
             wxString annotationStr('\n', empty-1);
-            TCLeft->AnnotationSetText(line_empty-1, annotationStr);
+            tcLeft_->AnnotationSetText(line_empty-1, annotationStr);
             left_empty.erase(it);
         }
         linesLeftWithDifferences_.push_back(line_removed);
@@ -183,30 +183,30 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         long line = itr->first;
         unsigned int len = itr->second;
         wxString annotationStr('\n', len-1);
-        TCLeft->AnnotationSetText(line-1, annotationStr);
+        tcLeft_->AnnotationSetText(line-1, annotationStr);
         auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), line);
         linesLeftWithDifferences_.insert(i, line);
     }
     if(leftReadOnly_)
-        TCLeft->SetReadOnly(true);
-    TCLeft->SetMarginType(0, wxSCI_MARGIN_NUMBER);
-    setLineNumberMarginWidth(TCLeft, lineNumbersWidthLeft);
-    TCLeft->GotoPos(leftCursorPos);
+        tcLeft_->SetReadOnly(true);
+    tcLeft_->SetMarginType(0, wxSCI_MARGIN_NUMBER);
+    setLineNumberMarginWidth(tcLeft_, lineNumbersWidthLeft_);
+    tcLeft_->GotoPos(leftCursorPos);
 
     linesRightWithDifferences_.clear();
-    int rightCursorPos = TCRight->GetCurrentPos();
-    TCRight->SetReadOnly(false);
-    TCRight->ClearAll();
-    TCRight->LoadFile(diff.GetRightFilename());
-    TCRight->AnnotationClearAll();
+    int rightCursorPos = tcRight_->GetCurrentPos();
+    tcRight_->SetReadOnly(false);
+    tcRight_->ClearAll();
+    tcRight_->LoadFile(diff.GetRightFilename());
+    tcRight_->AnnotationClearAll();
     for(auto itr = right_added.begin() ; itr != right_added.end() ; ++itr)
     {
         long line_added = itr->first;
         unsigned int added = itr->second;
         for(unsigned int k = 0 ; k < added ; ++k)
         {
-            TCRight->MarkerAdd(line_added+k, PLUS_MARKER);
-            TCRight->MarkerAdd(line_added+k, GREEN_BKG_MARKER);
+            tcRight_->MarkerAdd(line_added+k, PLUS_MARKER);
+            tcRight_->MarkerAdd(line_added+k, GREEN_BKG_MARKER);
         }
         auto it = right_empty.find(line_added);
         if(it != right_empty.end())
@@ -214,7 +214,7 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
             long line_empty = line_added + added;
             unsigned int empty = it->second - added;
             wxString annotationStr('\n', empty-1);
-            TCRight->AnnotationSetText(line_empty-1, annotationStr);
+            tcRight_->AnnotationSetText(line_empty-1, annotationStr);
             right_empty.erase(it);
         }
         linesRightWithDifferences_.push_back(line_added);
@@ -224,37 +224,37 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
         long line = itr->first;
         unsigned int len = itr->second;
         wxString annotationStr('\n', len-1);
-        TCRight->AnnotationSetText(line-1, annotationStr);
+        tcRight_->AnnotationSetText(line-1, annotationStr);
         auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), line);
         linesRightWithDifferences_.insert(i, line);
     }
     if(rightReadOnly_)
-        TCRight->SetReadOnly(true);
-    TCRight->SetMarginType(0, wxSCI_MARGIN_NUMBER);
-    setLineNumberMarginWidth(TCRight, lineNumbersWidthRight);
-    TCRight->GotoPos(rightCursorPos);
+        tcRight_->SetReadOnly(true);
+    tcRight_->SetMarginType(0, wxSCI_MARGIN_NUMBER);
+    setLineNumberMarginWidth(tcRight_, lineNumbersWidthRight_);
+    tcRight_->GotoPos(rightCursorPos);
 
-    Connect( TCLeft->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
-    Connect( TCRight->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Connect( tcLeft_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
+    Connect( tcRight_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
 }
 
 void cbSideBySideCtrl::Synchronize()
 {
     int curr_line = 0;
-    if(TCLeft->GetSCIFocus())   // which scintilla control has the focus?
-        curr_line = TCLeft->VisibleFromDocLine(TCLeft->GetCurrentLine());
+    if(tcLeft_->GetSCIFocus())   // which scintilla control has the focus?
+        curr_line = tcLeft_->VisibleFromDocLine(tcLeft_->GetCurrentLine());
 
-    if(TCRight->GetSCIFocus())
-        curr_line = TCRight->VisibleFromDocLine(TCRight->GetCurrentLine());
+    if(tcRight_->GetSCIFocus())
+        curr_line = tcRight_->VisibleFromDocLine(tcRight_->GetCurrentLine());
 
     /* Caretline background synchronisation */
     if(curr_line != lastSyncedLine_)
     {
-        TCLeft->MarkerDeleteHandle(lastSyncedLHandle);
-        TCRight->MarkerDeleteHandle(lastSyncedRHandle);
+        tcLeft_->MarkerDeleteHandle(lastSyncedLHandle_);
+        tcRight_->MarkerDeleteHandle(lastSyncedRHandle_);
 
-        lastSyncedLHandle = TCLeft->MarkerAdd(TCLeft->DocLineFromVisible(curr_line), CARET_LINE_MARKER);
-        lastSyncedRHandle = TCRight->MarkerAdd(TCRight->DocLineFromVisible(curr_line), CARET_LINE_MARKER);
+        lastSyncedLHandle_ = tcLeft_->MarkerAdd(tcLeft_->DocLineFromVisible(curr_line), CARET_LINE_MARKER);
+        lastSyncedRHandle_ = tcRight_->MarkerAdd(tcRight_->DocLineFromVisible(curr_line), CARET_LINE_MARKER);
 
         lastSyncedLine_ = curr_line;
         return;
@@ -262,43 +262,43 @@ void cbSideBySideCtrl::Synchronize()
 
     int curr_scroll_focus = 0;
     // which wxcontrol has the scrollfocus?
-    if(TCLeft->GetRect().Contains(ScreenToClient(wxGetMousePosition())))
+    if(tcLeft_->GetRect().Contains(ScreenToClient(wxGetMousePosition())))
         curr_scroll_focus = 1;
-    if(TCRight->GetRect().Contains(ScreenToClient(wxGetMousePosition())))
+    if(tcRight_->GetRect().Contains(ScreenToClient(wxGetMousePosition())))
         curr_scroll_focus = 2;
 
     /* Zoom synchronisation */
-    if(TCRight->GetZoom() != TCLeft->GetZoom())
+    if(tcRight_->GetZoom() != tcLeft_->GetZoom())
     {
         if(curr_scroll_focus == 1)
-            TCRight->SetZoom(TCLeft->GetZoom());
+            tcRight_->SetZoom(tcLeft_->GetZoom());
         if(curr_scroll_focus == 2)
-            TCLeft->SetZoom(TCRight->GetZoom());
+            tcLeft_->SetZoom(tcRight_->GetZoom());
     }
 
     /* Scroll synchronisation */
-    if(m_vscrollpos != VScrollBar->GetThumbPosition())
+    if(vscrollpos_ != vScrollBar_->GetThumbPosition())
     {
-        TCLeft->SetFirstVisibleLine(VScrollBar->GetThumbPosition());
-        TCRight->SetFirstVisibleLine(VScrollBar->GetThumbPosition());
-        m_vscrollpos = VScrollBar->GetThumbPosition();
+        tcLeft_->SetFirstVisibleLine(vScrollBar_->GetThumbPosition());
+        tcRight_->SetFirstVisibleLine(vScrollBar_->GetThumbPosition());
+        vscrollpos_ = vScrollBar_->GetThumbPosition();
     }
-    if(m_hscrollpos != HScrollBar->GetThumbPosition())
+    if(hscrollpos_ != hScrollBar_->GetThumbPosition())
     {
-        TCLeft->SetXOffset(HScrollBar->GetThumbPosition());
-        TCRight->SetXOffset(HScrollBar->GetThumbPosition());
-        m_hscrollpos = HScrollBar->GetThumbPosition();
+        tcLeft_->SetXOffset(hScrollBar_->GetThumbPosition());
+        tcRight_->SetXOffset(hScrollBar_->GetThumbPosition());
+        hscrollpos_ = hScrollBar_->GetThumbPosition();
     }
 }
 
 bool cbSideBySideCtrl::GetModified() const
 {
-    if(TCLeft->HasFocus())
-        return TCLeft->GetModify();
-    else if(TCRight->HasFocus())
-        return TCRight->GetModify();
+    if(tcLeft_->HasFocus())
+        return tcLeft_->GetModify();
+    else if(tcRight_->HasFocus())
+        return tcRight_->GetModify();
     else
-        return TCLeft->GetModify() || TCRight->GetModify();
+        return tcLeft_->GetModify() || tcRight_->GetModify();
 }
 
 bool cbSideBySideCtrl::QueryClose()
@@ -306,7 +306,7 @@ bool cbSideBySideCtrl::QueryClose()
     if (!GetModified())
         return true;
 
-    if(TCLeft->GetModify() && TCRight->GetModify())
+    if(tcLeft_->GetModify() && tcRight_->GetModify())
     {
         wxArrayString choices;
         choices.Add("none");
@@ -315,9 +315,9 @@ bool cbSideBySideCtrl::QueryClose()
         choices.Add("both");
         switch(wxGetSingleChoiceIndex("save", "Confirm", choices))
         {
-        case  0: TCLeft->SetSavePoint(); TCRight->SetSavePoint();break;
-        case  1: TCRight->SetSavePoint(); return SaveLeft();
-        case  2: TCLeft->SetSavePoint();  return SaveRight();
+        case  0: tcLeft_->SetSavePoint(); tcRight_->SetSavePoint();break;
+        case  1: tcRight_->SetSavePoint(); return SaveLeft();
+        case  2: tcLeft_->SetSavePoint();  return SaveRight();
         case  3:
         {
             const bool leftOk = SaveLeft();
@@ -328,7 +328,7 @@ bool cbSideBySideCtrl::QueryClose()
         case -1: return false;
         }
     }
-    else if ( TCLeft->GetModify() )
+    else if ( tcLeft_->GetModify() )
     {
         int answer = wxMessageBox("Save Left?", "Confirm", wxYES_NO | wxCANCEL);
         if (answer == wxCANCEL)
@@ -336,9 +336,9 @@ bool cbSideBySideCtrl::QueryClose()
         else if (answer == wxYES)
             return SaveLeft();
         else
-            TCLeft->SetSavePoint();
+            tcLeft_->SetSavePoint();
     }
-    else if ( TCRight->GetModify() )
+    else if ( tcRight_->GetModify() )
     {
         int answer = wxMessageBox("Save Right?", "Confirm", wxYES_NO | wxCANCEL);
         if (answer == wxCANCEL)
@@ -346,7 +346,7 @@ bool cbSideBySideCtrl::QueryClose()
         else if (answer == wxYES)
             return SaveRight();
         else
-            TCRight->SetSavePoint();
+            tcRight_->SetSavePoint();
     }
 
     parent_->updateTitle();
@@ -355,9 +355,9 @@ bool cbSideBySideCtrl::QueryClose()
 
 bool cbSideBySideCtrl::Save()
 {
-    if(TCLeft->HasFocus())
+    if(tcLeft_->HasFocus())
         return SaveLeft();
-    else if(TCRight->HasFocus())
+    else if(tcRight_->HasFocus())
         return SaveRight();
     else
     {
@@ -370,9 +370,9 @@ bool cbSideBySideCtrl::Save()
 
 bool cbSideBySideCtrl::SaveLeft()
 {
-    if(TCLeft->GetModify())
+    if(tcLeft_->GetModify())
     {
-        if(!TCLeft->SaveFile(leftFilename_))
+        if(!tcLeft_->SaveFile(leftFilename_))
             return false;
         else
             parent_->updateTitle();
@@ -382,9 +382,9 @@ bool cbSideBySideCtrl::SaveLeft()
 
 bool cbSideBySideCtrl::SaveRight()
 {
-    if(TCRight->GetModify())
+    if(tcRight_->GetModify())
     {
-        if(!TCRight->SaveFile(rightFilename_))
+        if(!tcRight_->SaveFile(rightFilename_))
             return false;
         else
             parent_->updateTitle();
@@ -394,12 +394,12 @@ bool cbSideBySideCtrl::SaveRight()
 
 bool cbSideBySideCtrl::LeftModified()
 {
-    return TCLeft->GetModify();
+    return tcLeft_->GetModify();
 }
 
 bool cbSideBySideCtrl::RightModified()
 {
-    return TCRight->GetModify();
+    return tcRight_->GetModify();
 }
 
 void cbSideBySideCtrl::setLineNumberMarginWidth(cbStyledTextCtrl *stc, int &currWidth)
@@ -436,105 +436,105 @@ void cbSideBySideCtrl::OnEditorChange(wxScintillaEvent &event)
 
 void cbSideBySideCtrl::Undo()
 {
-    if(!leftReadOnly_ && TCLeft->HasFocus())
-        TCLeft->Undo();
+    if(!leftReadOnly_ && tcLeft_->HasFocus())
+        tcLeft_->Undo();
 
-    if(!rightReadOnly_ && TCRight->HasFocus())
-        TCRight->Undo();
+    if(!rightReadOnly_ && tcRight_->HasFocus())
+        tcRight_->Undo();
 }
 
 void cbSideBySideCtrl::Redo()
 {
-    if(!leftReadOnly_ && TCLeft->HasFocus())
-        TCLeft->Redo();
+    if(!leftReadOnly_ && tcLeft_->HasFocus())
+        tcLeft_->Redo();
 
-    if(!rightReadOnly_ && TCRight->HasFocus())
-        TCRight->Redo();
+    if(!rightReadOnly_ && tcRight_->HasFocus())
+        tcRight_->Redo();
 }
 
 void cbSideBySideCtrl::ClearHistory()
 {
-    if(TCLeft->HasFocus())
-        TCLeft->EmptyUndoBuffer();
+    if(tcLeft_->HasFocus())
+        tcLeft_->EmptyUndoBuffer();
 
-    if(TCRight->HasFocus())
-        TCRight->EmptyUndoBuffer();
+    if(tcRight_->HasFocus())
+        tcRight_->EmptyUndoBuffer();
 }
 
 void cbSideBySideCtrl::Cut()
 {
-    if(!leftReadOnly_ && TCLeft->HasFocus())
-        TCLeft->Cut();
+    if(!leftReadOnly_ && tcLeft_->HasFocus())
+        tcLeft_->Cut();
 
-    if(!rightReadOnly_ && TCRight->HasFocus())
-        TCRight->Cut();
+    if(!rightReadOnly_ && tcRight_->HasFocus())
+        tcRight_->Cut();
 }
 
 void cbSideBySideCtrl::Copy()
 {
-    if(TCLeft->HasFocus())
-        TCLeft->Copy();
+    if(tcLeft_->HasFocus())
+        tcLeft_->Copy();
 
-    if(TCRight->HasFocus())
-        TCRight->Copy();
+    if(tcRight_->HasFocus())
+        tcRight_->Copy();
 }
 
 void cbSideBySideCtrl::Paste()
 {
-    if(!leftReadOnly_ && TCLeft->HasFocus())
-        TCLeft->Paste();
+    if(!leftReadOnly_ && tcLeft_->HasFocus())
+        tcLeft_->Paste();
 
-    if(!rightReadOnly_ && TCRight->HasFocus())
-        TCRight->Paste();
+    if(!rightReadOnly_ && tcRight_->HasFocus())
+        tcRight_->Paste();
 }
 
 bool cbSideBySideCtrl::CanUndo() const
 {
-    if(TCLeft->HasFocus())
-        return !leftReadOnly_ && TCLeft->CanUndo();
+    if(tcLeft_->HasFocus())
+        return !leftReadOnly_ && tcLeft_->CanUndo();
 
-    if(TCRight->HasFocus())
-        return !rightReadOnly_ && TCRight->CanUndo();
+    if(tcRight_->HasFocus())
+        return !rightReadOnly_ && tcRight_->CanUndo();
 
     return false;
 }
 
 bool cbSideBySideCtrl::CanRedo() const
 {
-    if(TCLeft->HasFocus())
-        return !leftReadOnly_ && TCLeft->CanRedo();
+    if(tcLeft_->HasFocus())
+        return !leftReadOnly_ && tcLeft_->CanRedo();
 
-    if(TCRight->HasFocus())
-        return !rightReadOnly_ && TCRight->CanRedo();
+    if(tcRight_->HasFocus())
+        return !rightReadOnly_ && tcRight_->CanRedo();
 
     return false;
 }
 
 bool cbSideBySideCtrl::HasSelection() const
 {
-    if(TCLeft->HasFocus())
-        return TCLeft->GetSelectionStart() != TCLeft->GetSelectionEnd();
+    if(tcLeft_->HasFocus())
+        return tcLeft_->GetSelectionStart() != tcLeft_->GetSelectionEnd();
 
-    if(TCRight->HasFocus())
-        return TCRight->GetSelectionStart() != TCRight->GetSelectionEnd();
+    if(tcRight_->HasFocus())
+        return tcRight_->GetSelectionStart() != tcRight_->GetSelectionEnd();
 
     return false;
 }
 
 bool cbSideBySideCtrl::CanPaste() const
 {
-    if(TCLeft->HasFocus())
+    if(tcLeft_->HasFocus())
     {
         if (platform::gtk)
             return !leftReadOnly_;
-        return TCLeft->CanPaste() && !leftReadOnly_;
+        return tcLeft_->CanPaste() && !leftReadOnly_;
     }
 
-    if(TCRight->HasFocus())
+    if(tcRight_->HasFocus())
     {
         if (platform::gtk)
             return !rightReadOnly_;
-        return TCRight->CanPaste() && !rightReadOnly_;
+        return tcRight_->CanPaste() && !rightReadOnly_;
     }
 
     return false;
@@ -542,97 +542,97 @@ bool cbSideBySideCtrl::CanPaste() const
 
 bool cbSideBySideCtrl::CanSelectAll() const
 {
-    if(TCLeft->HasFocus())
-        return TCLeft->GetLength() > 0;
+    if(tcLeft_->HasFocus())
+        return tcLeft_->GetLength() > 0;
 
-    if(TCRight->HasFocus())
-        return TCLeft->GetLength() > 0;
+    if(tcRight_->HasFocus())
+        return tcLeft_->GetLength() > 0;
 
     return false;
 }
 
 void cbSideBySideCtrl::SelectAll()
 {
-    if(TCLeft->HasFocus())
-        TCLeft->SelectAll();
+    if(tcLeft_->HasFocus())
+        tcLeft_->SelectAll();
 
-    if(TCRight->HasFocus())
-        TCRight->SelectAll();
+    if(tcRight_->HasFocus())
+        tcRight_->SelectAll();
 }
 
 void cbSideBySideCtrl::NextDifference()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty())
             return;
 
-        auto i = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+        auto i = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), tcLeft_->GetCurrentLine());
 
         if(i == linesLeftWithDifferences_.end())
             return;
 
-        TCLeft->GotoLine(*i);
+        tcLeft_->GotoLine(*i);
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty())
             return;
 
-        auto i = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+        auto i = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), tcRight_->GetCurrentLine());
 
         if(i == linesRightWithDifferences_.end())
             return;
 
-        TCRight->GotoLine(*i);
+        tcRight_->GotoLine(*i);
     }
 }
 
 void cbSideBySideCtrl::PrevDifference()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty())
             return;
 
-        auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+        auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), tcLeft_->GetCurrentLine());
 
         if(i == linesLeftWithDifferences_.begin())
             return;
 
-        TCLeft->GotoLine(*(--i));
+        tcLeft_->GotoLine(*(--i));
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty())
             return;
 
-        auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+        auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), tcRight_->GetCurrentLine());
 
         if(i == linesRightWithDifferences_.begin())
             return;
 
-        TCRight->GotoLine(*(--i));
+        tcRight_->GotoLine(*(--i));
     }
 }
 
 bool cbSideBySideCtrl::CanGotoNextDiff()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty())
             return false;
 
-        auto i = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+        auto i = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), tcLeft_->GetCurrentLine());
 
         return i != linesLeftWithDifferences_.end();
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty())
             return false;
 
-        auto i = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+        auto i = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), tcRight_->GetCurrentLine());
 
         return i != linesRightWithDifferences_.end();
     }
@@ -641,21 +641,21 @@ bool cbSideBySideCtrl::CanGotoNextDiff()
 
 bool cbSideBySideCtrl::CanGotoPrevDiff()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty())
             return false;
 
-        auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), TCLeft->GetCurrentLine());
+        auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), tcLeft_->GetCurrentLine());
 
         return i != linesLeftWithDifferences_.begin();
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty())
             return false;
 
-        auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), TCRight->GetCurrentLine());
+        auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), tcRight_->GetCurrentLine());
 
         return i != linesRightWithDifferences_.begin();
     }
@@ -664,66 +664,66 @@ bool cbSideBySideCtrl::CanGotoPrevDiff()
 
 void cbSideBySideCtrl::FirstDifference()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty()) return;
-        TCLeft->GotoLine(linesLeftWithDifferences_.front());
+        tcLeft_->GotoLine(linesLeftWithDifferences_.front());
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty()) return;
-        TCRight->GotoLine(linesRightWithDifferences_.front());
+        tcRight_->GotoLine(linesRightWithDifferences_.front());
     }
 }
 
 void cbSideBySideCtrl::LastDifference()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty()) return;
-        TCLeft->GotoLine(linesLeftWithDifferences_.back());
+        tcLeft_->GotoLine(linesLeftWithDifferences_.back());
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty()) return;
-        TCRight->GotoLine(linesRightWithDifferences_.back());
+        tcRight_->GotoLine(linesRightWithDifferences_.back());
     }
 }
 
 bool cbSideBySideCtrl::CanGotoFirstDiff()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty())
            return false;
 
-        return TCLeft->GetCurrentLine() != linesLeftWithDifferences_.front();
+        return tcLeft_->GetCurrentLine() != linesLeftWithDifferences_.front();
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty())
             return false;
 
-        return TCRight->GetCurrentLine() != linesRightWithDifferences_.front();
+        return tcRight_->GetCurrentLine() != linesRightWithDifferences_.front();
     }
     return false;
 }
 
 bool cbSideBySideCtrl::CanGotoLastDiff()
 {
-    if(TCLeft->GetSCIFocus())
+    if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty())
            return false;
 
-        return TCLeft->GetCurrentLine() != linesLeftWithDifferences_.back();
+        return tcLeft_->GetCurrentLine() != linesLeftWithDifferences_.back();
     }
-    else if(TCRight->GetSCIFocus())
+    else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty())
             return false;
 
-        return TCRight->GetCurrentLine() != linesRightWithDifferences_.back();
+        return tcRight_->GetCurrentLine() != linesRightWithDifferences_.back();
     }
     return false;
 }

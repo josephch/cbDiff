@@ -35,7 +35,7 @@ protected:
     virtual bool RightModified() override{return false;}
 private:
     std::vector<long> linesWithDifferences_;
-    cbStyledTextCtrl *m_txtctrl;
+    cbStyledTextCtrl *txtctrl_;
 };
 
 #endif
