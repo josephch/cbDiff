@@ -9,12 +9,15 @@ class cbTableCtrl : public cbDiffCtrl
 {
 public:
     cbTableCtrl(cbDiffEditor* parent);
-    virtual ~cbTableCtrl();
+    virtual ~cbTableCtrl(){}
     virtual void Init(cbDiffColors colset) override;
     virtual void ShowDiff(wxDiff diff) override;
-    virtual bool GetModified() const override;
-    virtual bool QueryClose() override;
-    virtual bool Save() override;
+
+    virtual bool GetModified() const override{return false;}
+    virtual bool QueryClose() override{return true;}
+    virtual bool Save() override{return true;}
+    virtual bool CanSelectAll() const override{return false;}
+    virtual void SelectAll() override{}
 
     virtual void NextDifference()override;
     virtual void PrevDifference()override;
@@ -25,24 +28,14 @@ public:
     virtual bool CanGotoFirstDiff()override;
     virtual bool CanGotoLastDiff()override;
 
-    virtual void Undo()override;
-    virtual void Redo()override;
-    virtual void ClearHistory()override;/** Clear Undo- (and Changebar-) history */
-    virtual void Cut()override;
+    //virtual void Cut()override;
     virtual void Copy()override;
-    virtual void Paste()override;
-    virtual bool CanUndo() const override;
-    virtual bool CanRedo() const override;
     virtual bool HasSelection() const override;
-    virtual bool CanPaste() const override;
-    virtual bool CanSelectAll() const override;
-    virtual void SelectAll() override;
 protected:
     virtual bool LeftModified() override{return false;}
-    virtual bool RightModified() override;
+    virtual bool RightModified() override{return false;}
 private:
     std::vector<long> linesWithDifferences_;
-    void OnEditorChange(wxScintillaEvent &event);
     cbStyledTextCtrl *m_txtctrl;
     int lineNumbersWidthRight;
     void setLineNumberMarginWidth();
