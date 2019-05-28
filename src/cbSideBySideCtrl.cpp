@@ -689,18 +689,38 @@ void cbSideBySideCtrl::LastDifference()
 bool cbSideBySideCtrl::CanGotoFirstDiff()
 {
     if(TCLeft->GetSCIFocus())
-        return !linesLeftWithDifferences_.empty();
+    {
+        if(linesLeftWithDifferences_.empty())
+           return false;
+
+        return TCLeft->GetCurrentLine() != linesLeftWithDifferences_.front();
+    }
     else if(TCRight->GetSCIFocus())
-        return !linesRightWithDifferences_.empty();
+    {
+        if(linesRightWithDifferences_.empty())
+            return false;
+
+        return TCRight->GetCurrentLine() != linesRightWithDifferences_.front();
+    }
     return false;
 }
 
 bool cbSideBySideCtrl::CanGotoLastDiff()
 {
     if(TCLeft->GetSCIFocus())
-        return !linesLeftWithDifferences_.empty();
+    {
+        if(linesLeftWithDifferences_.empty())
+           return false;
+
+        return TCLeft->GetCurrentLine() != linesLeftWithDifferences_.back();
+    }
     else if(TCRight->GetSCIFocus())
-        return !linesRightWithDifferences_.empty();
+    {
+        if(linesRightWithDifferences_.empty())
+            return false;
+
+        return TCRight->GetCurrentLine() != linesRightWithDifferences_.back();
+    }
     return false;
 }
 

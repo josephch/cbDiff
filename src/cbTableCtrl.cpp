@@ -192,10 +192,17 @@ void cbTableCtrl::LastDifference()
 
 bool cbTableCtrl::CanGotoFirstDiff()
 {
-    return !linesWithDifferences_.empty();
+    if(linesWithDifferences_.empty())
+        return false;
+
+    return m_txtctrl->GetCurrentLine() != linesWithDifferences_.front();
 }
 
 bool cbTableCtrl::CanGotoLastDiff()
 {
-    return !linesWithDifferences_.empty();
+
+    if(linesWithDifferences_.empty())
+        return false;
+
+    return m_txtctrl->GetCurrentLine() != linesWithDifferences_.back();
 }
