@@ -36,7 +36,6 @@ protected:
 private:
     std::vector<long> linesWithDifferences_;
     cbStyledTextCtrl *m_txtctrl;
-    void setLineNumberMarginWidth();
 };
 
 #endif
