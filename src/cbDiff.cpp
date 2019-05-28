@@ -382,7 +382,7 @@ void cbDiff::EvalCmdLine()
 void cbDiff::OnSwitchView(wxCommandEvent &event)
 {
     cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
-    if(!ed) return;
+    if(!ed || ed->GetModified()) return;
 
     int mode;
     if      (event.GetId() == ID_VIEW_TABLE)   mode = cbDiffEditor::TABLE;
@@ -399,7 +399,7 @@ void cbDiff::OnSwitchView(wxCommandEvent &event)
 void cbDiff::OnUpdateSwitchView(wxUpdateUIEvent &event)
 {
     cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
-    if(!ed)
+    if(!ed || ed->GetModified())
     {
         event.Enable(false);
         return;
