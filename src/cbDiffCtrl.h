@@ -18,13 +18,22 @@ public:
     virtual void ShowDiff(wxDiff diff) = 0;
 
     virtual void NextDifference() = 0;
-    virtual void PrevDifference() = 0;
     virtual bool CanGotoNextDiff() = 0;
+    virtual void PrevDifference() = 0;
     virtual bool CanGotoPrevDiff() = 0;
     virtual void FirstDifference() = 0;
-    virtual void LastDifference() = 0;
     virtual bool CanGotoFirstDiff() = 0;
+    virtual void LastDifference() = 0;
     virtual bool CanGotoLastDiff() = 0;
+
+    virtual void CopyLeft() = 0;
+    virtual bool CanCopyLeft() = 0;
+    virtual void CopyRight() = 0;
+    virtual bool CanCopyRight() = 0;
+    virtual void CopyLeftNext() = 0;
+    virtual bool CanCopyLeftNext() = 0;
+    virtual void CopyRightNext() = 0;
+    virtual bool CanCopyRightNext() = 0;
 
     virtual bool GetModified() const = 0;
     virtual bool QueryClose() = 0;

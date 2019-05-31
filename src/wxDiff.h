@@ -19,7 +19,8 @@ public:
     std::map<long, int> GetRemovedLines();
     std::map<long, int> GetLeftEmptyLines();
     std::map<long, int> GetRightEmptyLines();
-    std::map<long, long> GetLinePositions();
+    std::map<long, long> GetLinePositionsLeft();
+    std::map<long, long> GetLinePositionsRight();
     wxString GetLeftFilename();
     wxString GetRightFilename();
     bool RightReadOnly()const;
@@ -37,7 +38,8 @@ private:
     std::map<long, int>  removed_lines_;
     std::map<long, int>  left_empty_lines_;
     std::map<long, int>  right_empty_lines_;
-    std::map<long, long> line_pos_;
+    std::map<long, long> line_pos_right_;
+    std::map<long, long> line_pos_left_;
 };
 
 #endif

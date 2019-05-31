@@ -15,6 +15,7 @@ class cbDiffCtrl;
 #define GREEN_BKG_MARKER     5
 #define GREY_BKG_MARKER      6
 #define CARET_LINE_MARKER    7
+#define BLUE_BKG_MARKER      8
 
 class cbDiffColors
 {
@@ -22,6 +23,7 @@ public:
     wxString hlang_;       /// the highlightlanguage in Table/SidebySide mode
     wxColour addedlines_;
     wxColour removedlines_;
+    wxColour selectedlines_;
     int caretlinetype_;
     wxColour caretline_;
 };
@@ -78,6 +80,15 @@ public:
     void LastDifference();
     bool CanGotoFirstDiff();
     bool CanGotoLastDiff();
+
+    void CopyLeft();
+    bool CanCopyLeft();
+    void CopyRight();
+    bool CanCopyRight();
+    void CopyLeftNext();
+    bool CanCopyLeftNext();
+    void CopyRightNext();
+    bool CanCopyRightNext();
 
     enum
     {

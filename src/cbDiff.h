@@ -37,8 +37,8 @@ class cbDiff : public cbPlugin
         void OnMenuSaveAsUnifiedDiff(wxCommandEvent &event);
         void OnUpdateUiSaveAsUnifiedDiff(wxUpdateUIEvent &event);
         void OnNextDifference(wxCommandEvent &event);
-        void OnPrevDifference(wxCommandEvent &event);
         void OnUpdateNextDifference(wxUpdateUIEvent &event);
+        void OnPrevDifference(wxCommandEvent &event);
         void OnUpdatePrevDifference(wxUpdateUIEvent &event);
         void OnAppDoneStartup(CodeBlocksEvent &event);
         void OnAppCmdLine(CodeBlocksEvent &event);
@@ -55,7 +55,14 @@ class cbDiff : public cbPlugin
         void OnLastDifference(wxCommandEvent &event);
         void OnUpdateLastDifference(wxUpdateUIEvent &event);
 
-
+        void OnCopyLeft(wxCommandEvent &event);
+        void OnUpdateCopyLeft(wxUpdateUIEvent &event);
+        void OnCopyRight(wxCommandEvent &event);
+        void OnUpdateCopyRight(wxUpdateUIEvent &event);
+        void OnCopyLeftNext(wxCommandEvent &event);
+        void OnUpdateCopyLeftNext(wxUpdateUIEvent &event);
+        void OnCopyRightNext(wxCommandEvent &event);
+        void OnUpdateCopyRightNext(wxUpdateUIEvent &event);
 
         bool m_prevSelectionValid;
         wxString m_prevFileName;

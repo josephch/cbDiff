@@ -24,16 +24,21 @@ namespace
     const int ID_CONTEXT_DIFF_TWO_FILES = wxNewId();
     const int ID_MENU_SAVE_UNIFIED_DIFF = wxNewId();
 
-    const int ID_NEXT_DIFFERENCE        = XRCID("CB_DIFF_NEXT_DIFFERENCE");
-    const int ID_PREV_DIFFERENCE        = XRCID("CB_DIFF_PREVIOUS_DIFFERENCE");
-    const int ID_FIRST_DIFFERENCE       = XRCID("CB_DIFF_FIRST_DIFFERENCE");
-    const int ID_LAST_DIFFERENCE        = XRCID("CB_DIFF_LAST_DIFFERENCE");
-
     const int ID_VIEW_TABLE             = XRCID("CB_DIFF_ID_VIEW_TABLE");
     const int ID_VIEW_UNIFIED           = XRCID("CB_DIFF_ID_VIEW_UNIFIED");
     const int ID_VIEW_SIDEBYSIDE        = XRCID("CB_DIFF_ID_VIEW_SIDEBYSIDE");
     const int ID_RELOAD_FILES           = XRCID("CB_DIFF_ID_RELOAD_FILES");
     const int ID_SWAP_FILES             = XRCID("CB_DIFF_ID_SWAP_FILES");
+
+    const int ID_NEXT_DIFFERENCE        = XRCID("CB_DIFF_NEXT_DIFFERENCE");
+    const int ID_PREV_DIFFERENCE        = XRCID("CB_DIFF_PREVIOUS_DIFFERENCE");
+    const int ID_FIRST_DIFFERENCE       = XRCID("CB_DIFF_FIRST_DIFFERENCE");
+    const int ID_LAST_DIFFERENCE        = XRCID("CB_DIFF_LAST_DIFFERENCE");
+
+    const int ID_COPY_LEFT              = XRCID("CB_DIFF_COPY_LEFT");
+    const int ID_COPY_RIGHT             = XRCID("CB_DIFF_COPY_RIGHT");
+    const int ID_COPY_LEFT_NEXT         = XRCID("CB_DIFF_COPY_LEFT_NEXT");
+    const int ID_COPY_RIGHT_NEXT        = XRCID("CB_DIFF_COPY_RIGHT_NEXT");
 }
 
 /// Function for other plugins
@@ -49,15 +54,6 @@ BEGIN_EVENT_TABLE(cbDiff, cbPlugin)
     EVT_MENU        (ID_MENU_SAVE_UNIFIED_DIFF, cbDiff::OnMenuSaveAsUnifiedDiff)
     EVT_UPDATE_UI   (ID_MENU_SAVE_UNIFIED_DIFF, cbDiff::OnUpdateUiSaveAsUnifiedDiff)
 
-    EVT_MENU        (ID_NEXT_DIFFERENCE,        cbDiff::OnNextDifference)
-    EVT_UPDATE_UI   (ID_NEXT_DIFFERENCE,        cbDiff::OnUpdateNextDifference)
-    EVT_MENU        (ID_PREV_DIFFERENCE,        cbDiff::OnPrevDifference)
-    EVT_UPDATE_UI   (ID_PREV_DIFFERENCE,        cbDiff::OnUpdatePrevDifference)
-    EVT_MENU        (ID_FIRST_DIFFERENCE,       cbDiff::OnFirstDifference)
-    EVT_UPDATE_UI   (ID_FIRST_DIFFERENCE,       cbDiff::OnUpdateFirstDifference)
-    EVT_MENU        (ID_LAST_DIFFERENCE,        cbDiff::OnLastDifference)
-    EVT_UPDATE_UI   (ID_LAST_DIFFERENCE,        cbDiff::OnUpdateLastDifference)
-
     EVT_MENU        (ID_VIEW_TABLE,             cbDiff::OnSwitchView)
     EVT_UPDATE_UI   (ID_VIEW_TABLE,             cbDiff::OnUpdateSwitchView)
     EVT_MENU        (ID_VIEW_UNIFIED,           cbDiff::OnSwitchView)
@@ -69,6 +65,33 @@ BEGIN_EVENT_TABLE(cbDiff, cbPlugin)
     EVT_UPDATE_UI   (ID_RELOAD_FILES,           cbDiff::OnUpdateReloadFiles)
     EVT_MENU        (ID_SWAP_FILES,             cbDiff::OnSwapFiles)
     EVT_UPDATE_UI   (ID_SWAP_FILES,             cbDiff::OnUpdateSwapFiles)
+
+    EVT_MENU        (ID_NEXT_DIFFERENCE,        cbDiff::OnNextDifference)
+    EVT_UPDATE_UI   (ID_NEXT_DIFFERENCE,        cbDiff::OnUpdateNextDifference)
+    EVT_MENU        (ID_PREV_DIFFERENCE,        cbDiff::OnPrevDifference)
+    EVT_UPDATE_UI   (ID_PREV_DIFFERENCE,        cbDiff::OnUpdatePrevDifference)
+    EVT_MENU        (ID_FIRST_DIFFERENCE,       cbDiff::OnFirstDifference)
+    EVT_UPDATE_UI   (ID_FIRST_DIFFERENCE,       cbDiff::OnUpdateFirstDifference)
+    EVT_MENU        (ID_LAST_DIFFERENCE,        cbDiff::OnLastDifference)
+    EVT_UPDATE_UI   (ID_LAST_DIFFERENCE,        cbDiff::OnUpdateLastDifference)
+
+    EVT_MENU        (ID_NEXT_DIFFERENCE,        cbDiff::OnNextDifference)
+    EVT_UPDATE_UI   (ID_NEXT_DIFFERENCE,        cbDiff::OnUpdateNextDifference)
+    EVT_MENU        (ID_PREV_DIFFERENCE,        cbDiff::OnPrevDifference)
+    EVT_UPDATE_UI   (ID_PREV_DIFFERENCE,        cbDiff::OnUpdatePrevDifference)
+    EVT_MENU        (ID_FIRST_DIFFERENCE,       cbDiff::OnFirstDifference)
+    EVT_UPDATE_UI   (ID_FIRST_DIFFERENCE,       cbDiff::OnUpdateFirstDifference)
+    EVT_MENU        (ID_LAST_DIFFERENCE,        cbDiff::OnLastDifference)
+    EVT_UPDATE_UI   (ID_LAST_DIFFERENCE,        cbDiff::OnUpdateLastDifference)
+
+    EVT_MENU        (ID_COPY_LEFT,              cbDiff::OnCopyLeft)
+    EVT_UPDATE_UI   (ID_COPY_LEFT,              cbDiff::OnUpdateCopyLeft)
+    EVT_MENU        (ID_COPY_RIGHT,             cbDiff::OnCopyRight)
+    EVT_UPDATE_UI   (ID_COPY_RIGHT,             cbDiff::OnUpdateCopyRight)
+    EVT_MENU        (ID_COPY_LEFT_NEXT,         cbDiff::OnCopyLeftNext)
+    EVT_UPDATE_UI   (ID_COPY_LEFT_NEXT,         cbDiff::OnUpdateCopyLeftNext)
+    EVT_MENU        (ID_COPY_RIGHT_NEXT,        cbDiff::OnCopyRightNext)
+    EVT_UPDATE_UI   (ID_COPY_RIGHT_NEXT,        cbDiff::OnUpdateCopyRightNext)
 END_EVENT_TABLE()
 
 // constructor
@@ -198,7 +221,7 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTree
         wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, menuIds_);
         menu->AppendSubMenu(diffmenu, _("Diff with"));
     }
-    else if ( type == mtUnknown ) // assuming FileExplorer
+    else if ( type == mtFileManager )
     {
         if ( data && (data->GetKind() == FileTreeData::ftdkFile) )
         {
@@ -441,4 +464,94 @@ void cbDiff::OnUpdateSwapFiles(wxUpdateUIEvent &event)
     event.Enable(ed!=nullptr);
 }
 
+void cbDiff::OnCopyLeft(wxCommandEvent &event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->CopyLeft();
+    }
+}
 
+void cbDiff::OnUpdateCopyLeft(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanCopyLeft();
+    }
+    event.Enable(enable);
+}
+
+void cbDiff::OnCopyRight(wxCommandEvent &event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->CopyRight();
+    }
+}
+
+void cbDiff::OnUpdateCopyRight(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanCopyRight();
+    }
+    event.Enable(enable);
+}
+
+void cbDiff::OnCopyLeftNext(wxCommandEvent &event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->CopyLeftNext();
+    }
+}
+
+void cbDiff::OnUpdateCopyLeftNext(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanCopyLeftNext();
+    }
+    event.Enable(enable);
+}
+
+void cbDiff::OnCopyRightNext(wxCommandEvent &event)
+{
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        if(ed)
+            ed->CopyRightNext();
+    }
+}
+
+void cbDiff::OnUpdateCopyRightNext(wxUpdateUIEvent &event)
+{
+    bool enable = false;
+    if(EditorManager *edman = Manager::Get()->GetEditorManager())
+    {
+        EditorBase *edb = edman->GetActiveEditor();
+        cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
+        enable = ed && ed->CanCopyRightNext();
+    }
+    event.Enable(enable);
+}

@@ -31,6 +31,7 @@ cbDiffEditor::cbDiffEditor(const wxString &leftFile, const wxString &rightFile, 
 {
     colorset_.addedlines_ = wxColour(0,255,0,50);
     colorset_.removedlines_ = wxColour(255,0,0,50);
+    colorset_.selectedlines_ = wxColour(0,0,255,50);
     colorset_.caretlinetype_ = 0;
     colorset_.caretline_ = wxColor(122,122,0);
 
@@ -41,11 +42,14 @@ cbDiffEditor::cbDiffEditor(const wxString &leftFile, const wxString &rightFile, 
         int addalpha = cfg->ReadInt(_T("addedlinesalpha"), 50);
         wxColour rem = cfg->ReadColour(_T("removedlines"), wxColour(255,0,0,50));
         int remalpha = cfg->ReadInt(_T("removedlinesalpha"), 50);
+        wxColour sel = cfg->ReadColour(_T("selectedlines"), wxColour(0,0,255,50));
+        int selalpha = cfg->ReadInt(_T("selectedlinesalpha"), 50);
         colorset_.caretlinetype_ = cfg->ReadInt(_T("caretlinetype"));
         wxColour car = cfg->ReadColour(_T("caretline"), wxColor(122,122,0));
         int caralpha = cfg->ReadInt(_T("caretlinealpha"), 50);
         colorset_.addedlines_ = wxColour(add.Red(), add.Green(), add.Blue(), addalpha);
         colorset_.removedlines_ = wxColour(rem.Red(), rem.Green(), rem.Blue(), remalpha);
+        colorset_.selectedlines_ = wxColour(sel.Red(), sel.Green(), sel.Blue(), selalpha);
         colorset_.caretline_ = wxColour(car.Red(), car.Green(), car.Blue(), caralpha);
 
         if(viewmode == DEFAULT)
@@ -206,7 +210,6 @@ void cbDiffEditor::updateTitle()
                  (diffctrl_->LeftModified() ? _("*") : _("")) + wxFileNameFromPath(leftFile_) +
                  _T(" ") +
                  (diffctrl_->RightModified() ? _("*") : _("")) + wxFileNameFromPath(rightFile_));
-
 }
 
 void cbDiffEditor::Undo()                      {diffctrl_->Undo();}
@@ -222,43 +225,20 @@ bool cbDiffEditor::CanPaste() const     {return diffctrl_->CanPaste();}
 bool cbDiffEditor::CanSelectAll() const {return diffctrl_->CanSelectAll();}
 void cbDiffEditor::SelectAll()                 {diffctrl_->SelectAll();}
 
-void cbDiffEditor::NextDifference()
-{
-    diffctrl_->NextDifference();
-}
-
-void cbDiffEditor::PrevDifference()
-{
-    diffctrl_->PrevDifference();
-}
-
-void cbDiffEditor::FirstDifference()
-{
-    diffctrl_->FirstDifference();
-}
-
-void cbDiffEditor::LastDifference()
-{
-    diffctrl_->LastDifference();
-}
-
-bool cbDiffEditor::CanGotoNextDiff()
-{
-    return diffctrl_->CanGotoNextDiff();
-}
-
-bool cbDiffEditor::CanGotoPrevDiff()
-{
-    return diffctrl_->CanGotoPrevDiff();
-}
-
-bool cbDiffEditor::CanGotoFirstDiff()
-{
-    return diffctrl_->CanGotoFirstDiff();
-}
-
-bool cbDiffEditor::CanGotoLastDiff()
-{
-    return diffctrl_->CanGotoLastDiff();
-}
+void cbDiffEditor::NextDifference()  {       diffctrl_->NextDifference();  }
+bool cbDiffEditor::CanGotoNextDiff() {return diffctrl_->CanGotoNextDiff(); }
+void cbDiffEditor::PrevDifference()  {       diffctrl_->PrevDifference();  }
+bool cbDiffEditor::CanGotoPrevDiff() {return diffctrl_->CanGotoPrevDiff(); }
+void cbDiffEditor::FirstDifference() {       diffctrl_->FirstDifference(); }
+bool cbDiffEditor::CanGotoFirstDiff(){return diffctrl_->CanGotoFirstDiff();}
+void cbDiffEditor::LastDifference()  {       diffctrl_->LastDifference();  }
+bool cbDiffEditor::CanGotoLastDiff() {return diffctrl_->CanGotoLastDiff(); }
+void cbDiffEditor::CopyLeft()        {       diffctrl_->CopyLeft();        }
+bool cbDiffEditor::CanCopyLeft()     {return diffctrl_->CanCopyLeft();     }
+void cbDiffEditor::CopyRight()       {       diffctrl_->CopyRight();       }
+bool cbDiffEditor::CanCopyRight()    {return diffctrl_->CanCopyRight();    }
+void cbDiffEditor::CopyLeftNext()    {       diffctrl_->CopyLeftNext();    }
+bool cbDiffEditor::CanCopyLeftNext() {return diffctrl_->CanCopyLeftNext(); }
+void cbDiffEditor::CopyRightNext()   {       diffctrl_->CopyRightNext();   }
+bool cbDiffEditor::CanCopyRightNext(){return diffctrl_->CanCopyRightNext();}
 

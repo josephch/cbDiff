@@ -35,11 +35,13 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 		wxButton* BColAdd;
 		wxButton* BColCar;
 		wxButton* BColRem;
+		wxButton* BColSel;
 		wxChoice* CHCaret;
 		wxRadioBox* RBViewing;
 		wxSlider* SLAddAlpha;
 		wxSlider* SLCarAlpha;
 		wxSlider* SLRemAlpha;
+		wxSlider* SLSelAlpha;
 		wxStaticText* StaticText3;
 		//*)
 
@@ -50,6 +52,8 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 		static const long ID_BUTTON1;
 		static const long ID_STATICTEXT2;
 		static const long ID_SLIDER2;
+		static const long ID_BUTTON4;
+		static const long ID_SLIDER4;
 		static const long ID_CHOICE1;
 		static const long ID_BUTTON3;
 		static const long ID_STATICTEXT3;
@@ -61,6 +65,7 @@ class cbDiffConfigPanel: public cbConfigurationPanel
 		void OnColAddClick(wxCommandEvent& event);
 		void OnColRemClick(wxCommandEvent& event);
 		void OnColCarClick(wxCommandEvent& event);
+		void OnColSelClick(wxCommandEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()

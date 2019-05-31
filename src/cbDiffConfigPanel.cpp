@@ -23,6 +23,8 @@ const long cbDiffConfigPanel::ID_SLIDER1 = wxNewId();
 const long cbDiffConfigPanel::ID_BUTTON1 = wxNewId();
 const long cbDiffConfigPanel::ID_STATICTEXT2 = wxNewId();
 const long cbDiffConfigPanel::ID_SLIDER2 = wxNewId();
+const long cbDiffConfigPanel::ID_BUTTON4 = wxNewId();
+const long cbDiffConfigPanel::ID_SLIDER4 = wxNewId();
 const long cbDiffConfigPanel::ID_CHOICE1 = wxNewId();
 const long cbDiffConfigPanel::ID_BUTTON3 = wxNewId();
 const long cbDiffConfigPanel::ID_STATICTEXT3 = wxNewId();
@@ -43,8 +45,10 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
 	wxStaticBoxSizer* StaticBoxSizer1;
 	wxStaticBoxSizer* StaticBoxSizer2;
 	wxStaticBoxSizer* StaticBoxSizer3;
+	wxStaticBoxSizer* StaticBoxSizer4;
 	wxStaticText* StaticText1;
 	wxStaticText* StaticText2;
+	wxStaticText* StaticText4;
 
 	Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("wxID_ANY"));
 	BoxSizer1 = new wxBoxSizer(wxVERTICAL);
@@ -64,6 +68,14 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
 	SLRemAlpha = new wxSlider(this, ID_SLIDER2, 50, 0, 255, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER2"));
 	StaticBoxSizer1->Add(SLRemAlpha, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	BoxSizer1->Add(StaticBoxSizer1, 0, wxALL|wxEXPAND, 5);
+	StaticBoxSizer4 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Removed Lines:"));
+	BColSel = new wxButton(this, ID_BUTTON4, _("Colour"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
+	StaticBoxSizer4->Add(BColSel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText4 = new wxStaticText(this, wxID_ANY, _("Alpha:"), wxDefaultPosition, wxDefaultSize, 0, _T("wxID_ANY"));
+	StaticBoxSizer4->Add(StaticText4, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	SLSelAlpha = new wxSlider(this, ID_SLIDER4, 50, 0, 255, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER4"));
+	StaticBoxSizer4->Add(SLSelAlpha, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	BoxSizer1->Add(StaticBoxSizer4, 0, wxALL|wxEXPAND, 5);
 	StaticBoxSizer3 = new wxStaticBoxSizer(wxVERTICAL, this, _("Caret Line:"));
 	CHCaret = new wxChoice(this, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
 	CHCaret->SetSelection( CHCaret->Append(_("Underline")) );
@@ -93,10 +105,12 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
 
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffConfigPanel::OnColAddClick);
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffConfigPanel::OnColRemClick);
+	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffConfigPanel::OnColSelClick);
 	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&cbDiffConfigPanel::OnColCarClick);
 	//*)
     BColAdd->SetBackgroundColour(wxColour(0,255,0,50));
     BColRem->SetBackgroundColour(wxColour(255,0,0,50));
+    BColSel->SetBackgroundColour(wxColour(0,0,255,50));
     CHCaret->SetSelection(0);
 	BColCar->SetBackgroundColour(wxColour(122,122,0));
 
@@ -106,7 +120,9 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
         BColAdd->SetBackgroundColour(cfg->ReadColour(_T("addedlines"), wxColour(0,255,0,50)));
         SLAddAlpha->SetValue(cfg->ReadInt(_T("addedlinesalpha"), 50));
         BColRem->SetBackgroundColour(cfg->ReadColour(_T("removedlines"), wxColour(255,0,0,50)));
-        SLRemAlpha->SetValue(cfg->ReadInt(_T("removedlinesalpha"),50));
+        SLRemAlpha->SetValue(cfg->ReadInt(_T("removedlinesalpha"), 50));
+        BColSel->SetBackgroundColour(cfg->ReadColour(_T("selectedlines"), wxColour(0,0,255,50)));
+        SLSelAlpha->SetValue(cfg->ReadInt(_T("selectedlinesalpha"), 50));
         CHCaret->SetSelection(cfg->ReadInt(_T("caretlinetype")));
         BColCar->SetBackgroundColour(cfg->ReadColour(_T("caretline"), wxColor(122,122,0)));
         SLCarAlpha->SetValue(cfg->ReadInt(_T("caretlinealpha"), 50));
@@ -115,6 +131,7 @@ cbDiffConfigPanel::cbDiffConfigPanel(wxWindow *parent)
 
     BColAdd->SetLabel(BColAdd->GetBackgroundColour().GetAsString());
     BColRem->SetLabel(BColRem->GetBackgroundColour().GetAsString());
+    BColSel->SetLabel(BColSel->GetBackgroundColour().GetAsString());
     BColCar->SetLabel(BColCar->GetBackgroundColour().GetAsString());
 }
 
@@ -146,6 +163,8 @@ void cbDiffConfigPanel::OnApply()
         cfg->Write(_T("addedlinesalpha"), SLAddAlpha->GetValue());
         cfg->Write(_T("removedlines"), BColRem->GetBackgroundColour());
         cfg->Write(_T("removedlinesalpha"), SLRemAlpha->GetValue());
+        cfg->Write(_T("selectedlines"), BColSel->GetBackgroundColour());
+        cfg->Write(_T("selectedlinesalpha"), SLSelAlpha->GetValue());
         cfg->Write(_T("caretlinetype"), CHCaret->GetSelection());
         cfg->Write(_T("caretline"), BColCar->GetBackgroundColour());
         cfg->Write(_T("caretlinealpha"), SLCarAlpha->GetValue());
@@ -180,6 +199,18 @@ void cbDiffConfigPanel::OnColRemClick(wxCommandEvent& event)
     {
         BColRem->SetBackgroundColour(dialog.GetColourData().GetColour());
         BColRem->SetLabel(dialog.GetColourData().GetColour().GetAsString());
+    }
+}
+
+void cbDiffConfigPanel::OnColSelClick(wxCommandEvent& event)
+{
+    wxColourData data;
+    data.SetColour(BColSel->GetBackgroundColour());
+    wxColourDialog dialog(this, &data);
+    if (dialog.ShowModal() == wxID_OK)
+    {
+        BColSel->SetBackgroundColour(dialog.GetColourData().GetColour());
+        BColSel->SetLabel(dialog.GetColourData().GetColour().GetAsString());
     }
 }
 

@@ -20,13 +20,22 @@ public:
     virtual void SelectAll() override{}
 
     virtual void NextDifference()override;
-    virtual void PrevDifference()override;
     virtual bool CanGotoNextDiff()override;
+    virtual void PrevDifference()override;
     virtual bool CanGotoPrevDiff()override;
     virtual void FirstDifference()override;
-    virtual void LastDifference()override;
     virtual bool CanGotoFirstDiff()override;
+    virtual void LastDifference()override;
     virtual bool CanGotoLastDiff()override;
+
+    virtual void CopyLeft()override{}
+    virtual bool CanCopyLeft()override{return false;}
+    virtual void CopyRight()override{}
+    virtual bool CanCopyRight()override{return false;}
+    virtual void CopyLeftNext()override{}
+    virtual bool CanCopyLeftNext()override{return false;}
+    virtual void CopyRightNext()override{}
+    virtual bool CanCopyRightNext()override{return false;}
 
     virtual void Copy()override;
     virtual bool HasSelection() const override;

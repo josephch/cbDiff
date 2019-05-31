@@ -110,6 +110,7 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
     for(unsigned int i = 0; i < diffs.size(); i++)
     {
         wxArrayString currdiff = diffs[i];
+        currdiff.Add("");
         wxString headline = currdiff[0];
         headline.Replace(_T("@@"),_T(""));
         headline.Trim();
@@ -157,13 +158,19 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
                 if (removed > 0)
                 {
                     removed_lines_[block_start_left] = removed;
-                    line_pos_[block_start_left] = block_start_right;
                 }
 
                 if(added > removed)
                     left_empty_lines_[block_start_left] = added;
                 if(removed > added)
                     right_empty_lines_[block_start_right] = removed;
+
+                if (added > 0 || removed > 0)
+                {
+                    line_pos_left_[block_start_right] = block_start_left;
+                    line_pos_right_[block_start_left] = block_start_right;
+                }
+
                 added = 0;
                 removed = 0;
                 ++start_left;
@@ -193,9 +200,14 @@ std::map<long, int> wxDiff::GetRightEmptyLines()
     return right_empty_lines_;
 }
 
-std::map<long, long> wxDiff::GetLinePositions()
+std::map<long, long> wxDiff::GetLinePositionsLeft()
 {
-    return line_pos_;
+    return line_pos_left_;
+}
+
+std::map<long, long> wxDiff::GetLinePositionsRight()
+{
+    return line_pos_right_;
 }
 
 std::map<long, int> wxDiff::GetRemovedLines()

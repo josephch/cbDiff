@@ -46,7 +46,6 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
     std::map<long, int> right_added  = diff.GetAddedLines();
     std::map<long, int> left_removed = diff.GetRemovedLines();
     std::map<long, int> left_empty   = diff.GetLeftEmptyLines();
-    //std::map<long, long> line_pos    = diff.GetLinePositions();
 
     rightFilename_ = diff.GetRightFilename();
     leftFilename_ = diff.GetLeftFilename();
