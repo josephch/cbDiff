@@ -5,6 +5,7 @@
 
 class LineChangedTimer;
 class cbStyledTextCtrl;
+class cbEditor;
 
 class cbSideBySideCtrl : public cbDiffCtrl
 {
@@ -66,6 +67,8 @@ private:
     void markDiffLeft(long line);
     void unmarkDiffLeft();
     void markEmptyPartLeft(long line);
+
+    cbEditor *GetCbEditorIfActive(const wxString &filename);
 
     int lastSyncedLine_;
     int lastSyncedLHandle_;
