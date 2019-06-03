@@ -29,15 +29,14 @@ public:
     virtual void LastDifference()override;
     virtual bool CanGotoLastDiff()override;
 
-    virtual void CopyLeft()override;
-    virtual bool CanCopyLeft()override;
-    virtual void CopyRight()override;
-    virtual bool CanCopyRight()override;
-    virtual void CopyLeftNext()override;
-    virtual bool CanCopyLeftNext()override;
-    virtual void CopyRightNext()override;
-    virtual bool CanCopyRightNext()override;
-
+    virtual void CopyToLeft()override;
+    virtual bool CanCopyToLeft()override;
+    virtual void CopyToRight()override;
+    virtual bool CanCopyToRight()override;
+    virtual void CopyToLeftNext()override;
+    virtual bool CanCopyToLeftNext()override;
+    virtual void CopyToRightNext()override;
+    virtual bool CanCopyToRightNext()override;
 
     virtual bool GetModified() const override;
     virtual bool QueryClose() override;
@@ -60,13 +59,15 @@ protected:
     virtual bool RightModified() override;
 private:
     void selectDiffRight(long line);
-    void markDiffRight(long line);
-    void unmarkDiffRight();
-    void markEmptyPartRight(long line);
+    void markSelectionDiffRight(long line);
+    void unmarkSelectionDiffRight();
+    void markSelectionEmptyPartRight(long line);
     void selectDiffLeft(long line);
-    void markDiffLeft(long line);
-    void unmarkDiffLeft();
-    void markEmptyPartLeft(long line);
+    void markSelectionDiffLeft(long line);
+    void unmarkSelectionDiffLeft();
+    void markSelectionEmptyPartLeft(long line);
+    void DeleteMarksForSelectionLeft();
+    void DeleteMarksForSelectionRight();
 
     cbEditor *GetCbEditorIfActive(const wxString &filename);
 
@@ -100,6 +101,8 @@ private:
 
     int lineNumbersWidthLeft_;
     int lineNumbersWidthRight_;
+    void doCopyToLeft(const Block &leftBlock, const Block &rightBlock);
+    void doCopyToRight(const Block &leftBlock, const Block &rightBlock);
 
     static void setLineNumberMarginWidth(cbStyledTextCtrl *stc, int &currWidth);
 

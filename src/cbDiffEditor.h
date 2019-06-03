@@ -72,8 +72,8 @@ public:
     void SetMode(int mode);
 
     void NextDifference();
-    void PrevDifference();
     bool CanGotoNextDiff();
+    void PrevDifference();
     bool CanGotoPrevDiff();
 
     void FirstDifference();
@@ -81,14 +81,14 @@ public:
     bool CanGotoFirstDiff();
     bool CanGotoLastDiff();
 
-    void CopyLeft();
-    bool CanCopyLeft();
-    void CopyRight();
-    bool CanCopyRight();
-    void CopyLeftNext();
-    bool CanCopyLeftNext();
-    void CopyRightNext();
-    bool CanCopyRightNext();
+    void CopyToLeft();
+    bool CanCopyToLeft();
+    void CopyToRight();
+    bool CanCopyToRight();
+    void CopyToLeftNext();
+    bool CanCopyToLeftNext();
+    void CopyToRightNext();
+    bool CanCopyToRightNext();
 
     enum
     {

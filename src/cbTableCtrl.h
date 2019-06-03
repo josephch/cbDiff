@@ -28,14 +28,14 @@ public:
     virtual void LastDifference()override;
     virtual bool CanGotoLastDiff()override;
 
-    virtual void CopyLeft()override{}
-    virtual bool CanCopyLeft()override{return false;}
-    virtual void CopyRight()override{}
-    virtual bool CanCopyRight()override{return false;}
-    virtual void CopyLeftNext()override{}
-    virtual bool CanCopyLeftNext()override{return false;}
-    virtual void CopyRightNext()override{}
-    virtual bool CanCopyRightNext()override{return false;}
+    virtual void CopyToLeft()override{}
+    virtual bool CanCopyToLeft()override{return false;}
+    virtual void CopyToRight()override{}
+    virtual bool CanCopyToRight()override{return false;}
+    virtual void CopyToLeftNext()override{}
+    virtual bool CanCopyToLeftNext()override{return false;}
+    virtual void CopyToRightNext()override{}
+    virtual bool CanCopyToRightNext()override{return false;}
 
     virtual void Copy()override;
     virtual bool HasSelection() const override;

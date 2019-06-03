@@ -308,15 +308,25 @@ void cbSideBySideCtrl::SynchronizeSelection()
        (((leftChanges_[lastLeftMarkedDiff_].len >  0) && (curr_left_line != lastLeftMarkedDiff_)) ||
         ((leftChanges_[lastLeftMarkedDiff_].len == 0) && (curr_left_line != lastLeftMarkedEmptyDiff_))))
     {
-        unmarkDiffLeft();
-        unmarkDiffRight();
+        unmarkSelectionDiffLeft();
+        lastLeftMarkedDiff_ = -1;
+        lastLeftMarkedEmptyDiff_ = -1;
+
+        unmarkSelectionDiffRight();
+        lastRightMarkedDiff_ = -1;
+        lastRightMarkedEmptyDiff_ = -1;
     }
     if(lastRightMarkedDiff_ != -1 &&
        (((rightChanges_[lastRightMarkedDiff_].len >  0) && (curr_right_line != lastRightMarkedDiff_)) ||
         ((rightChanges_[lastRightMarkedDiff_].len == 0) && (curr_right_line != lastRightMarkedEmptyDiff_))))
     {
-        unmarkDiffRight();
-        unmarkDiffLeft();
+        unmarkSelectionDiffRight();
+        lastRightMarkedDiff_ = -1;
+        lastRightMarkedEmptyDiff_ = -1;
+
+        unmarkSelectionDiffLeft();
+        lastLeftMarkedDiff_ = -1;
+        lastLeftMarkedEmptyDiff_ = -1;
     }
 }
 
@@ -396,9 +406,6 @@ bool cbSideBySideCtrl::GetModified() const
 
 bool cbSideBySideCtrl::QueryClose()
 {
-    if (!GetModified())
-        return true;
-
     if( tcLeft_->GetModify() && !GetCbEditorIfActive(leftFilename_) &&
         tcRight_->GetModify() && !GetCbEditorIfActive(rightFilename_))
     {
@@ -850,59 +857,187 @@ bool cbSideBySideCtrl::CanGotoLastDiff()
     return false;
 }
 
-void cbSideBySideCtrl::CopyLeft()
+bool cbSideBySideCtrl::CanCopyToLeft()
 {
-    return;
-}
+    if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return false;
 
-bool cbSideBySideCtrl::CanCopyLeft()
-{
     return lastLeftMarkedDiff_ != -1 && lastRightMarkedDiff_ != -1;
 }
 
-void cbSideBySideCtrl::CopyRight()
+void cbSideBySideCtrl::CopyToLeft()
 {
-    return;
+    if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return;
+
+    auto itrl = leftChanges_.find(lastLeftMarkedDiff_);
+    auto itrr = rightChanges_.find(lastRightMarkedDiff_);
+
+    if(itrl == leftChanges_.end()) return;
+    if(itrr == rightChanges_.end()) return;
+
+    unmarkSelectionDiffLeft();
+    unmarkSelectionDiffRight();
+
+    DeleteMarksForSelectionLeft();
+    DeleteMarksForSelectionRight();
+
+    doCopyToLeft(itrl->second, itrr->second);
+
+    auto itl = std::find(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), lastLeftMarkedDiff_);
+    if(itl != linesLeftWithDifferences_.end())
+        linesLeftWithDifferences_.erase(itl);
+    auto itr = std::find(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), lastRightMarkedDiff_);
+    if(itr != linesRightWithDifferences_.end())
+        linesRightWithDifferences_.erase(itr);
+
+    leftChanges_.erase(itrl);
+    rightChanges_.erase(itrr);
+
+    lastLeftMarkedDiff_ = -1;
+    lastLeftMarkedEmptyDiff_ = -1;
+    lastRightMarkedDiff_ = -1;
+    lastRightMarkedEmptyDiff_ = -1;
 }
 
-bool cbSideBySideCtrl::CanCopyRight()
+void cbSideBySideCtrl::doCopyToLeft(const Block &leftBlock, const Block &rightBlock)
 {
-    return CanCopyLeft();
+    const int pos = tcLeft_->PositionFromLine(lastLeftMarkedDiff_);
+    tcLeft_->BeginUndoAction();
+    if(rightBlock.len > 0)
+    {
+        int start = pos;
+        int stop = tcLeft_->PositionFromLine(lastLeftMarkedDiff_+rightBlock.len);
+        tcLeft_->DeleteRange(start, stop-start);
+    }
+    if(leftBlock.len > 0)
+    {
+        wxString str;
+        for(int l = 0 ; l < leftBlock.len ; ++l)
+            str += tcRight_->GetLine(lastRightMarkedDiff_+l);
+        str.RemoveLast();
+        tcLeft_->InsertText(pos, str);
+    }
+    tcLeft_->EndUndoAction();
 }
 
-void cbSideBySideCtrl::CopyLeftNext()
+void cbSideBySideCtrl::CopyToRight()
 {
-    CopyLeft();
+    if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return;
+
+    auto itrl = leftChanges_.find(lastLeftMarkedDiff_);
+    auto itrr = rightChanges_.find(lastRightMarkedDiff_);
+
+    if(itrl == leftChanges_.end()) return;
+    if(itrr == rightChanges_.end()) return;
+
+    unmarkSelectionDiffLeft();
+    unmarkSelectionDiffRight();
+
+    DeleteMarksForSelectionLeft();
+    DeleteMarksForSelectionRight();
+
+    doCopyToRight(itrl->second, itrr->second);
+
+    auto itl = std::find(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), lastLeftMarkedDiff_);
+    if(itl != linesLeftWithDifferences_.end())
+        linesLeftWithDifferences_.erase(itl);
+    auto itr = std::find(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), lastRightMarkedDiff_);
+    if(itr != linesRightWithDifferences_.end())
+        linesRightWithDifferences_.erase(itr);
+
+    leftChanges_.erase(itrl);
+    rightChanges_.erase(itrr);
+
+    lastLeftMarkedDiff_ = -1;
+    lastLeftMarkedEmptyDiff_ = -1;
+    lastRightMarkedDiff_ = -1;
+    lastRightMarkedEmptyDiff_ = -1;
+}
+
+void cbSideBySideCtrl::doCopyToRight(const Block &leftBlock, const Block &rightBlock)
+{
+    const int pos = tcRight_->PositionFromLine(lastRightMarkedDiff_);
+    tcRight_->BeginUndoAction();
+    if(leftBlock.len > 0)
+    {
+        int start = pos;
+        int stop = tcRight_->PositionFromLine(lastRightMarkedDiff_+leftBlock.len);
+        tcRight_->DeleteRange(start, stop-start);
+    }
+    if(rightBlock.len > 0)
+    {
+        wxString str;
+        for(int l = 0 ; l < rightBlock.len ; ++l)
+            str += tcLeft_->GetLine(lastLeftMarkedDiff_+l);
+        str.RemoveLast();
+        tcRight_->InsertText(pos, str);
+    }
+    tcRight_->EndUndoAction();
+}
+
+void cbSideBySideCtrl::DeleteMarksForSelectionLeft()
+{
+    auto itr = leftChanges_.find(lastLeftMarkedDiff_);
+
+    for(int k = 0 ; k < itr->second.len ; ++k)
+    {
+        tcLeft_->MarkerDelete(lastLeftMarkedDiff_+k, MINUS_MARKER);
+        tcLeft_->MarkerDelete(lastLeftMarkedDiff_+k, RED_BKG_MARKER);
+    }
+    if(lastLeftMarkedEmptyDiff_ != -1)
+        tcLeft_->AnnotationClearLine(lastLeftMarkedEmptyDiff_);
+}
+
+void cbSideBySideCtrl::DeleteMarksForSelectionRight()
+{
+    auto itr = rightChanges_.find(lastRightMarkedDiff_);
+
+    for(int k = 0 ; k < itr->second.len ; ++k)
+    {
+        tcRight_->MarkerDelete(lastRightMarkedDiff_+k, PLUS_MARKER);
+        tcRight_->MarkerDelete(lastRightMarkedDiff_+k, GREEN_BKG_MARKER);
+    }
+    if(lastRightMarkedEmptyDiff_ != -1)
+        tcRight_->AnnotationClearLine(lastRightMarkedEmptyDiff_);
+}
+
+bool cbSideBySideCtrl::CanCopyToRight()
+{
+    return CanCopyToLeft();
+}
+
+void cbSideBySideCtrl::CopyToLeftNext()
+{
+    CopyToLeft();
     NextDifference();
 }
 
-bool cbSideBySideCtrl::CanCopyLeftNext()
+bool cbSideBySideCtrl::CanCopyToLeftNext()
 {
-    return CanCopyLeft() && CanGotoNextDiff();
+    return CanCopyToLeft() && CanGotoNextDiff();
 }
 
-void cbSideBySideCtrl::CopyRightNext()
+void cbSideBySideCtrl::CopyToRightNext()
 {
-    CopyRight();
+    CopyToRight();
     NextDifference();
 }
 
-bool cbSideBySideCtrl::CanCopyRightNext()
+bool cbSideBySideCtrl::CanCopyToRightNext()
 {
-    return CanCopyRight() && CanGotoNextDiff();
+    return CanCopyToRight() && CanGotoNextDiff();
 }
 
 void cbSideBySideCtrl::selectDiffLeft(long line)
 {
     int rline = leftChanges_[line].ref;
-    markDiffLeft(line);
-    markDiffRight(rline);
+    markSelectionDiffLeft(line);
+    markSelectionDiffRight(rline);
 }
 
-void cbSideBySideCtrl::markDiffLeft(long line)
+void cbSideBySideCtrl::markSelectionDiffLeft(long line)
 {
     if(lastLeftMarkedDiff_ == line) return;
-    unmarkDiffLeft();
+    unmarkSelectionDiffLeft();
 
     for(int k = 0 ; k < leftChanges_[line].len ; ++k)
     {
@@ -930,10 +1065,10 @@ void cbSideBySideCtrl::markDiffLeft(long line)
 
     lastLeftMarkedDiff_ = line;
 
-    markEmptyPartLeft(line);
+    markSelectionEmptyPartLeft(line);
 }
 
-void cbSideBySideCtrl::markEmptyPartLeft(long line)
+void cbSideBySideCtrl::markSelectionEmptyPartLeft(long line)
 {
     if(lastLeftMarkedEmptyDiff_ != -1)
         tcLeft_->AnnotationSetStyle(lastLeftMarkedEmptyDiff_, 0);
@@ -953,7 +1088,7 @@ void cbSideBySideCtrl::markEmptyPartLeft(long line)
         lastLeftMarkedEmptyDiff_ = -1;
 }
 
-void cbSideBySideCtrl::unmarkDiffLeft()
+void cbSideBySideCtrl::unmarkSelectionDiffLeft()
 {
     if(lastLeftMarkedDiff_ != -1)
         for(int k = 0 ; k < leftChanges_[lastLeftMarkedDiff_].len ; ++k)
@@ -964,22 +1099,19 @@ void cbSideBySideCtrl::unmarkDiffLeft()
 
     if(lastLeftMarkedEmptyDiff_ != -1)
         tcLeft_->AnnotationSetStyle(lastLeftMarkedEmptyDiff_, 0);
-
-    lastLeftMarkedDiff_ = -1;
-    lastLeftMarkedEmptyDiff_ = -1;
 }
 
 void cbSideBySideCtrl::selectDiffRight(long line)
 {
     int lline = rightChanges_[line].ref;
-    markDiffRight(line);
-    markDiffLeft(lline);
+    markSelectionDiffRight(line);
+    markSelectionDiffLeft(lline);
 }
 
-void cbSideBySideCtrl::markDiffRight(long line)
+void cbSideBySideCtrl::markSelectionDiffRight(long line)
 {
     if(lastRightMarkedDiff_ == line) return;
-    unmarkDiffRight();
+    unmarkSelectionDiffRight();
 
     for(int k = 0 ; k < rightChanges_[line].len ; ++k)
     {
@@ -1007,10 +1139,10 @@ void cbSideBySideCtrl::markDiffRight(long line)
 
     lastRightMarkedDiff_ = line;
 
-    markEmptyPartRight(line);
+    markSelectionEmptyPartRight(line);
 }
 
-void cbSideBySideCtrl::markEmptyPartRight(long line)
+void cbSideBySideCtrl::markSelectionEmptyPartRight(long line)
 {
     int len = rightChanges_[line].len;
     int emptyLines = rightChanges_[line].empty;
@@ -1026,7 +1158,7 @@ void cbSideBySideCtrl::markEmptyPartRight(long line)
         lastRightMarkedEmptyDiff_ = -1;
 }
 
-void cbSideBySideCtrl::unmarkDiffRight()
+void cbSideBySideCtrl::unmarkSelectionDiffRight()
 {
     if(lastRightMarkedDiff_ != -1)
         for(int k = 0 ; k < rightChanges_[lastRightMarkedDiff_].len ; ++k)
@@ -1037,9 +1169,6 @@ void cbSideBySideCtrl::unmarkDiffRight()
 
     if(lastRightMarkedEmptyDiff_ != -1)
         tcRight_->AnnotationSetStyle(lastRightMarkedEmptyDiff_, 0);
-
-    lastRightMarkedDiff_ = -1;
-    lastRightMarkedEmptyDiff_ = -1;
 }
 
 cbEditor *cbSideBySideCtrl::GetCbEditorIfActive(const wxString &filename)

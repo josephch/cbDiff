@@ -221,7 +221,7 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTree
         wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, menuIds_);
         menu->AppendSubMenu(diffmenu, _("Diff with"));
     }
-    else if ( type == mtFileManager )
+    else if ( type == mtUnknown ) // assuming FileExplorer
     {
         if ( data && (data->GetKind() == FileTreeData::ftdkFile) )
         {
@@ -471,7 +471,7 @@ void cbDiff::OnCopyLeft(wxCommandEvent &event)
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
         if(ed)
-            ed->CopyLeft();
+            ed->CopyToLeft();
     }
 }
 
@@ -482,7 +482,7 @@ void cbDiff::OnUpdateCopyLeft(wxUpdateUIEvent &event)
     {
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
-        enable = ed && ed->CanCopyLeft();
+        enable = ed && ed->CanCopyToLeft();
     }
     event.Enable(enable);
 }
@@ -494,7 +494,7 @@ void cbDiff::OnCopyRight(wxCommandEvent &event)
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
         if(ed)
-            ed->CopyRight();
+            ed->CopyToRight();
     }
 }
 
@@ -505,7 +505,7 @@ void cbDiff::OnUpdateCopyRight(wxUpdateUIEvent &event)
     {
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
-        enable = ed && ed->CanCopyRight();
+        enable = ed && ed->CanCopyToRight();
     }
     event.Enable(enable);
 }
@@ -517,7 +517,7 @@ void cbDiff::OnCopyLeftNext(wxCommandEvent &event)
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
         if(ed)
-            ed->CopyLeftNext();
+            ed->CopyToLeftNext();
     }
 }
 
@@ -528,7 +528,7 @@ void cbDiff::OnUpdateCopyLeftNext(wxUpdateUIEvent &event)
     {
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
-        enable = ed && ed->CanCopyLeftNext();
+        enable = ed && ed->CanCopyToLeftNext();
     }
     event.Enable(enable);
 }
@@ -540,7 +540,7 @@ void cbDiff::OnCopyRightNext(wxCommandEvent &event)
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
         if(ed)
-            ed->CopyRightNext();
+            ed->CopyToRightNext();
     }
 }
 
@@ -551,7 +551,7 @@ void cbDiff::OnUpdateCopyRightNext(wxUpdateUIEvent &event)
     {
         EditorBase *edb = edman->GetActiveEditor();
         cbDiffEditor *ed = dynamic_cast<cbDiffEditor*>(edb);
-        enable = ed && ed->CanCopyRightNext();
+        enable = ed && ed->CanCopyToRightNext();
     }
     event.Enable(enable);
 }

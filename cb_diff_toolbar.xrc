@@ -60,6 +60,35 @@
       <bitmap>images/22x22/lastDifference.png</bitmap>
     </object>
 
+    
+    <object class="separator"/>
+
+    <object class="tool" name="CB_DIFF_COPY_LEFT">
+      <tooltip>Copy to left</tooltip>
+      <longhelp>Copy from right to left</longhelp>
+      <bitmap>images/22x22/copyLeft.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_COPY_RIGHT">
+      <tooltip>Copy to right</tooltip>
+      <longhelp>Copy from left to right</longhelp>
+      <bitmap>images/22x22/copyRight.png</bitmap>
+    </object>
+
+
+    <object class="tool" name="CB_DIFF_COPY_LEFT_NEXT">
+      <tooltip>Copy to left</tooltip>
+      <longhelp>Copy from right to left and goto next difference</longhelp>
+      <bitmap>images/22x22/copyLeft_next.png</bitmap>
+    </object>
+
+    <object class="tool" name="CB_DIFF_COPY_RIGHT_NEXT">
+      <tooltip>Copy to right</tooltip>
+      <longhelp>Copy from left to right and goto next difference</longhelp>
+      <bitmap>images/22x22/copyRight_next.png</bitmap>
+    </object>
+
+    
 
   </object>
 </resource>

@@ -26,14 +26,14 @@ public:
     virtual void LastDifference() = 0;
     virtual bool CanGotoLastDiff() = 0;
 
-    virtual void CopyLeft() = 0;
-    virtual bool CanCopyLeft() = 0;
-    virtual void CopyRight() = 0;
-    virtual bool CanCopyRight() = 0;
-    virtual void CopyLeftNext() = 0;
-    virtual bool CanCopyLeftNext() = 0;
-    virtual void CopyRightNext() = 0;
-    virtual bool CanCopyRightNext() = 0;
+    virtual void CopyToLeft() = 0;
+    virtual bool CanCopyToLeft() = 0;
+    virtual void CopyToRight() = 0;
+    virtual bool CanCopyToRight() = 0;
+    virtual void CopyToLeftNext() = 0;
+    virtual bool CanCopyToLeftNext() = 0;
+    virtual void CopyToRightNext() = 0;
+    virtual bool CanCopyToRightNext() = 0;
 
     virtual bool GetModified() const = 0;
     virtual bool QueryClose() = 0;

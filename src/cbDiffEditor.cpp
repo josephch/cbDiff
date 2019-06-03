@@ -225,20 +225,21 @@ bool cbDiffEditor::CanPaste() const     {return diffctrl_->CanPaste();}
 bool cbDiffEditor::CanSelectAll() const {return diffctrl_->CanSelectAll();}
 void cbDiffEditor::SelectAll()                 {diffctrl_->SelectAll();}
 
-void cbDiffEditor::NextDifference()  {       diffctrl_->NextDifference();  }
-bool cbDiffEditor::CanGotoNextDiff() {return diffctrl_->CanGotoNextDiff(); }
-void cbDiffEditor::PrevDifference()  {       diffctrl_->PrevDifference();  }
-bool cbDiffEditor::CanGotoPrevDiff() {return diffctrl_->CanGotoPrevDiff(); }
-void cbDiffEditor::FirstDifference() {       diffctrl_->FirstDifference(); }
-bool cbDiffEditor::CanGotoFirstDiff(){return diffctrl_->CanGotoFirstDiff();}
-void cbDiffEditor::LastDifference()  {       diffctrl_->LastDifference();  }
-bool cbDiffEditor::CanGotoLastDiff() {return diffctrl_->CanGotoLastDiff(); }
-void cbDiffEditor::CopyLeft()        {       diffctrl_->CopyLeft();        }
-bool cbDiffEditor::CanCopyLeft()     {return diffctrl_->CanCopyLeft();     }
-void cbDiffEditor::CopyRight()       {       diffctrl_->CopyRight();       }
-bool cbDiffEditor::CanCopyRight()    {return diffctrl_->CanCopyRight();    }
-void cbDiffEditor::CopyLeftNext()    {       diffctrl_->CopyLeftNext();    }
-bool cbDiffEditor::CanCopyLeftNext() {return diffctrl_->CanCopyLeftNext(); }
-void cbDiffEditor::CopyRightNext()   {       diffctrl_->CopyRightNext();   }
-bool cbDiffEditor::CanCopyRightNext(){return diffctrl_->CanCopyRightNext();}
+void cbDiffEditor::NextDifference()    {       diffctrl_->NextDifference();    }
+bool cbDiffEditor::CanGotoNextDiff()   {return diffctrl_->CanGotoNextDiff();   }
+void cbDiffEditor::PrevDifference()    {       diffctrl_->PrevDifference();    }
+bool cbDiffEditor::CanGotoPrevDiff()   {return diffctrl_->CanGotoPrevDiff();   }
+void cbDiffEditor::FirstDifference()   {       diffctrl_->FirstDifference();   }
+bool cbDiffEditor::CanGotoFirstDiff()  {return diffctrl_->CanGotoFirstDiff();  }
+void cbDiffEditor::LastDifference()    {       diffctrl_->LastDifference();    }
+bool cbDiffEditor::CanGotoLastDiff()   {return diffctrl_->CanGotoLastDiff();   }
+
+void cbDiffEditor::CopyToLeft()        {       diffctrl_->CopyToLeft();        }
+bool cbDiffEditor::CanCopyToLeft()     {return diffctrl_->CanCopyToLeft();     }
+void cbDiffEditor::CopyToRight()       {       diffctrl_->CopyToRight();       }
+bool cbDiffEditor::CanCopyToRight()    {return diffctrl_->CanCopyToRight();    }
+void cbDiffEditor::CopyToLeftNext()    {       diffctrl_->CopyToLeftNext();    }
+bool cbDiffEditor::CanCopyToLeftNext() {return diffctrl_->CanCopyToLeftNext(); }
+void cbDiffEditor::CopyToRightNext()   {       diffctrl_->CopyToRightNext();   }
+bool cbDiffEditor::CanCopyToRightNext(){return diffctrl_->CanCopyToRightNext();}
 
