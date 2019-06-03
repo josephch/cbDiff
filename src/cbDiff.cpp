@@ -160,6 +160,18 @@ void cbDiff::BuildMenu(wxMenuBar *menuBar)
     if(!fileMenu)
         return;
 
+    wxMenu *diffMenu = new wxMenu;
+
+    diffMenu->Append(ID_MENU_DIFF_FILES,        _("Diff files..."),                 _("Shows the differences between two files"));
+    diffMenu->Append(ID_MENU_SAVE_UNIFIED_DIFF, _("Save as unified diff file ..."), _("Saves the current differences as unified diff file"));
+    diffMenu->AppendSeparator();
+    diffMenu->Append(ID_GOTO_NEXT_DIFFERENCE,   _("Next difference"),               _("Go to next difference"));
+    diffMenu->Append(ID_GOTO_PREV_DIFFERENCE,   _("Previous difference"),           _("Go to previous difference"));
+    diffMenu->Append(ID_COPY_TO_RIGHT,          _("Copy to right"),                 _("Copy from left to right"));
+    diffMenu->Append(ID_COPY_TO_LEFT,           _("Copy to left"),                  _("Copy from right to left"));
+    diffMenu->Append(ID_COPY_TO_RIGHT_NEXT,     _("Copy to right and go to next"),  _("Copy from left to right and go to next difference"));
+    diffMenu->Append(ID_COPY_TO_LEFT_NEXT,      _("Copy to left and go to next"),   _("Copy from right to left and go to next difference"));
+
     wxMenuItemList& list = fileMenu->GetMenuItems();
     int pos = 0;
     // Search for the Recent files entry and insert the diff entry after it
@@ -175,18 +187,12 @@ void cbDiff::BuildMenu(wxMenuBar *menuBar)
         if (label.Contains( _("Recent files")))
         {
             fileMenu->InsertSeparator(pos + 1);
-            fileMenu->Insert(pos + 2, ID_MENU_DIFF_FILES,        _("Diff files..."),             _("Shows the differences between two files"));
-            fileMenu->Insert(pos + 3, ID_MENU_SAVE_UNIFIED_DIFF, _("Save as unified diff file"), _("Saves the current diff as unified diff file"));
-            fileMenu->Insert(pos + 4, ID_GOTO_NEXT_DIFFERENCE,   _("Next Difference"),           _("Goto next difference"));
-            fileMenu->Insert(pos + 5, ID_GOTO_PREV_DIFFERENCE,   _("Previous Difference"),       _("Goto previous difference"));
+            fileMenu->Insert(pos + 2, wxID_ANY, _("Diff Menu"), diffMenu);
             return;
         }
     }
     fileMenu->AppendSeparator();
-    fileMenu->Append(ID_MENU_DIFF_FILES,        _("Diff files..."),             _("Shows the differences between two files"));
-    fileMenu->Append(ID_MENU_SAVE_UNIFIED_DIFF, _("Save as unified diff file"), _("Saves the current diff as unified diff file"));
-    fileMenu->Append(ID_GOTO_NEXT_DIFFERENCE,   _("Next Difference"),           _("Goto next difference"));
-    fileMenu->Append(ID_GOTO_PREV_DIFFERENCE,   _("Previous Difference"),       _("Goto previous difference"));
+    fileMenu->AppendSubMenu(diffMenu, _("Diff Menu"));
 }
 
 void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTreeData *data)
