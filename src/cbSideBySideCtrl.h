@@ -103,6 +103,7 @@ private:
     int lineNumbersWidthRight_;
     void doCopyToLeft(const Block &leftBlock, const Block &rightBlock);
     void doCopyToRight(const Block &leftBlock, const Block &rightBlock);
+    bool HasDiffSelected();
 
     static void setLineNumberMarginWidth(cbStyledTextCtrl *stc, int &currWidth);
 

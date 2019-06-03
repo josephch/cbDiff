@@ -625,15 +625,11 @@ bool cbSideBySideCtrl::CanPaste() const
 {
     if(tcLeft_->HasFocus())
     {
-        if (platform::gtk)
-            return !leftReadOnly_;
         return tcLeft_->CanPaste() && !leftReadOnly_;
     }
 
     else if(tcRight_->HasFocus())
     {
-        if (platform::gtk)
-            return !rightReadOnly_;
         return tcRight_->CanPaste() && !rightReadOnly_;
     }
 
@@ -859,6 +855,16 @@ bool cbSideBySideCtrl::CanGotoLastDiff()
 
 bool cbSideBySideCtrl::CanCopyToLeft()
 {
+    return !leftReadOnly_ && HasDiffSelected();
+}
+
+bool cbSideBySideCtrl::CanCopyToRight()
+{
+    return !rightReadOnly_ && HasDiffSelected();
+}
+
+bool cbSideBySideCtrl::HasDiffSelected()
+{
     if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return false;
 
     return lastLeftMarkedDiff_ != -1 && lastRightMarkedDiff_ != -1;
@@ -998,11 +1004,6 @@ void cbSideBySideCtrl::DeleteMarksForSelectionRight()
     }
     if(lastRightMarkedEmptyDiff_ != -1)
         tcRight_->AnnotationClearLine(lastRightMarkedEmptyDiff_);
-}
-
-bool cbSideBySideCtrl::CanCopyToRight()
-{
-    return CanCopyToLeft();
 }
 
 void cbSideBySideCtrl::CopyToLeftNext()
