@@ -33,62 +33,62 @@
       <longhelp>Swap files</longhelp>
       <bitmap>images/22x22/swap.png</bitmap>
     </object>
-    
+
     <object class="separator"/>
 
-    <object class="tool" name="CB_DIFF_NEXT_DIFFERENCE">
+    <object class="tool" name="CB_DIFF_GOTO_NEXT_DIFFERENCE">
       <tooltip>Next Difference</tooltip>
       <longhelp>Goto next difference</longhelp>
       <bitmap>images/22x22/nextDifference.png</bitmap>
     </object>
 
-    <object class="tool" name="CB_DIFF_PREVIOUS_DIFFERENCE">
+    <object class="tool" name="CB_DIFF_GOTO_PREVIOUS_DIFFERENCE">
       <tooltip>Previous Difference</tooltip>
       <longhelp>Goto previous difference</longhelp>
       <bitmap>images/22x22/previousDifference.png</bitmap>
     </object>
 
-    <object class="tool" name="CB_DIFF_FIRST_DIFFERENCE">
+    <object class="tool" name="CB_DIFF_GOTO_FIRST_DIFFERENCE">
       <tooltip>First Difference</tooltip>
       <longhelp>Goto first Difference</longhelp>
       <bitmap>images/22x22/firstDifference.png</bitmap>
     </object>
 
-    <object class="tool" name="CB_DIFF_LAST_DIFFERENCE">
+    <object class="tool" name="CB_DIFF_GOTO_LAST_DIFFERENCE">
       <tooltip>Last Difference</tooltip>
       <longhelp>Goto last Difference</longhelp>
       <bitmap>images/22x22/lastDifference.png</bitmap>
     </object>
 
-    
+
     <object class="separator"/>
 
-    <object class="tool" name="CB_DIFF_COPY_LEFT">
+    <object class="tool" name="CB_DIFF_COPY_TO_LEFT">
       <tooltip>Copy to left</tooltip>
       <longhelp>Copy from right to left</longhelp>
       <bitmap>images/22x22/copyLeft.png</bitmap>
     </object>
 
-    <object class="tool" name="CB_DIFF_COPY_RIGHT">
+    <object class="tool" name="CB_DIFF_COPY_TO_RIGHT">
       <tooltip>Copy to right</tooltip>
       <longhelp>Copy from left to right</longhelp>
       <bitmap>images/22x22/copyRight.png</bitmap>
     </object>
 
 
-    <object class="tool" name="CB_DIFF_COPY_LEFT_NEXT">
+    <object class="tool" name="CB_DIFF_COPY_TO_LEFT_NEXT">
       <tooltip>Copy to left</tooltip>
       <longhelp>Copy from right to left and goto next difference</longhelp>
       <bitmap>images/22x22/copyLeft_next.png</bitmap>
     </object>
 
-    <object class="tool" name="CB_DIFF_COPY_RIGHT_NEXT">
+    <object class="tool" name="CB_DIFF_COPY_TO_RIGHT_NEXT">
       <tooltip>Copy to right</tooltip>
       <longhelp>Copy from left to right and goto next difference</longhelp>
       <bitmap>images/22x22/copyRight_next.png</bitmap>
     </object>
 
-    
+
 
   </object>
 </resource>
