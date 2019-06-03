@@ -36,13 +36,10 @@ class cbDiff : public cbPlugin
         void OnContextDiffFiles(wxCommandEvent &event);
         void OnMenuSaveAsUnifiedDiff(wxCommandEvent &event);
         void OnUpdateUiSaveAsUnifiedDiff(wxUpdateUIEvent &event);
-        void OnNextDifference(wxCommandEvent &event);
-        void OnUpdateNextDifference(wxUpdateUIEvent &event);
-        void OnPrevDifference(wxCommandEvent &event);
-        void OnUpdatePrevDifference(wxUpdateUIEvent &event);
         void OnAppDoneStartup(CodeBlocksEvent &event);
         void OnAppCmdLine(CodeBlocksEvent &event);
         void EvalCmdLine();
+
         void OnSwitchView(wxCommandEvent &event);
         void OnUpdateSwitchView(wxUpdateUIEvent &event);
         void OnReloadFiles(wxCommandEvent &event);
@@ -50,19 +47,23 @@ class cbDiff : public cbPlugin
         void OnSwapFiles(wxCommandEvent &event);
         void OnUpdateSwapFiles(wxUpdateUIEvent &event);
 
-        void OnFirstDifference(wxCommandEvent &event);
-        void OnUpdateFirstDifference(wxUpdateUIEvent &event);
-        void OnLastDifference(wxCommandEvent &event);
-        void OnUpdateLastDifference(wxUpdateUIEvent &event);
+        void OnGotoNextDifference(wxCommandEvent &event);
+        void OnUpdateGotoNextDifference(wxUpdateUIEvent &event);
+        void OnGotoPreviousDifference(wxCommandEvent &event);
+        void OnUpdateGotoPreviousDifference(wxUpdateUIEvent &event);
+        void OnGotoFirstDifference(wxCommandEvent &event);
+        void OnUpdateGotoFirstDifference(wxUpdateUIEvent &event);
+        void OnGotoLastDifference(wxCommandEvent &event);
+        void OnUpdateGotoLastDifference(wxUpdateUIEvent &event);
 
-        void OnCopyLeft(wxCommandEvent &event);
-        void OnUpdateCopyLeft(wxUpdateUIEvent &event);
-        void OnCopyRight(wxCommandEvent &event);
-        void OnUpdateCopyRight(wxUpdateUIEvent &event);
-        void OnCopyLeftNext(wxCommandEvent &event);
-        void OnUpdateCopyLeftNext(wxUpdateUIEvent &event);
-        void OnCopyRightNext(wxCommandEvent &event);
-        void OnUpdateCopyRightNext(wxUpdateUIEvent &event);
+        void OnCopyToLeft(wxCommandEvent &event);
+        void OnUpdateCopyToLeft(wxUpdateUIEvent &event);
+        void OnCopyToRight(wxCommandEvent &event);
+        void OnUpdateCopyToRight(wxUpdateUIEvent &event);
+        void OnCopyToLeftNext(wxCommandEvent &event);
+        void OnUpdateCopyToLeftNext(wxUpdateUIEvent &event);
+        void OnCopyToRightNext(wxCommandEvent &event);
+        void OnUpdateCopyToRightNext(wxUpdateUIEvent &event);
 
         bool m_prevSelectionValid;
         wxString m_prevFileName;
