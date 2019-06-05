@@ -20,6 +20,7 @@
       <bitmap>images/22x22/sidebyside.png</bitmap>
     </object>
 
+
     <object class="separator"/>
 
     <object class="tool" name="CB_DIFF_ID_RELOAD_FILES">
@@ -33,6 +34,7 @@
       <longhelp>Swap files</longhelp>
       <bitmap>images/22x22/swap.png</bitmap>
     </object>
+
 
     <object class="separator"/>
 
@@ -75,7 +77,6 @@
       <bitmap>images/22x22/copyRight.png</bitmap>
     </object>
 
-
     <object class="tool" name="CB_DIFF_COPY_TO_LEFT_NEXT">
       <tooltip>Copy to left</tooltip>
       <longhelp>Copy from right to left and goto next difference</longhelp>
@@ -87,8 +88,6 @@
       <longhelp>Copy from left to right and goto next difference</longhelp>
       <bitmap>images/22x22/copyRight_next.png</bitmap>
     </object>
-
-
 
   </object>
 </resource>

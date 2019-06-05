@@ -57,12 +57,9 @@
 		<Compiler>
 			<Add directory="dtl" />
 		</Compiler>
-		<Unit filename="images/reload.h" />
-		<Unit filename="images/sidebyside.h" />
-		<Unit filename="images/swap.h" />
-		<Unit filename="images/table.h" />
-		<Unit filename="images/unified.h" />
+		<Unit filename="cb_diff_toolbar.xrc" />
 		<Unit filename="manifest.xml" />
+		<Unit filename="open.txt" />
 		<Unit filename="src/cbDiff.cpp" />
 		<Unit filename="src/cbDiff.h" />
 		<Unit filename="src/cbDiffConfigPanel.cpp" />
@@ -107,6 +104,7 @@
 				<doxyfile_dot />
 				<general />
 			</DoxyBlocks>
+			<fortran_project />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

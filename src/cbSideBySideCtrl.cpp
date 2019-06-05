@@ -1,5 +1,7 @@
 #include "cbSideBySideCtrl.h"
 
+#include <algorithm>
+
 #include <manager.h>
 #include <editormanager.h>
 #include <configmanager.h>

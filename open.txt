@@ -1,0 +1,5 @@
+
+
+clicking just above total-empty selection does not un-select it
+
+reload should work from buffer and not file, especially in side by side view (while editing)
