@@ -159,7 +159,17 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     tcRight_->SetVisiblePolicy(wxSCI_VISIBLE_STRICT, 0);
 }
 
-void cbSideBySideCtrl::ShowDiff(wxDiff diff)
+void cbSideBySideCtrl::UpdateDiff(const wxDiff &diff)
+{
+    ShowDiff(diff, false);
+}
+
+void cbSideBySideCtrl::ShowDiff(const wxDiff &diff)
+{
+    ShowDiff(diff, true);
+}
+
+void cbSideBySideCtrl::ShowDiff(const wxDiff &diff, bool reloadFile)
 {
     Disconnect( tcLeft_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
     Disconnect( tcRight_->GetId(), wxEVT_SCI_CHANGE, wxScintillaEventHandler(cbSideBySideCtrl::OnEditorChange));
@@ -181,11 +191,14 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     lastLeftMarkedEmptyDiff_ = -1;
     int leftCursorPos =   tcLeft_->GetCurrentPos();
     tcLeft_->SetReadOnly(false);
-    tcLeft_->ClearAll();
-    if(cbEditor *ed = GetCbEditorIfActive(leftFilename_))
-        tcLeft_->SetDocPointer(ed->GetControl()->GetDocPointer());
-    else
-        tcLeft_->LoadFile(diff.GetLeftFilename());
+    if(reloadFile)
+    {
+        tcLeft_->ClearAll();
+        if(cbEditor *ed = GetCbEditorIfActive(leftFilename_))
+            tcLeft_->SetDocPointer(ed->GetControl()->GetDocPointer());
+        else
+            tcLeft_->LoadFile(diff.GetLeftFilename());
+    }
     tcLeft_->AnnotationClearAll();
     tcLeft_->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
     for(auto itr = left_removed.begin() ; itr != left_removed.end() ; ++itr)
@@ -237,11 +250,14 @@ void cbSideBySideCtrl::ShowDiff(wxDiff diff)
     lastRightMarkedEmptyDiff_ = -1;
     int rightCursorPos = tcRight_->GetCurrentPos();
     tcRight_->SetReadOnly(false);
-    tcRight_->ClearAll();
-    if(cbEditor *ed = GetCbEditorIfActive(rightFilename_))
-        tcRight_->SetDocPointer(ed->GetControl()->GetDocPointer());
-    else
-        tcRight_->LoadFile(diff.GetRightFilename());
+    if(reloadFile)
+    {
+        tcRight_->ClearAll();
+        if(cbEditor *ed = GetCbEditorIfActive(rightFilename_))
+            tcRight_->SetDocPointer(ed->GetControl()->GetDocPointer());
+        else
+            tcRight_->LoadFile(diff.GetRightFilename());
+    }
     tcRight_->AnnotationClearAll();
     tcRight_->AnnotationSetVisible(wxSCI_ANNOTATION_STANDARD);
     for(auto itr = right_added.begin() ; itr != right_added.end() ; ++itr)
@@ -838,16 +854,6 @@ bool cbSideBySideCtrl::CanCopyToRight()
     return !rightReadOnly_ && HasDiffSelected();
 }
 
-void cbSideBySideCtrl::CopyToLeft()
-{
-    CopyTo(false);
-}
-
-void cbSideBySideCtrl::CopyToRight()
-{
-    CopyTo(true);
-}
-
 void cbSideBySideCtrl::CopyTo(bool toRight)
 {
     if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return;
@@ -919,26 +925,26 @@ void cbSideBySideCtrl::DeleteMarksForSelection(std::map<long, Block> &changes, c
         tc->AnnotationClearLine(lastMarkedEmptyDiff);
 }
 
+bool cbSideBySideCtrl::CanCopyToLeftNext()
+{
+    return CanCopyToLeft() && CanGotoNextDiff();
+}
+
+bool cbSideBySideCtrl::CanCopyToRightNext()
+{
+    return CanCopyToRight() && CanGotoNextDiff();
+}
+
 void cbSideBySideCtrl::CopyToLeftNext()
 {
     CopyToLeft();
     NextDifference();
 }
 
-bool cbSideBySideCtrl::CanCopyToLeftNext()
-{
-    return CanCopyToLeft() && CanGotoNextDiff();
-}
-
 void cbSideBySideCtrl::CopyToRightNext()
 {
     CopyToRight();
     NextDifference();
-}
-
-bool cbSideBySideCtrl::CanCopyToRightNext()
-{
-    return CanCopyToRight() && CanGotoNextDiff();
 }
 
 void cbSideBySideCtrl::selectDiff(long lline, long rline)
@@ -1028,3 +1034,13 @@ cbEditor *cbSideBySideCtrl::GetCbEditorIfActive(const wxString &filename)
     }
     return nullptr;
 }
+
+std::vector<std::string> *cbSideBySideCtrl::GetLines(cbStyledTextCtrl *tc)
+{
+    const int N = tc->GetLineCount();
+    std::vector<std::string> *lines = new std::vector<std::string>;
+    for(size_t l = 0 ; l < N ; ++l)
+        lines->push_back(tc->GetLine(l).RemoveLast().ToStdString());
+    return lines;
+}
+

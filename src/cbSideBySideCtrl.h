@@ -13,7 +13,8 @@ public:
     cbSideBySideCtrl(cbDiffEditor *parent);
     virtual ~cbSideBySideCtrl();
     virtual void Init(cbDiffColors colset) override;
-    virtual void ShowDiff(wxDiff diff) override;
+    virtual void ShowDiff(const wxDiff &diff) override;
+    virtual void UpdateDiff(const wxDiff &diff) override;
     void Synchronize();
     void SynchronizeSelection();
     void SynchronizeCaretline();
@@ -29,9 +30,9 @@ public:
     virtual void LastDifference()override;
     virtual bool CanGotoLastDiff()override;
 
-    virtual void CopyToLeft()override;
+    virtual void CopyToLeft()override{CopyTo(false);}
     virtual bool CanCopyToLeft()override;
-    virtual void CopyToRight()override;
+    virtual void CopyToRight()override{CopyTo(true);}
     virtual bool CanCopyToRight()override;
     virtual void CopyToLeftNext()override;
     virtual bool CanCopyToLeftNext()override;
@@ -54,7 +55,11 @@ public:
     virtual bool CanPaste() const override;
     virtual bool CanSelectAll() const override;
     virtual void SelectAll() override;
+    virtual std::vector<std::string> *GetLeftLines()override{return GetLines(tcLeft_);}
+    virtual std::vector<std::string> *GetRightLines()override{return GetLines(tcRight_);}
+
 protected:
+    static std::vector<std::string> *GetLines(cbStyledTextCtrl *tc);
     virtual bool LeftModified() override;
     virtual bool RightModified() override;
 private:
@@ -77,6 +82,7 @@ private:
     static bool CanGotoNextDiff(const std::vector<long> &linesWithDifferences, int currline);
     static long PrevDifference(int curr_line, const std::vector<long> &linesWithDifferences, std::map<long, Block> &changes);
     static bool CanGotoPrevDiff(int curr_line, std::vector<long> linesWithDifferences, std::map<long, Block> &changes);
+    void ShowDiff(const wxDiff &diff, bool reloadFile);
 
     cbEditor *GetCbEditorIfActive(const wxString &filename);
 

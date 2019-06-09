@@ -9,25 +9,26 @@
 class wxDiff
 {
 public:
-    wxDiff(wxString filename1, wxString filename2, bool leftReadOnly, bool rightReadOnly);
+    wxDiff(wxString filename1, wxString filename2, bool leftReadOnly, bool rightReadOnly, std::vector<std::string> *letElems, std::vector<std::string> *rightElems);
     virtual ~wxDiff(){}
 
-    wxString IsDifferent();
+    wxString IsDifferent()const;
 
-    wxString GetDiff();
-    std::map<long, int> GetAddedLines();
-    std::map<long, int> GetRemovedLines();
-    std::map<long, int> GetLeftEmptyLines();
-    std::map<long, int> GetRightEmptyLines();
-    std::map<long, long> GetLinePositionsLeft();
-    std::map<long, long> GetLinePositionsRight();
-    wxString GetLeftFilename();
-    wxString GetRightFilename();
+    wxString GetDiff()const;
+    std::map<long, int> GetAddedLines()const;
+    std::map<long, int> GetRemovedLines()const;
+    std::map<long, int> GetLeftEmptyLines()const;
+    std::map<long, int> GetRightEmptyLines()const;
+    std::map<long, long> GetLinePositionsLeft()const;
+    std::map<long, long> GetLinePositionsRight()const;
+    wxString GetLeftFilename()const;
+    wxString GetRightFilename()const;
     bool RightReadOnly()const;
     bool LeftReadOnly()const;
 private:
-    wxString CreateHeader();
+    wxString CreateHeader()const;
     void ParseDiff(std::vector<wxArrayString> diffs);
+    void LoadLines(std::vector<std::string> &Lines, std::vector<std::string> *elems, const wxString &filename);
 
     wxString leftFilename_;
     wxString rightFilename_;

@@ -9,6 +9,10 @@
 #include <wx/sstream.h>
 #include <wx/tokenzr.h>
 
+#include <manager.h>
+#include <logmanager.h>
+
+
 using dtl::Diff;
 using dtl::elemInfo;
 using dtl::uniHunk;
@@ -17,29 +21,23 @@ using std::string;
 using std::ifstream;
 using std::vector;
 
-wxDiff::wxDiff(wxString leftFilename, wxString rightFilename, bool leftReadOnly, bool rightReadOnly):
+wxDiff::wxDiff(wxString leftFilename, wxString rightFilename, bool leftReadOnly, bool rightReadOnly, std::vector<std::string> *leftElems, std::vector<std::string> *rightElems):
     leftFilename_(leftFilename),
     rightFilename_(rightFilename),
     leftReadOnly_(leftReadOnly),
     rightReadOnly_(rightReadOnly)
 {
-    typedef string elem;
-    typedef pair<elem, elemInfo> sesElem;
-    ifstream Aifs(leftFilename.mbc_str());
-    ifstream Bifs(rightFilename.mbc_str());
-    elem buf;
-    vector<elem> ALines, BLines;
+    typedef pair<string, elemInfo> sesElem;
+    string buf;
 
-    while(getline(Aifs, buf))
-    {
-        ALines.push_back(buf);
-    }
-    while(getline(Bifs, buf))
-    {
-        BLines.push_back(buf);
-    }
+    vector<string> ALines;
+    LoadLines(ALines, leftElems, leftFilename);
 
-    Diff<elem, vector<elem> > diff(ALines, BLines);
+    vector<string> BLines;
+    LoadLines(BLines, rightElems, rightFilename);
+
+
+    Diff<string, vector<string> > diff(ALines, BLines);
     diff.onHuge();
     diff.compose();
 
@@ -73,7 +71,24 @@ wxDiff::wxDiff(wxString leftFilename, wxString rightFilename, bool leftReadOnly,
     ParseDiff(diffs);
 }
 
-wxString wxDiff::IsDifferent()
+void wxDiff::LoadLines(vector<string> &Lines, vector<string> *elems, const wxString &filename)
+{
+    if(elems)
+        Lines = *elems;
+    else
+    {
+        string buf;
+        ifstream ifs(filename.mbc_str());
+        while(getline(ifs, buf))
+        {
+            //if(buf[buf.size()-1] == '\r')
+            //    buf.erase(buf.size()-1);
+            Lines.push_back(buf);
+        }
+    }
+}
+
+wxString wxDiff::IsDifferent()const
 {
     wxFileName filename(leftFilename_);
     wxDateTime modifyTime;
@@ -88,7 +103,7 @@ wxString wxDiff::IsDifferent()
     return wxEmptyString;
 }
 
-wxString wxDiff::CreateHeader()
+wxString wxDiff::CreateHeader()const
 {
     wxString header;
     wxFileName filename(leftFilename_);
@@ -152,13 +167,10 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
             else
             {
                 if (added > 0)
-                {
                     added_lines_[block_start_right] = added;
-                }
+
                 if (removed > 0)
-                {
                     removed_lines_[block_start_left] = removed;
-                }
 
                 if(added > removed)
                     left_empty_lines_[block_start_left] = added;
@@ -180,50 +192,51 @@ void wxDiff::ParseDiff(vector<wxArrayString> diffs)
     }
 }
 
-wxString wxDiff::GetDiff()
+wxString wxDiff::GetDiff()const
 {
     return CreateHeader() + diff_;
 }
 
-std::map<long, int> wxDiff::GetAddedLines()
+std::map<long, int> wxDiff::GetAddedLines()const
 {
     return added_lines_;
 }
 
-std::map<long, int> wxDiff::GetLeftEmptyLines()
+std::map<long, int> wxDiff::GetLeftEmptyLines()const
 {
     return left_empty_lines_;
 }
 
-std::map<long, int> wxDiff::GetRightEmptyLines()
+std::map<long, int> wxDiff::GetRightEmptyLines()const
 {
     return right_empty_lines_;
 }
 
-std::map<long, long> wxDiff::GetLinePositionsLeft()
+std::map<long, long> wxDiff::GetLinePositionsLeft()const
 {
     return line_pos_left_;
 }
 
-std::map<long, long> wxDiff::GetLinePositionsRight()
+std::map<long, long> wxDiff::GetLinePositionsRight()const
 {
     return line_pos_right_;
 }
 
-std::map<long, int> wxDiff::GetRemovedLines()
+std::map<long, int> wxDiff::GetRemovedLines()const
 {
     return removed_lines_;
 }
 
-wxString wxDiff::GetLeftFilename()
+wxString wxDiff::GetLeftFilename()const
 {
     return leftFilename_;
 }
 
-wxString wxDiff::GetRightFilename()
+wxString wxDiff::GetRightFilename()const
 {
     return rightFilename_;
 }
+
 bool wxDiff::RightReadOnly()const
 {
     return rightReadOnly_;

@@ -30,12 +30,17 @@ void cbUnifiedCtrl::Init(cbDiffColors colset)
     theme_->Apply(_T("DiffPatch"), txtctrl_, false, true);
 }
 
-void cbUnifiedCtrl::ShowDiff(wxDiff diff)
+void cbUnifiedCtrl::ShowDiff(const wxDiff &diff)
 {
     txtctrl_->SetReadOnly(false);
     txtctrl_->ClearAll();
     txtctrl_->AppendText(diff.GetDiff());
     txtctrl_->SetReadOnly(true);
+}
+
+void cbUnifiedCtrl::UpdateDiff(const wxDiff &diff)
+{
+    ShowDiff(diff);
 }
 
 void cbUnifiedCtrl::Copy()

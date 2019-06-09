@@ -40,6 +40,7 @@ public:
     static void CloseAllEditors();
 
     virtual bool GetModified() const override;
+    bool GetAnyModified() const;
     virtual bool QueryClose() override;
     virtual bool Save() override;
     virtual bool SaveAs()override{return SaveAsUnifiedDiff();}

@@ -11,7 +11,8 @@ public:
     cbTableCtrl(cbDiffEditor* parent);
     virtual ~cbTableCtrl(){}
     virtual void Init(cbDiffColors colset) override;
-    virtual void ShowDiff(wxDiff diff) override;
+    virtual void ShowDiff(const wxDiff &diff) override;
+    virtual void UpdateDiff(const wxDiff &diff) override;
 
     virtual bool GetModified() const override{return false;}
     virtual bool QueryClose() override{return true;}
@@ -39,6 +40,9 @@ public:
 
     virtual void Copy()override;
     virtual bool HasSelection() const override;
+
+    virtual std::vector<std::string> *GetLeftLines()override{return nullptr;}
+    virtual std::vector<std::string> *GetRightLines()override{return nullptr;}
 protected:
     virtual bool LeftModified() override{return false;}
     virtual bool RightModified() override{return false;}

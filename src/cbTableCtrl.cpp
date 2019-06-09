@@ -43,7 +43,7 @@ void cbTableCtrl::Init(cbDiffColors colset)
     theme_->Apply(theme_->GetHighlightLanguage(lang), txtctrl_, isC, true);
 }
 
-void cbTableCtrl::ShowDiff(wxDiff diff)
+void cbTableCtrl::ShowDiff(const wxDiff &diff)
 {
     std::map<long, int> right_added  = diff.GetAddedLines();
     std::map<long, int> left_removed = diff.GetRemovedLines();
@@ -126,6 +126,11 @@ void cbTableCtrl::ShowDiff(wxDiff diff)
     }
     txtctrl_->SetReadOnly(true);
     txtctrl_->GotoPos(cursorPos);
+}
+
+void cbTableCtrl::UpdateDiff(const wxDiff &diff)
+{
+    ShowDiff(diff);
 }
 
 void cbTableCtrl::Copy()

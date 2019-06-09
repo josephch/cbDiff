@@ -79,7 +79,13 @@ cbDiffEditor::~cbDiffEditor()
 void cbDiffEditor::ShowDiff()
 {
     /* Diff creation */
-    wxDiff diff(leftFile_, rightFile_, leftReadOnly_, rightReadOnly_);
+    std::vector<std::string> *leftElems = nullptr;
+    if(diffctrl_->LeftModified())
+        leftElems = diffctrl_->GetLeftLines();
+    std::vector<std::string> *rightElems = nullptr;
+    if(diffctrl_->RightModified())
+        rightElems = diffctrl_->GetRightLines();
+    wxDiff diff(leftFile_, rightFile_, leftReadOnly_, rightReadOnly_, leftElems, rightElems);
     updateTitle();
 
     wxString different = diff.IsDifferent();
@@ -88,8 +94,14 @@ void cbDiffEditor::ShowDiff()
 
     diff_ = diff.GetDiff();
 
-    diffctrl_->ShowDiff(diff);
+    if(leftElems || rightElems)
+        diffctrl_->UpdateDiff(diff);
+    else
+        diffctrl_->ShowDiff(diff);
     diffctrl_->Layout();
+
+    if(leftElems) delete leftElems;
+    if(rightElems) delete rightElems;
 }
 
 bool cbDiffEditor::SaveAsUnifiedDiff()
@@ -185,6 +197,11 @@ void cbDiffEditor::CloseAllEditors()
         (*i)->Close();
     }
     assert(allEditors_.empty());
+}
+
+bool cbDiffEditor::GetAnyModified() const
+{
+    return diffctrl_->LeftModified() || diffctrl_->RightModified();
 }
 
 bool cbDiffEditor::GetModified() const

@@ -15,7 +15,8 @@ public:
     cbDiffCtrl(cbDiffEditor *parent);
     virtual ~cbDiffCtrl();
     virtual void Init(cbDiffColors colset) = 0;
-    virtual void ShowDiff(wxDiff diff) = 0;
+    virtual void ShowDiff(const wxDiff &diff) = 0;
+    virtual void UpdateDiff(const wxDiff &diff) = 0;
 
     virtual void NextDifference() = 0;
     virtual bool CanGotoNextDiff() = 0;
@@ -55,6 +56,9 @@ public:
     virtual bool CanPaste() const {return false;}
     virtual bool CanSelectAll() const = 0;
     virtual void SelectAll() = 0;
+
+    virtual std::vector<std::string> *GetLeftLines()=0;
+    virtual std::vector<std::string> *GetRightLines()=0;
 
 protected:
     cbDiffEditor *parent_;

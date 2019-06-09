@@ -419,7 +419,7 @@ void cbDiff::OnSwitchView(wxCommandEvent &event)
 void cbDiff::OnUpdateSwitchView(wxUpdateUIEvent &event)
 {
     cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
-    if(!ed || ed->GetModified())
+    if(!ed || ed->GetAnyModified())
     {
         event.Enable(false);
         return;
@@ -436,9 +436,8 @@ void cbDiff::OnUpdateSwitchView(wxUpdateUIEvent &event)
 void cbDiff::OnReloadFiles(wxCommandEvent &event)
 {
     cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
-    if(!ed) return;
-
-    ed->Reload();
+    if(ed)
+        ed->Reload();
 }
 
 void cbDiff::OnUpdateReloadFiles(wxUpdateUIEvent &event)
@@ -450,15 +449,14 @@ void cbDiff::OnUpdateReloadFiles(wxUpdateUIEvent &event)
 void cbDiff::OnSwapFiles(wxCommandEvent &event)
 {
     cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
-    if(!ed) return;
-
-    ed->Swap();
+    if(ed)
+        ed->Swap();
 }
 
 void cbDiff::OnUpdateSwapFiles(wxUpdateUIEvent &event)
 {
     cbDiffEditor *ed = dynamic_cast<cbDiffEditor *>(Manager::Get()->GetEditorManager()->GetActiveEditor());
-    event.Enable(ed!=nullptr);
+    event.Enable(ed && !ed->GetAnyModified());
 }
 
 void cbDiff::OnCopyToLeft(wxCommandEvent &event)
