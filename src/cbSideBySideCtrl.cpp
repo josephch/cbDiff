@@ -889,16 +889,16 @@ void cbSideBySideCtrl::doCopy(const Block &srcBlock, const Block &dstBlock, long
 {
     const int pos = tcDst->PositionFromLine(lastDstMarkedDiff);
     tcDst->BeginUndoAction();
-    if(srcBlock.len > 0)
-    {
-        int start = pos;
-        int stop = tcDst->PositionFromLine(lastDstMarkedDiff+srcBlock.len);
-        tcDst->DeleteRange(start, stop-start);
-    }
     if(dstBlock.len > 0)
     {
+        int start = pos;
+        int stop = tcDst->PositionFromLine(lastDstMarkedDiff+dstBlock.len);
+        tcDst->DeleteRange(start, stop-start);
+    }
+    if(srcBlock.len > 0)
+    {
         wxString str;
-        for(int l = 0 ; l < dstBlock.len ; ++l)
+        for(int l = 0 ; l < srcBlock.len ; ++l)
             str += tcSrc->GetLine(lastSrcMarkedDiff+l);
         str.RemoveLast();
         tcDst->InsertText(pos, str);
@@ -943,6 +943,7 @@ bool cbSideBySideCtrl::CanCopyToRightNext()
 
 void cbSideBySideCtrl::selectDiff(long lline, long rline)
 {
+    if(lline == -1 && rline == -1) return;
     if(lline == -1) lline = rightChanges_[rline].ref;
     if(rline == -1) rline = leftChanges_[lline].ref;
     markSelectionDiff(lline, lastLeftMarkedDiff_, leftChanges_, tcLeft_, tcRight_, lastLeftMarkedEmptyDiff_, lastSyncedLHandle_, Removed);
