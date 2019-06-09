@@ -58,16 +58,25 @@ protected:
     virtual bool LeftModified() override;
     virtual bool RightModified() override;
 private:
-    void selectDiffRight(long line);
-    void markSelectionDiffRight(long line);
-    void unmarkSelectionDiffRight();
-    void markSelectionEmptyPartRight(long line);
-    void selectDiffLeft(long line);
-    void markSelectionDiffLeft(long line);
-    void unmarkSelectionDiffLeft();
-    void markSelectionEmptyPartLeft(long line);
-    void DeleteMarksForSelectionLeft();
-    void DeleteMarksForSelectionRight();
+    struct Block
+    {
+        Block():len(0),empty(0), ref(0){}
+        int len;
+        int empty;
+        long ref;
+    };
+    enum AddOrRem {Added, Removed};
+    void selectDiff(long lline, long rline);
+    static void markSelectionDiff(long line, long &lastMarkedDiff, std::map<long, Block> &changes, cbStyledTextCtrl *tc, cbStyledTextCtrl *tcOther, long &lastMarkedEmptyDiff, int &lastSyncedHandle, AddOrRem ar);
+    static void markSelectionEmptyPart(long line, long &lastMarkedEmptyDiff, cbStyledTextCtrl *tc, std::map<long, Block> &changes);
+    static void DeleteMarksForSelection(std::map<long, Block> &changes, const long &lastMarkedDiff, cbStyledTextCtrl *tc, const long &lastMarkedEmptyDiff, AddOrRem ar);
+
+    static void unmarkSelectionDiff(const long &lastMarkedDiff, std::map<long, Block> &changes,  cbStyledTextCtrl *tc, const long &lastMarkedEmptyDiff, AddOrRem ar);
+
+    static long NextDifference(const std::vector<long> &linesWithDifferences, int currline);
+    static bool CanGotoNextDiff(const std::vector<long> &linesWithDifferences, int currline);
+    static long PrevDifference(int curr_line, const std::vector<long> &linesWithDifferences, std::map<long, Block> &changes);
+    static bool CanGotoPrevDiff(int curr_line, std::vector<long> linesWithDifferences, std::map<long, Block> &changes);
 
     cbEditor *GetCbEditorIfActive(const wxString &filename);
 
@@ -87,13 +96,6 @@ private:
     wxScrollBar *vScrollBar_;
     wxScrollBar *hScrollBar_;
 
-    struct Block
-    {
-        Block():len(0),empty(0), ref(0){}
-        int len;
-        int empty;
-        long ref;
-    };
     std::vector<long> linesRightWithDifferences_;
     std::map<long, Block> rightChanges_;
     std::vector<long> linesLeftWithDifferences_;
@@ -101,8 +103,8 @@ private:
 
     int lineNumbersWidthLeft_;
     int lineNumbersWidthRight_;
-    void doCopyToLeft(const Block &leftBlock, const Block &rightBlock);
-    void doCopyToRight(const Block &leftBlock, const Block &rightBlock);
+    static void doCopy(const Block &srcBlock, const Block &dstBlock, long &lastSrcMarkedDiff, long &lastDstMarkedDiff, cbStyledTextCtrl *tcSrc, cbStyledTextCtrl *tcDst);
+    void CopyTo(bool toRight);
     bool HasDiffSelected();
 
     static void setLineNumberMarginWidth(cbStyledTextCtrl *stc, int &currWidth);

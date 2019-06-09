@@ -310,11 +310,11 @@ void cbSideBySideCtrl::SynchronizeSelection()
        (((leftChanges_[lastLeftMarkedDiff_].len >  0) && (curr_left_line != lastLeftMarkedDiff_)) ||
         ((leftChanges_[lastLeftMarkedDiff_].len == 0) && (curr_left_line != lastLeftMarkedEmptyDiff_))))
     {
-        unmarkSelectionDiffLeft();
+        unmarkSelectionDiff(lastLeftMarkedDiff_, leftChanges_, tcLeft_, lastLeftMarkedEmptyDiff_, Removed);
         lastLeftMarkedDiff_ = -1;
         lastLeftMarkedEmptyDiff_ = -1;
 
-        unmarkSelectionDiffRight();
+        unmarkSelectionDiff(lastRightMarkedDiff_, rightChanges_, tcRight_, lastRightMarkedEmptyDiff_, Added);
         lastRightMarkedDiff_ = -1;
         lastRightMarkedEmptyDiff_ = -1;
     }
@@ -322,11 +322,11 @@ void cbSideBySideCtrl::SynchronizeSelection()
        (((rightChanges_[lastRightMarkedDiff_].len >  0) && (curr_right_line != lastRightMarkedDiff_)) ||
         ((rightChanges_[lastRightMarkedDiff_].len == 0) && (curr_right_line != lastRightMarkedEmptyDiff_))))
     {
-        unmarkSelectionDiffRight();
+        unmarkSelectionDiff(lastRightMarkedDiff_, rightChanges_, tcRight_, lastRightMarkedEmptyDiff_, Added);
         lastRightMarkedDiff_ = -1;
         lastRightMarkedEmptyDiff_ = -1;
 
-        unmarkSelectionDiffLeft();
+        unmarkSelectionDiff(lastLeftMarkedDiff_, leftChanges_, tcLeft_, lastLeftMarkedEmptyDiff_, Removed);
         lastLeftMarkedDiff_ = -1;
         lastLeftMarkedEmptyDiff_ = -1;
     }
@@ -626,14 +626,10 @@ bool cbSideBySideCtrl::HasSelection() const
 bool cbSideBySideCtrl::CanPaste() const
 {
     if(tcLeft_->HasFocus())
-    {
         return tcLeft_->CanPaste() && !leftReadOnly_;
-    }
 
     else if(tcRight_->HasFocus())
-    {
         return tcRight_->CanPaste() && !rightReadOnly_;
-    }
 
     return false;
 }
@@ -658,31 +654,48 @@ void cbSideBySideCtrl::SelectAll()
         tcRight_->SelectAll();
 }
 
+long cbSideBySideCtrl::NextDifference(const std::vector<long> &linesWithDifferences, int currline)
+{
+    if(linesWithDifferences.empty())
+        return -1;
+
+    auto itr = std::upper_bound(linesWithDifferences.begin(), linesWithDifferences.end(), currline);
+    if(itr == linesWithDifferences.end())
+        return -1;
+
+    return *itr;
+}
+
 void cbSideBySideCtrl::NextDifference()
 {
     if(tcLeft_->GetSCIFocus())
     {
-        if(linesLeftWithDifferences_.empty())
-            return;
-
-        auto itr = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), tcLeft_->GetCurrentLine());
-
-        if(itr == linesLeftWithDifferences_.end())
-            return;
-
-        selectDiffLeft(*itr);
+        long l = NextDifference(linesLeftWithDifferences_, tcLeft_->GetCurrentLine());
+        if(l != -1)
+            selectDiff(l, -1);
     }
     else if(tcRight_->GetSCIFocus())
     {
-        if(linesRightWithDifferences_.empty())
-            return;
+        long l = NextDifference(linesRightWithDifferences_, tcRight_->GetCurrentLine());
+        if(l != -1)
+            selectDiff(-1, l);
+    }
+}
 
-        auto itr = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), tcRight_->GetCurrentLine());
+long cbSideBySideCtrl::PrevDifference(int curr_line, const std::vector<long> &linesWithDifferences, std::map<long, Block> &changes)
+{
+    if(curr_line == 0) return -1;
 
-        if(itr == linesRightWithDifferences_.end())
-            return;
+    if(linesWithDifferences.empty()) return -1;
 
-        selectDiffRight(*itr);
+    auto itr = changes.find(curr_line);
+    if(itr != changes.end() && changes[curr_line].len == 0)
+        return curr_line;
+    else
+    {
+        auto itr = std::lower_bound(linesWithDifferences.begin(), linesWithDifferences.end(), curr_line);
+        if(itr == linesWithDifferences.begin()) return -1;
+        return *(--itr);
     }
 }
 
@@ -690,102 +703,59 @@ void cbSideBySideCtrl::PrevDifference()
 {
     if(tcLeft_->GetSCIFocus())
     {
-        int curr_line = tcLeft_->GetCurrentLine();
-        if(curr_line == 0) return;
-
-        if(linesLeftWithDifferences_.empty()) return;
-
-        auto itr = leftChanges_.find(curr_line);
-        if(itr != leftChanges_.end() && leftChanges_[curr_line].len == 0)
-        {
-            selectDiffLeft(curr_line);
-        }
-        else
-        {
-            auto itr = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), curr_line);
-            if(itr == linesLeftWithDifferences_.begin()) return;
-            selectDiffLeft(*(--itr));
-        }
-
+        long l = PrevDifference(tcLeft_->GetCurrentLine(), linesLeftWithDifferences_, leftChanges_);
+        if(l != -1)
+            selectDiff(l, -1);
     }
     else if(tcRight_->GetSCIFocus())
     {
-        int curr_line = tcRight_->GetCurrentLine();
-        if(curr_line == 0) return;
-
-        if(linesRightWithDifferences_.empty()) return;
-
-        auto itr = rightChanges_.find(curr_line);
-        if(itr != rightChanges_.end() && rightChanges_[curr_line].len == 0)
-        {
-            selectDiffRight(curr_line);
-        }
-        else
-        {
-            auto itr = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), curr_line);
-            if(itr == linesRightWithDifferences_.begin()) return;
-            selectDiffRight(*(--itr));
-        }
+        long l = PrevDifference(tcRight_->GetCurrentLine(), linesRightWithDifferences_, rightChanges_);
+        if(l != -1)
+            selectDiff(-1, l);
     }
+}
+
+bool cbSideBySideCtrl::CanGotoNextDiff(const std::vector<long> &linesWithDifferences, int currline)
+{
+    if(linesWithDifferences.empty()) return false;
+
+    auto i = std::upper_bound(linesWithDifferences.begin(), linesWithDifferences.end(), currline);
+    return i != linesWithDifferences.end();
 }
 
 bool cbSideBySideCtrl::CanGotoNextDiff()
 {
     if(tcLeft_->GetSCIFocus())
-    {
-        if(linesLeftWithDifferences_.empty())
-            return false;
-
-        auto i = std::upper_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), tcLeft_->GetCurrentLine());
-
-        return i != linesLeftWithDifferences_.end();
-    }
+        return CanGotoNextDiff(linesLeftWithDifferences_, tcLeft_->GetCurrentLine());
     else if(tcRight_->GetSCIFocus())
-    {
-        if(linesRightWithDifferences_.empty())
-            return false;
+        return CanGotoNextDiff(linesRightWithDifferences_, tcRight_->GetCurrentLine());
 
-        auto i = std::upper_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), tcRight_->GetCurrentLine());
-
-        return i != linesRightWithDifferences_.end();
-    }
     return false;
+}
+
+bool cbSideBySideCtrl::CanGotoPrevDiff(int curr_line, std::vector<long> linesWithDifferences, std::map<long, Block> &changes)
+{
+    if(curr_line == 0) return false;
+
+    if(linesWithDifferences.empty()) return false;
+
+    auto itr = changes.find(curr_line);
+    if(itr != changes.end() && changes[curr_line].len == 0)
+        return true;
+    else
+    {
+        auto i = std::lower_bound(linesWithDifferences.begin(), linesWithDifferences.end(), curr_line);
+        return i != linesWithDifferences.begin();
+    }
 }
 
 bool cbSideBySideCtrl::CanGotoPrevDiff()
 {
     if(tcLeft_->GetSCIFocus())
-    {
-        int curr_line = tcLeft_->GetCurrentLine();
-        if(curr_line == 0) return false;
-
-        if(linesLeftWithDifferences_.empty()) return false;
-
-        auto itr = leftChanges_.find(curr_line);
-        if(itr != leftChanges_.end() && leftChanges_[curr_line].len == 0)
-            return true;
-        else
-        {
-            auto i = std::lower_bound(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), curr_line);
-            return i != linesLeftWithDifferences_.begin();
-        }
-    }
+        return CanGotoPrevDiff(tcLeft_->GetCurrentLine(), linesLeftWithDifferences_, leftChanges_);
     else if(tcRight_->GetSCIFocus())
-    {
-        int curr_line = tcRight_->GetCurrentLine();
-        if(curr_line == 0) return false;
+        return CanGotoPrevDiff(tcRight_->GetCurrentLine(), linesRightWithDifferences_, rightChanges_);
 
-        if(linesRightWithDifferences_.empty()) return false;
-
-        auto itr = rightChanges_.find(curr_line);
-        if(itr != rightChanges_.end() && rightChanges_[curr_line].len == 0)
-            return true;
-        else
-        {
-            auto i = std::lower_bound(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), curr_line);
-            return i != linesRightWithDifferences_.begin();
-        }
-    }
     return false;
 }
 
@@ -794,12 +764,12 @@ void cbSideBySideCtrl::FirstDifference()
     if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty()) return;
-        selectDiffLeft(linesLeftWithDifferences_.front());
+        selectDiff(linesLeftWithDifferences_.front(), -1);
     }
     else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty()) return;
-        selectDiffRight(linesRightWithDifferences_.front());
+        selectDiff(-1, linesRightWithDifferences_.front());
     }
 }
 
@@ -808,12 +778,12 @@ void cbSideBySideCtrl::LastDifference()
     if(tcLeft_->GetSCIFocus())
     {
         if(linesLeftWithDifferences_.empty()) return;
-        selectDiffLeft(linesLeftWithDifferences_.back());
+        selectDiff(linesLeftWithDifferences_.back(), -1);
     }
     else if(tcRight_->GetSCIFocus())
     {
         if(linesRightWithDifferences_.empty()) return;
-        selectDiffRight(linesRightWithDifferences_.back());
+        selectDiff(-1, linesRightWithDifferences_.back());
     }
 }
 
@@ -821,15 +791,13 @@ bool cbSideBySideCtrl::CanGotoFirstDiff()
 {
     if(tcLeft_->GetSCIFocus())
     {
-        if(linesLeftWithDifferences_.empty())
-           return false;
+        if(linesLeftWithDifferences_.empty()) return false;
 
         return tcLeft_->GetCurrentLine() != linesLeftWithDifferences_.front();
     }
     else if(tcRight_->GetSCIFocus())
     {
-        if(linesRightWithDifferences_.empty())
-            return false;
+        if(linesRightWithDifferences_.empty()) return false;
 
         return tcRight_->GetCurrentLine() != linesRightWithDifferences_.front();
     }
@@ -840,19 +808,24 @@ bool cbSideBySideCtrl::CanGotoLastDiff()
 {
     if(tcLeft_->GetSCIFocus())
     {
-        if(linesLeftWithDifferences_.empty())
-           return false;
+        if(linesLeftWithDifferences_.empty()) return false;
 
         return tcLeft_->GetCurrentLine() != linesLeftWithDifferences_.back();
     }
     else if(tcRight_->GetSCIFocus())
     {
-        if(linesRightWithDifferences_.empty())
-            return false;
+        if(linesRightWithDifferences_.empty()) return false;
 
         return tcRight_->GetCurrentLine() != linesRightWithDifferences_.back();
     }
     return false;
+}
+
+bool cbSideBySideCtrl::HasDiffSelected()
+{
+    if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return false;
+
+    return lastLeftMarkedDiff_ != -1 && lastRightMarkedDiff_ != -1;
 }
 
 bool cbSideBySideCtrl::CanCopyToLeft()
@@ -865,85 +838,36 @@ bool cbSideBySideCtrl::CanCopyToRight()
     return !rightReadOnly_ && HasDiffSelected();
 }
 
-bool cbSideBySideCtrl::HasDiffSelected()
-{
-    if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return false;
-
-    return lastLeftMarkedDiff_ != -1 && lastRightMarkedDiff_ != -1;
-}
-
 void cbSideBySideCtrl::CopyToLeft()
 {
-    if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return;
-
-    auto itrl = leftChanges_.find(lastLeftMarkedDiff_);
-    auto itrr = rightChanges_.find(lastRightMarkedDiff_);
-
-    if(itrl == leftChanges_.end()) return;
-    if(itrr == rightChanges_.end()) return;
-
-    unmarkSelectionDiffLeft();
-    unmarkSelectionDiffRight();
-
-    DeleteMarksForSelectionLeft();
-    DeleteMarksForSelectionRight();
-
-    doCopyToLeft(itrl->second, itrr->second);
-
-    auto itl = std::find(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), lastLeftMarkedDiff_);
-    if(itl != linesLeftWithDifferences_.end())
-        linesLeftWithDifferences_.erase(itl);
-    auto itr = std::find(linesRightWithDifferences_.begin(), linesRightWithDifferences_.end(), lastRightMarkedDiff_);
-    if(itr != linesRightWithDifferences_.end())
-        linesRightWithDifferences_.erase(itr);
-
-    leftChanges_.erase(itrl);
-    rightChanges_.erase(itrr);
-
-    lastLeftMarkedDiff_ = -1;
-    lastLeftMarkedEmptyDiff_ = -1;
-    lastRightMarkedDiff_ = -1;
-    lastRightMarkedEmptyDiff_ = -1;
-}
-
-void cbSideBySideCtrl::doCopyToLeft(const Block &leftBlock, const Block &rightBlock)
-{
-    const int pos = tcLeft_->PositionFromLine(lastLeftMarkedDiff_);
-    tcLeft_->BeginUndoAction();
-    if(rightBlock.len > 0)
-    {
-        int start = pos;
-        int stop = tcLeft_->PositionFromLine(lastLeftMarkedDiff_+rightBlock.len);
-        tcLeft_->DeleteRange(start, stop-start);
-    }
-    if(leftBlock.len > 0)
-    {
-        wxString str;
-        for(int l = 0 ; l < leftBlock.len ; ++l)
-            str += tcRight_->GetLine(lastRightMarkedDiff_+l);
-        str.RemoveLast();
-        tcLeft_->InsertText(pos, str);
-    }
-    tcLeft_->EndUndoAction();
+    CopyTo(false);
 }
 
 void cbSideBySideCtrl::CopyToRight()
 {
+    CopyTo(true);
+}
+
+void cbSideBySideCtrl::CopyTo(bool toRight)
+{
     if(linesLeftWithDifferences_.empty() || linesRightWithDifferences_.empty()) return;
 
     auto itrl = leftChanges_.find(lastLeftMarkedDiff_);
-    auto itrr = rightChanges_.find(lastRightMarkedDiff_);
-
     if(itrl == leftChanges_.end()) return;
+
+    auto itrr = rightChanges_.find(lastRightMarkedDiff_);
     if(itrr == rightChanges_.end()) return;
 
-    unmarkSelectionDiffLeft();
-    unmarkSelectionDiffRight();
+    unmarkSelectionDiff(lastLeftMarkedDiff_, leftChanges_, tcLeft_, lastLeftMarkedEmptyDiff_, Removed);
+    unmarkSelectionDiff(lastRightMarkedDiff_, rightChanges_, tcRight_, lastRightMarkedEmptyDiff_, Added);
 
-    DeleteMarksForSelectionLeft();
-    DeleteMarksForSelectionRight();
+    DeleteMarksForSelection(leftChanges_, lastLeftMarkedDiff_, tcLeft_, lastLeftMarkedEmptyDiff_, Removed);
+    DeleteMarksForSelection(rightChanges_, lastRightMarkedDiff_, tcRight_, lastRightMarkedEmptyDiff_, Added);
 
-    doCopyToRight(itrl->second, itrr->second);
+    if ( toRight )
+        doCopy(itrl->second, itrr->second, lastLeftMarkedDiff_, lastRightMarkedDiff_, tcLeft_, tcRight_);
+    else
+        doCopy(itrr->second, itrl->second, lastRightMarkedDiff_, lastLeftMarkedDiff_, tcRight_, tcLeft_);
 
     auto itl = std::find(linesLeftWithDifferences_.begin(), linesLeftWithDifferences_.end(), lastLeftMarkedDiff_);
     if(itl != linesLeftWithDifferences_.end())
@@ -961,51 +885,38 @@ void cbSideBySideCtrl::CopyToRight()
     lastRightMarkedEmptyDiff_ = -1;
 }
 
-void cbSideBySideCtrl::doCopyToRight(const Block &leftBlock, const Block &rightBlock)
+void cbSideBySideCtrl::doCopy(const Block &srcBlock, const Block &dstBlock, long &lastSrcMarkedDiff, long &lastDstMarkedDiff, cbStyledTextCtrl *tcSrc, cbStyledTextCtrl *tcDst)
 {
-    const int pos = tcRight_->PositionFromLine(lastRightMarkedDiff_);
-    tcRight_->BeginUndoAction();
-    if(leftBlock.len > 0)
+    const int pos = tcDst->PositionFromLine(lastDstMarkedDiff);
+    tcDst->BeginUndoAction();
+    if(srcBlock.len > 0)
     {
         int start = pos;
-        int stop = tcRight_->PositionFromLine(lastRightMarkedDiff_+leftBlock.len);
-        tcRight_->DeleteRange(start, stop-start);
+        int stop = tcDst->PositionFromLine(lastDstMarkedDiff+srcBlock.len);
+        tcDst->DeleteRange(start, stop-start);
     }
-    if(rightBlock.len > 0)
+    if(dstBlock.len > 0)
     {
         wxString str;
-        for(int l = 0 ; l < rightBlock.len ; ++l)
-            str += tcLeft_->GetLine(lastLeftMarkedDiff_+l);
+        for(int l = 0 ; l < dstBlock.len ; ++l)
+            str += tcSrc->GetLine(lastSrcMarkedDiff+l);
         str.RemoveLast();
-        tcRight_->InsertText(pos, str);
+        tcDst->InsertText(pos, str);
     }
-    tcRight_->EndUndoAction();
+    tcDst->EndUndoAction();
 }
 
-void cbSideBySideCtrl::DeleteMarksForSelectionLeft()
+void cbSideBySideCtrl::DeleteMarksForSelection(std::map<long, Block> &changes, const long &lastMarkedDiff, cbStyledTextCtrl *tc, const long &lastMarkedEmptyDiff, AddOrRem ar)
 {
-    auto itr = leftChanges_.find(lastLeftMarkedDiff_);
+    auto itr = changes.find(lastMarkedDiff);
 
     for(int k = 0 ; k < itr->second.len ; ++k)
     {
-        tcLeft_->MarkerDelete(lastLeftMarkedDiff_+k, MINUS_MARKER);
-        tcLeft_->MarkerDelete(lastLeftMarkedDiff_+k, RED_BKG_MARKER);
+        tc->MarkerDelete(lastMarkedDiff+k, (ar == Removed) ? MINUS_MARKER : PLUS_MARKER);
+        tc->MarkerDelete(lastMarkedDiff+k, (ar == Removed) ? RED_BKG_MARKER : GREEN_BKG_MARKER);
     }
-    if(lastLeftMarkedEmptyDiff_ != -1)
-        tcLeft_->AnnotationClearLine(lastLeftMarkedEmptyDiff_);
-}
-
-void cbSideBySideCtrl::DeleteMarksForSelectionRight()
-{
-    auto itr = rightChanges_.find(lastRightMarkedDiff_);
-
-    for(int k = 0 ; k < itr->second.len ; ++k)
-    {
-        tcRight_->MarkerDelete(lastRightMarkedDiff_+k, PLUS_MARKER);
-        tcRight_->MarkerDelete(lastRightMarkedDiff_+k, GREEN_BKG_MARKER);
-    }
-    if(lastRightMarkedEmptyDiff_ != -1)
-        tcRight_->AnnotationClearLine(lastRightMarkedEmptyDiff_);
+    if(lastMarkedEmptyDiff != -1)
+        tc->AnnotationClearLine(lastMarkedEmptyDiff);
 }
 
 void cbSideBySideCtrl::CopyToLeftNext()
@@ -1030,148 +941,77 @@ bool cbSideBySideCtrl::CanCopyToRightNext()
     return CanCopyToRight() && CanGotoNextDiff();
 }
 
-void cbSideBySideCtrl::selectDiffLeft(long line)
+void cbSideBySideCtrl::selectDiff(long lline, long rline)
 {
-    int rline = leftChanges_[line].ref;
-    markSelectionDiffLeft(line);
-    markSelectionDiffRight(rline);
+    if(lline == -1) lline = rightChanges_[rline].ref;
+    if(rline == -1) rline = leftChanges_[lline].ref;
+    markSelectionDiff(lline, lastLeftMarkedDiff_, leftChanges_, tcLeft_, tcRight_, lastLeftMarkedEmptyDiff_, lastSyncedLHandle_, Removed);
+    markSelectionDiff(rline, lastRightMarkedDiff_, rightChanges_, tcRight_, tcLeft_, lastRightMarkedEmptyDiff_, lastSyncedRHandle_, Added);
 }
 
-void cbSideBySideCtrl::markSelectionDiffLeft(long line)
+void cbSideBySideCtrl::markSelectionEmptyPart(long line, long &lastMarkedEmptyDiff, cbStyledTextCtrl *tc, std::map<long, Block> &changes)
 {
-    if(lastLeftMarkedDiff_ == line) return;
-    unmarkSelectionDiffLeft();
+    if(lastMarkedEmptyDiff != -1)
+        tc->AnnotationSetStyle(lastMarkedEmptyDiff, 0);
 
-    for(int k = 0 ; k < leftChanges_[line].len ; ++k)
-    {
-        tcLeft_->MarkerDelete(line+k, RED_BKG_MARKER);
-        tcLeft_->MarkerAdd(line+k, BLUE_BKG_MARKER);
-    }
-
-    if(leftChanges_[line].len == 0)
-    {
-        tcRight_->SetFocus();
-        if(line)
-        {
-            tcLeft_->GotoLine(line-1);
-            tcLeft_->EnsureVisibleEnforcePolicy(line-1);
-        }
-    }
-    else
-    {
-        tcLeft_->GotoLine(line);
-        tcLeft_->EnsureVisibleEnforcePolicy(line);
-    }
-
-    tcLeft_->MarkerDeleteHandle(lastSyncedLHandle_);
-    lastSyncedLHandle_ = -1;
-
-    lastLeftMarkedDiff_ = line;
-
-    markSelectionEmptyPartLeft(line);
-}
-
-void cbSideBySideCtrl::markSelectionEmptyPartLeft(long line)
-{
-    if(lastLeftMarkedEmptyDiff_ != -1)
-        tcLeft_->AnnotationSetStyle(lastLeftMarkedEmptyDiff_, 0);
-
-    int len = leftChanges_[line].len;
-    int emptyLines = leftChanges_[line].empty;
+    int len = changes[line].len;
+    int emptyLines = changes[line].empty;
 
     if (line) --line; // annotation are one below the previous line
     line += len;
 
     if(emptyLines)
     {
-        tcLeft_->AnnotationSetStyle(line, STYLE_BLUE_BACK);
-        lastLeftMarkedEmptyDiff_ = line;
+        tc->AnnotationSetStyle(line, STYLE_BLUE_BACK);
+        lastMarkedEmptyDiff = line;
     }
     else
-        lastLeftMarkedEmptyDiff_ = -1;
+        lastMarkedEmptyDiff = -1;
 }
 
-void cbSideBySideCtrl::unmarkSelectionDiffLeft()
+void cbSideBySideCtrl::markSelectionDiff(long line, long &lastMarkedDiff, std::map<long, Block> &changes, cbStyledTextCtrl *tc, cbStyledTextCtrl *tcOther, long &lastMarkedEmptyDiff, int &lastSyncedHandle, AddOrRem ar)
 {
-    if(lastLeftMarkedDiff_ != -1)
-        for(int k = 0 ; k < leftChanges_[lastLeftMarkedDiff_].len ; ++k)
-        {
-            tcLeft_->MarkerDelete(lastLeftMarkedDiff_+k, BLUE_BKG_MARKER);
-            tcLeft_->MarkerAdd(lastLeftMarkedDiff_+k, RED_BKG_MARKER);
-        }
+    if(lastMarkedDiff == line) return;
+    unmarkSelectionDiff(lastMarkedDiff, changes, tc, lastMarkedEmptyDiff, ar);
 
-    if(lastLeftMarkedEmptyDiff_ != -1)
-        tcLeft_->AnnotationSetStyle(lastLeftMarkedEmptyDiff_, 0);
-}
-
-void cbSideBySideCtrl::selectDiffRight(long line)
-{
-    int lline = rightChanges_[line].ref;
-    markSelectionDiffRight(line);
-    markSelectionDiffLeft(lline);
-}
-
-void cbSideBySideCtrl::markSelectionDiffRight(long line)
-{
-    if(lastRightMarkedDiff_ == line) return;
-    unmarkSelectionDiffRight();
-
-    for(int k = 0 ; k < rightChanges_[line].len ; ++k)
+    for(int k = 0 ; k < changes[line].len ; ++k)
     {
-        tcRight_->MarkerDelete(line+k, GREEN_BKG_MARKER);
-        tcRight_->MarkerAdd(line+k, BLUE_BKG_MARKER);
+        tc->MarkerDelete(line+k, (ar == Removed) ? RED_BKG_MARKER : GREEN_BKG_MARKER);
+        tc->MarkerAdd(line+k, BLUE_BKG_MARKER);
     }
 
-    if(rightChanges_[line].len == 0)
+    if(changes[line].len == 0)
     {
-        tcLeft_->SetFocus();
+        tcOther->SetFocus();
         if(line)
         {
-            tcRight_->GotoLine(line-1);
-            tcRight_->EnsureVisibleEnforcePolicy(line-1);
+            tc->GotoLine(line-1);
+            tc->EnsureVisibleEnforcePolicy(line-1);
         }
     }
     else
     {
-        tcRight_->GotoLine(line);
-        tcRight_->EnsureVisibleEnforcePolicy(line);
+        tc->GotoLine(line);
+        tc->EnsureVisibleEnforcePolicy(line);
     }
 
-    tcRight_->MarkerDeleteHandle(lastSyncedRHandle_);
-    lastSyncedRHandle_ = -1;
-
-    lastRightMarkedDiff_ = line;
-
-    markSelectionEmptyPartRight(line);
+    tc->MarkerDeleteHandle(lastSyncedHandle);
+    lastSyncedHandle = -1;
+    lastMarkedDiff = line;
+    markSelectionEmptyPart(line, lastMarkedEmptyDiff, tc, changes);
 }
 
-void cbSideBySideCtrl::markSelectionEmptyPartRight(long line)
+void cbSideBySideCtrl::unmarkSelectionDiff(const long &lastMarkedDiff, std::map<long, Block> &changes, cbStyledTextCtrl *tc, const long &lastMarkedEmptyDiff, AddOrRem ar)
 {
-    int len = rightChanges_[line].len;
-    int emptyLines = rightChanges_[line].empty;
-
-    if (line) --line; // annotation are one below the previous line
-    line += len;
-    if(emptyLines)
-    {
-        tcRight_->AnnotationSetStyle(line, STYLE_BLUE_BACK);
-        lastRightMarkedEmptyDiff_ = line;
-    }
-    else
-        lastRightMarkedEmptyDiff_ = -1;
-}
-
-void cbSideBySideCtrl::unmarkSelectionDiffRight()
-{
-    if(lastRightMarkedDiff_ != -1)
-        for(int k = 0 ; k < rightChanges_[lastRightMarkedDiff_].len ; ++k)
+    if(lastMarkedDiff != -1)
+        for(int k = 0 ; k < changes[lastMarkedDiff].len ; ++k)
         {
-            tcRight_->MarkerDelete(lastRightMarkedDiff_+k, BLUE_BKG_MARKER);
-            tcRight_->MarkerAdd(lastRightMarkedDiff_+k, GREEN_BKG_MARKER);
+            tc->MarkerDelete(lastMarkedDiff+k, BLUE_BKG_MARKER);
+            tc->MarkerAdd(lastMarkedDiff+k, (ar == Removed) ? RED_BKG_MARKER : GREEN_BKG_MARKER);
         }
 
-    if(lastRightMarkedEmptyDiff_ != -1)
-        tcRight_->AnnotationSetStyle(lastRightMarkedEmptyDiff_, 0);
+    if(lastMarkedEmptyDiff != -1)
+        tc->AnnotationSetStyle(lastMarkedEmptyDiff, 0);
 }
 
 cbEditor *cbSideBySideCtrl::GetCbEditorIfActive(const wxString &filename)
