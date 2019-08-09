@@ -128,6 +128,7 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     tcLeft_->AnnotationSetStyleOffset(512);
     tcLeft_->StyleSetBackground(512+STYLE_BLUE_BACK, annotBkgL);
     tcLeft_->SetVisiblePolicy(wxSCI_VISIBLE_STRICT, 0);
+    //tcLeft_->SetViewEOL(true);
 
     cbEditor::ApplyStyles(tcRight_);
     tcRight_->SetMarginWidth(1, 16);
@@ -157,6 +158,7 @@ void cbSideBySideCtrl::Init(cbDiffColors colset)
     tcRight_->AnnotationSetStyleOffset(512);
     tcRight_->StyleSetBackground(512+STYLE_BLUE_BACK, annotBkgR);
     tcRight_->SetVisiblePolicy(wxSCI_VISIBLE_STRICT, 0);
+    //tcRight_->SetViewEOL(true);
 }
 
 void cbSideBySideCtrl::UpdateDiff(const wxDiff &diff)
@@ -1037,10 +1039,10 @@ cbEditor *cbSideBySideCtrl::GetCbEditorIfActive(const wxString &filename)
 
 std::vector<std::string> *cbSideBySideCtrl::GetLines(cbStyledTextCtrl *tc)
 {
-    const int N = tc->GetLineCount();
+    const unsigned int N = tc->GetLineCount();
     std::vector<std::string> *lines = new std::vector<std::string>;
     for(size_t l = 0 ; l < N ; ++l)
-        lines->push_back(tc->GetLine(l).RemoveLast().ToStdString());
+        lines->push_back(tc->GetLine(l).ToStdString()); //.RemoveLast()
     return lines;
 }
 
