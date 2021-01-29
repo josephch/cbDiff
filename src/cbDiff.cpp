@@ -218,7 +218,7 @@ void cbDiff::BuildModuleMenu(const ModuleType type, wxMenu *menu, const FileTree
         wxMenu *diffmenu = new cbDiffMenu(this, filename, m_prevSelectionValid, m_prevFileName, menuIds_);
         menu->AppendSubMenu(diffmenu, _("Diff with"));
     }
-    else if ( type == mtUnknown ) // assuming FileExplorer
+    else if ( type == mtFileExplorer )
     {
         if ( data && (data->GetKind() == FileTreeData::ftdkFile) )
         {
