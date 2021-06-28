@@ -28,7 +28,7 @@
 				</Linker>
 				<ExtraCommands>
 					<Add after="zip -j9 ../../../devel/share/codeblocks/cbDiff.zip manifest.xml *.xrc" />
-					<Add after="zip -Rq9 ../../../devel/share/codeblocks/cbDiff.zip images/64x64/*.png images/56x56/*.png images/48x48/*.png images/40x40/*.png images/32x32/*.png images/28x28/*.png images/24x24/*.png images/20x20/*.png images/16x16/*.png" />
+					<Add after="zip -Rq9 ../../../devel/share/codeblocks/cbDiff.zip images/64x64/*.png images/56x56/*.png images/48x48/*.png images/40x40/*.png images/32x32/*.png images/28x28/*.png images/24x24/*.png images/20x20/*.png images/16x16/*.png cb_diff_toolbar.xrc" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
@@ -37,11 +37,6 @@
 			<Add alias="All" targets="default;" />
 		</VirtualTargets>
 		<Unit filename="cb_diff_toolbar.xrc" />
-		<Unit filename="images/reload.h" />
-		<Unit filename="images/sidebyside.h" />
-		<Unit filename="images/swap.h" />
-		<Unit filename="images/table.h" />
-		<Unit filename="images/unified.h" />
 		<Unit filename="manifest.xml" />
 		<Unit filename="src/cbDiff.cpp" />
 		<Unit filename="src/cbDiff.h" />
