@@ -9,3 +9,6 @@
 bin
 *.[oa]
 *.obj
+/compile_commands.json
+/.cache
+

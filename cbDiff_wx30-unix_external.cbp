@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="cbDiff wx3.0.x (Unix)" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="default">
+				<Option output="bin/cbDiff" prefix_auto="0" extension_auto="1" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="`pkg-config --cflags codeblocks`" />
+					<Add option="-Wall" />
+					<Add option="-fPIC" />
+					<Add option="`wx-config --cflags`" />
+					<Add option="-DEXPORT_FUNC" />
+				</Compiler>
+				<Linker>
+					<Add option="`wx-config --libs`" />
+				</Linker>
+				<ExtraCommands>
+					<Add after="zip -j9 bin/cbDiff.zip manifest.xml" />
+					<Add after="zip -Rq9 bin/cbDiff.zip images\64x64\*.png images\56x56\*.png images\48x48\*.png images\40x40\*.png images\32x32\*.png images\28x28\*.png images\24x24\*.png images\20x20\*.png images\16x16\*.png cb_diff_toolbar.xrc" />
+					<Add after="zip -j9 bin/cbDiff.cbplugin bin/cbDiff.so bin/cbDiff.zip" />
+					<Mode after="always" />
+				</ExtraCommands>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="default;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-g" />
+			<Add option="-std=c++11" />
+			<Add directory="./dtl" />
+		</Compiler>
+		<Unit filename="cb_diff_toolbar.xrc" />
+		<Unit filename="manifest.xml" />
+		<Unit filename="open.txt" />
+		<Unit filename="src/cbDiff.cpp" />
+		<Unit filename="src/cbDiff.h" />
+		<Unit filename="src/cbDiffConfigPanel.cpp" />
+		<Unit filename="src/cbDiffConfigPanel.h" />
+		<Unit filename="src/cbDiffCtrl.cpp" />
+		<Unit filename="src/cbDiffCtrl.h" />
+		<Unit filename="src/cbDiffEditor.cpp" />
+		<Unit filename="src/cbDiffEditor.h" />
+		<Unit filename="src/cbDiffMenu.cpp" />
+		<Unit filename="src/cbDiffMenu.h" />
+		<Unit filename="src/cbDiffSelectFiles.cpp" />
+		<Unit filename="src/cbDiffSelectFiles.h" />
+		<Unit filename="src/cbDiffUtils.cpp" />
+		<Unit filename="src/cbDiffUtils.h" />
+		<Unit filename="src/cbSideBySideCtrl.cpp" />
+		<Unit filename="src/cbSideBySideCtrl.h" />
+		<Unit filename="src/cbTableCtrl.cpp" />
+		<Unit filename="src/cbTableCtrl.h" />
+		<Unit filename="src/cbUnifiedCtrl.cpp" />
+		<Unit filename="src/cbUnifiedCtrl.h" />
+		<Unit filename="src/wxDiff.cpp" />
+		<Unit filename="src/wxDiff.h" />
+		<Unit filename="wxsmith/cbDiffConfigPanel.wxs" />
+		<Unit filename="wxsmith/cbDiffSelectFiles.wxs" />
+		<Extensions>
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+			<lib_finder disable_auto="1" />
+			<wxsmith version="1">
+				<resources>
+					<wxPanel wxs="wxsmith/cbDiffConfigPanel.wxs" src="src/cbDiffConfigPanel.cpp" hdr="src/cbDiffConfigPanel.h" fwddecl="1" i18n="1" name="cbDiffConfigPanel" language="CPP" />
+					<wxDialog wxs="wxsmith/cbDiffSelectFiles.wxs" src="src/cbDiffSelectFiles.cpp" hdr="src/cbDiffSelectFiles.h" fwddecl="1" i18n="1" name="cbDiffSelectFiles" language="CPP" />
+				</resources>
+			</wxsmith>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
